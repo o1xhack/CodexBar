@@ -6,7 +6,7 @@ enum PreferencesTab: String, Hashable {
     case about
     case debug
 
-    static let windowWidth: CGFloat = 340
+    static let windowWidth: CGFloat = 374
     static let windowHeight: CGFloat = 374
 
     var preferredHeight: CGFloat {
