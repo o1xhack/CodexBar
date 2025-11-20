@@ -169,6 +169,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let account: AccountInfo
     private let updater: UpdaterProviding
     private var statusItems: [UsageProvider: NSStatusItem] = [:]
+    private var lastMenuProvider: UsageProvider?
     private var cancellables = Set<AnyCancellable>()
     private let preferencesSelection: PreferencesSelection
     private var animationDisplayLink: CADisplayLink?
@@ -386,9 +387,19 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     }
 
     @objc private func openDashboard() {
-        if let url = URL(string: "https://chatgpt.com/codex/settings/usage") {
-            NSWorkspace.shared.open(url)
+        let preferred = self.lastMenuProvider
+            ?? (self.store.isEnabled(.codex) ? .codex : self.store.enabledProviders().first)
+
+        let urlString: String
+        switch preferred {
+        case .claude?:
+            urlString = "https://console.anthropic.com/settings/billing"
+        default:
+            urlString = "https://chatgpt.com/codex/settings/usage"
         }
+
+        guard let url = URL(string: urlString) else { return }
+        NSWorkspace.shared.open(url)
     }
 
     @objc private func showSettingsGeneral() { self.openSettings(tab: .general) }
@@ -427,6 +438,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
 extension StatusItemController {
     private func makeMenu(for provider: UsageProvider?) -> NSMenu {
+        self.lastMenuProvider = provider
         let descriptor = MenuDescriptor.build(
             provider: provider,
             store: self.store,
