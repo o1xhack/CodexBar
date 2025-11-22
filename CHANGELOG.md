@@ -9,6 +9,7 @@
 - Codex probes and version detection now launch the CLI with `-s read-only -a untrusted` to keep PTY runs sandboxed.
 - Codex warm-up screens (“data not available yet”) are handled gracefully: cached credits stay visible and the menu skips the scary parse error.
 - Codex usage/credits now use the codex app-server RPC by default (with PTY `/status` fallback when RPC is unavailable), reducing flakiness and speeding refreshes.
+- Codex reset times are shown for both RPC and TTY fallback, and plan labels are capitalized while emails stay verbatim.
 
 ## 0.4.3 — 2025-11-21
 - Fix status item creation timing on macOS 15 by deferring NSStatusItem setup to after launch; adds a regression test for the path.
