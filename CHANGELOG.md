@@ -1,14 +1,13 @@
 # Changelog
 
 ## 0.5.0 — Unreleased
+- Codex usage/credits now use the codex app-server RPC by default (with PTY `/status` fallback when RPC is unavailable), reducing flakiness and speeding refreshes.
 - Claude CLI probe now runs `/usage` and `/status` in parallel (no simulated typing), captures reset strings, and uses a resilient parser (label-first with ordered fallback) while keeping org/email separate by provider.
-- Reset lines are now displayed for both providers (Claude & Codex) with consistent “Resets …” formatting and without duplicated prefixes.
 - TTY runner now always tears down the spawned process group (even on early Claude login prompts) to avoid leaking CLI processes.
 - Default refresh cadence is now 5 minutes, and a 15-minute option was added to the settings picker.
 - Claude probes/version detection now start with `--allowed-tools ""` (tool access disabled) while keeping interactive PTY mode working.
 - Codex probes and version detection now launch the CLI with `-s read-only -a untrusted` to keep PTY runs sandboxed.
 - Codex warm-up screens (“data not available yet”) are handled gracefully: cached credits stay visible and the menu skips the scary parse error.
-- Codex usage/credits now use the codex app-server RPC by default (with PTY `/status` fallback when RPC is unavailable), reducing flakiness and speeding refreshes.
 - Codex reset times are shown for both RPC and TTY fallback, and plan labels are capitalized while emails stay verbatim.
 
 ## 0.4.3 — 2025-11-21

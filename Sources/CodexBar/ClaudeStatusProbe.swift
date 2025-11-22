@@ -217,6 +217,7 @@ struct ClaudeStatusProbe {
             return explicit.trimmingCharacters(in: .whitespacesAndNewlines)
         }
         // Capture any "Claude <...>" phrase (e.g., Max/Pro/Ultra/Team) to avoid future plan-name churn.
+        // Strip any leading ANSI that may have survived (rare) before matching.
         let planPattern = #"(?i)(claude\s+[a-z0-9][a-z0-9\s._-]{0,24})"#
         var candidates: [String] = []
         if let regex = try? NSRegularExpression(pattern: planPattern, options: []) {
@@ -225,7 +226,8 @@ struct ClaudeStatusProbe {
                 guard let match,
                       match.numberOfRanges >= 2,
                       let r = Range(match.range(at: 1), in: text) else { return }
-                let val = String(text[r]).trimmingCharacters(in: .whitespacesAndNewlines)
+                let raw = String(text[r])
+                let val = TextParsing.stripANSICodes(raw).trimmingCharacters(in: .whitespacesAndNewlines)
                 candidates.append(val)
             }
         }
