@@ -62,15 +62,7 @@ Account details stay local and per-provider:
 - Only arm64 build is scripted; add `--arch x86_64` if you want a universal binary.
 
 ## Release checklist
-- [ ] Update version in Scripts/package_app.sh, Scripts/sign-and-notarize.sh, About panel (CodexBarApp) and CHANGELOG.md
-- [ ] Run swiftlint & swiftformat
-- [ ] swift test / swift build -c release
-- [ ] ./Scripts/package_app.sh release
-- [ ] ./Scripts/sign-and-notarize.sh (arm64)
-- [ ] Verify .app: `spctl -a -t exec -vv CodexBar.app`; `stapler validate CodexBar.app`
-- [ ] Generate Sparkle appcast with notarized zip using your Ed25519 key; upload appcast + zip to Releases; set SUPublicEDKey in Info.plist
-- [ ] Upload `CodexBar-<version>.zip` to GitHub Releases and tag
-- [ ] README download link points to the new release
+See `docs/RELEASING.md` for the full CodexBar release flow, including signing, notarization, appcast generation, and asset validation.
 
 ## Changelog
 See [CHANGELOG.md](CHANGELOG.md).
