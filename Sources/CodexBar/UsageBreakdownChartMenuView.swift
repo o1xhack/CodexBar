@@ -19,6 +19,7 @@ struct UsageBreakdownChartMenuView: View {
     }
 
     private let breakdown: [OpenAIDashboardDailyBreakdown]
+    @State private var selectedDayKey: String?
 
     init(breakdown: [OpenAIDashboardDailyBreakdown]) {
         self.breakdown = breakdown
@@ -50,7 +51,20 @@ struct UsageBreakdownChartMenuView: View {
                 }
                 .chartLegend(.hidden)
                 .frame(height: 130)
-                .allowsHitTesting(false)
+                .chartOverlay { proxy in
+                    GeometryReader { geo in
+                        MouseLocationReader { location in
+                            self.updateSelection(location: location, model: model, proxy: proxy, geo: geo)
+                        }
+                    }
+                }
+
+                Text(self.detailText(model: model))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(height: 16, alignment: .leading)
 
                 LazyVGrid(
                     columns: [GridItem(.adaptive(minimum: 110), alignment: .leading)],
@@ -78,6 +92,8 @@ struct UsageBreakdownChartMenuView: View {
 
     private struct Model {
         let points: [Point]
+        let breakdownByDayKey: [String: OpenAIDashboardDailyBreakdown]
+        let dayDates: [(dayKey: String, date: Date)]
         let services: [String]
         let serviceColors: [Color]
         let axisDates: [Date]
@@ -97,8 +113,16 @@ struct UsageBreakdownChartMenuView: View {
         var points: [Point] = []
         points.reserveCapacity(sorted.count * 2)
 
+        var breakdownByDayKey: [String: OpenAIDashboardDailyBreakdown] = [:]
+        breakdownByDayKey.reserveCapacity(sorted.count)
+
+        var dayDates: [(dayKey: String, date: Date)] = []
+        dayDates.reserveCapacity(sorted.count)
+
         for day in sorted {
             guard let date = self.dateFromDayKey(day.day) else { continue }
+            breakdownByDayKey[day.day] = day
+            dayDates.append((dayKey: day.day, date: date))
             for service in day.services where service.creditsUsed > 0 {
                 points.append(Point(date: date, service: service.service, creditsUsed: service.creditsUsed))
             }
@@ -108,7 +132,13 @@ struct UsageBreakdownChartMenuView: View {
         let colors = services.map { Self.colorForService($0) }
         let axisDates = Self.axisDates(fromSortedDays: sorted)
 
-        return Model(points: points, services: services, serviceColors: colors, axisDates: axisDates)
+        return Model(
+            points: points,
+            breakdownByDayKey: breakdownByDayKey,
+            dayDates: dayDates,
+            services: services,
+            serviceColors: colors,
+            axisDates: axisDates)
     }
 
     private static func serviceOrder(from breakdown: [OpenAIDashboardDailyBreakdown]) -> [String] {
@@ -177,5 +207,73 @@ struct UsageBreakdownChartMenuView: View {
         // Noon avoids off-by-one-day shifts if anything ends up interpreted in UTC.
         comps.hour = 12
         return comps.date
+    }
+
+    private func updateSelection(
+        location: CGPoint?,
+        model: Model,
+        proxy: ChartProxy,
+        geo: GeometryProxy)
+    {
+        guard let location else {
+            if self.selectedDayKey != nil { self.selectedDayKey = nil }
+            return
+        }
+
+        guard let plotAnchor = proxy.plotFrame else { return }
+        let plotFrame = geo[plotAnchor]
+        guard plotFrame.contains(location) else {
+            if self.selectedDayKey != nil { self.selectedDayKey = nil }
+            return
+        }
+
+        let xInPlot = location.x - plotFrame.origin.x
+        guard let date: Date = proxy.value(atX: xInPlot) else { return }
+        guard let nearest = self.nearestDayKey(to: date, model: model) else { return }
+
+        if self.selectedDayKey != nearest {
+            self.selectedDayKey = nearest
+        }
+    }
+
+    private func nearestDayKey(to date: Date, model: Model) -> String? {
+        guard !model.dayDates.isEmpty else { return nil }
+        var best: (key: String, distance: TimeInterval)?
+        for entry in model.dayDates {
+            let dist = abs(entry.date.timeIntervalSince(date))
+            if let cur = best {
+                if dist < cur.distance { best = (entry.dayKey, dist) }
+            } else {
+                best = (entry.dayKey, dist)
+            }
+        }
+        return best?.key
+    }
+
+    private func detailText(model: Model) -> String {
+        guard let key = self.selectedDayKey,
+              let day = model.breakdownByDayKey[key],
+              let date = Self.dateFromDayKey(key)
+        else {
+            return "Hover a bar for details"
+        }
+
+        let dayLabel = date.formatted(.dateTime.month(.abbreviated).day())
+        let total = day.totalCreditsUsed.formatted(.number.precision(.fractionLength(0...2)))
+        if day.services.count <= 1, let first = day.services.first {
+            let used = first.creditsUsed.formatted(.number.precision(.fractionLength(0...2)))
+            return "\(dayLabel): \(used) (\(first.service))"
+        }
+
+        let services = day.services
+            .sorted { lhs, rhs in
+                if lhs.creditsUsed == rhs.creditsUsed { return lhs.service < rhs.service }
+                return lhs.creditsUsed > rhs.creditsUsed
+            }
+            .prefix(3)
+            .map { "\($0.service) \($0.creditsUsed.formatted(.number.precision(.fractionLength(0...2))))" }
+            .joined(separator: " · ")
+
+        return "\(dayLabel): \(total) (\(services))"
     }
 }
