@@ -31,25 +31,15 @@ struct AdvancedPane: View {
 
                 Divider()
 
-                SettingsSection(contentSpacing: 10) {
+                SettingsSection(contentSpacing: 12) {
+                    Text("Display")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .textCase(.uppercase)
                     PreferenceToggleRow(
                         title: "Show usage as used",
                         subtitle: "Progress bars fill as you consume quota (instead of showing remaining).",
                         binding: self.$settings.usageBarsShowUsed)
-                }
-
-                Divider()
-
-                SettingsSection(contentSpacing: 10) {
-                    PreferenceToggleRow(
-                        title: "Check provider status",
-                        subtitle: "Polls OpenAI/Claude status pages and surfaces incidents in the icon and menu.",
-                        binding: self.$settings.statusChecksEnabled)
-                }
-
-                Divider()
-
-                SettingsSection(contentSpacing: 10) {
                     PreferenceToggleRow(
                         title: "Merge Icons",
                         subtitle: "Use a single menu bar icon with a provider switcher.",
@@ -58,7 +48,24 @@ struct AdvancedPane: View {
 
                 Divider()
 
-                SettingsSection(contentSpacing: 10) {
+                SettingsSection(contentSpacing: 12) {
+                    Text("Status")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .textCase(.uppercase)
+                    PreferenceToggleRow(
+                        title: "Check provider status",
+                        subtitle: "Polls OpenAI/Claude status pages and surfaces incidents in the icon and menu.",
+                        binding: self.$settings.statusChecksEnabled)
+                }
+
+                Divider()
+
+                SettingsSection(contentSpacing: 12) {
+                    Text("Fun")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .textCase(.uppercase)
                     PreferenceToggleRow(
                         title: "Surprise me",
                         subtitle: "Check if you like your agents having some fun up there.",
