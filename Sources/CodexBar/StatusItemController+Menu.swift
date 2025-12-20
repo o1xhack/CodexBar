@@ -452,7 +452,10 @@ private final class ProviderSwitcherView: NSView {
         }
 
         for (index, segment) in self.segments.enumerated() {
-            let button = NSButton(title: segment.title, target: self, action: #selector(self.handleSelection(_:)))
+            let button = PaddedToggleButton(
+                title: segment.title,
+                target: self,
+                action: #selector(self.handleSelection(_:)))
             button.tag = index
             button.image = segment.image
             button.imagePosition = .imageLeading
@@ -510,6 +513,17 @@ private final class ProviderSwitcherView: NSView {
         case .claude: "Claude"
         case .gemini: "Gemini"
         }
+    }
+}
+
+private final class PaddedToggleButton: NSButton {
+    private let contentPadding = NSEdgeInsets(top: 4, left: 8, bottom: 4, right: 10)
+
+    override var intrinsicContentSize: NSSize {
+        let size = super.intrinsicContentSize
+        return NSSize(
+            width: size.width + self.contentPadding.left + self.contentPadding.right,
+            height: size.height + self.contentPadding.top + self.contentPadding.bottom)
     }
 }
 
