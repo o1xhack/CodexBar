@@ -56,7 +56,7 @@ struct AboutPane: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
-                Text("May your tokens never run out—keep Codex limits in view.")
+                Text("May your tokens never run out—keep agent limits in view.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
