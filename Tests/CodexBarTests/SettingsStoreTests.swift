@@ -128,6 +128,7 @@ struct SettingsStoreTests {
             .copilot,
             .zai,
             .minimax,
+            .kiro,
         ])
 
         // Move one provider; ensure it's persisted across instances.

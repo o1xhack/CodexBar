@@ -1,5 +1,5 @@
 ---
-summary: "Provider data sources and parsing overview (Codex, Claude, Gemini, Antigravity, Cursor, Droid/Factory, z.ai, Copilot)."
+summary: "Provider data sources and parsing overview (Codex, Claude, Gemini, Antigravity, Cursor, Droid/Factory, z.ai, Copilot, Kiro)."
 read_when:
   - Adding or modifying provider fetch/parsing
   - Adjusting provider labels, toggles, or metadata
@@ -23,6 +23,7 @@ Source labels (CLI/header): `openai-web`, `web`, `oauth`, `api`, `local`, plus p
 | z.ai | API token (Keychain/env) → quota API (`api`). |
 | MiniMax | Manual cookie header (Keychain/env) → browser cookies (+ local storage access token) → coding plan page (HTML) with remains API fallback (`web`). |
 | Copilot | API token (device flow/env) → copilot_internal API (`api`). |
+| Kiro | CLI command via `kiro-cli chat --no-interactive "/usage"` (`cli`). |
 
 ## Codex
 - Web dashboard (when enabled): `https://chatgpt.com/codex/settings/usage` via WebView + browser cookies.
@@ -81,5 +82,12 @@ Source labels (CLI/header): `openai-web`, `web`, `oauth`, `api`, `local`, plus p
 - GitHub device flow OAuth token + `api.github.com/copilot_internal/user`.
 - Status: Statuspage.io (GitHub).
 - Details: `docs/copilot.md`.
+
+## Kiro
+- CLI-based: runs `kiro-cli chat --no-interactive "/usage"` with 10s timeout.
+- Parses ANSI output for plan name, monthly credits percentage, and bonus credits.
+- Requires `kiro-cli` installed and logged in via AWS Builder ID.
+- Status: AWS Health Dashboard (manual link, no auto-polling).
+- Details: `docs/kiro.md`.
 
 See also: `docs/provider.md` for architecture notes.

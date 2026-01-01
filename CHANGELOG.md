@@ -3,6 +3,7 @@
 ## 0.17.1 — Unreleased
 - Cursor: avoid Intel crash when opening login and harden WebKit teardown. Thanks @meghanto!
 - Cursor: load stored session cookies before reads to make relaunches deterministic.
+- Kiro: add CLI-based usage provider via kiro-cli. Thanks @neror!
 
 ## 0.17.0 — 2025-12-31
 - New providers: MiniMax.

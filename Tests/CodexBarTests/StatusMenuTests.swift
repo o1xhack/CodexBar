@@ -38,8 +38,10 @@ struct StatusMenuTests {
         #expect(controller.lastMenuProvider == .claude)
 
         // No providers enabled: fall back to Codex.
-        if let claudeMeta = registry.metadata[.claude] {
-            settings.setProviderEnabled(provider: .claude, metadata: claudeMeta, enabled: false)
+        for provider in UsageProvider.allCases {
+            if let meta = registry.metadata[provider] {
+                settings.setProviderEnabled(provider: provider, metadata: meta, enabled: false)
+            }
         }
         let unmappedMenu = controller.makeMenu()
         controller.menuWillOpen(unmappedMenu)

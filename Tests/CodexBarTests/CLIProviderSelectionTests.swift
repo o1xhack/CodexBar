@@ -18,6 +18,7 @@ struct CLIProviderSelectionTests {
             "|gemini|",
             "|antigravity|",
             "|copilot|",
+            "|kiro|",
             "|both|",
             "|all]",
         ]
@@ -83,6 +84,12 @@ struct CLIProviderSelectionTests {
         let enabled: [UsageProvider] = [.codex, .gemini]
         let selection = CodexBarCLI.providerSelection(rawOverride: nil, enabled: enabled)
         #expect(selection.asList == enabled)
+    }
+
+    @Test
+    func providerSelectionAcceptsKiroAlias() {
+        let selection = CodexBarCLI.providerSelection(rawOverride: "kiro-cli", enabled: [.codex])
+        #expect(selection.asList == [.kiro])
     }
 
     @Test
