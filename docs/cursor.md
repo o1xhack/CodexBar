@@ -34,6 +34,8 @@ Manual option:
   - Plan usage (included), on-demand usage, billing cycle window.
 - `GET https://cursor.com/api/auth/me`
   - User email + name.
+- `GET https://cursor.com/api/usage?user=ID`
+  - Legacy request-based plan usage (request counts + limits).
 
 ## Cookie file paths
 - Safari: `~/Library/Cookies/Cookies.binarycookies`
@@ -42,7 +44,7 @@ Manual option:
 
 ## Snapshot mapping
 - Primary: plan usage percent (included plan).
-- Secondary: on-demand usage percent (team on-demand preferred when present).
+- Secondary: on-demand usage percent (individual usage).
 - Provider cost: on-demand usage USD (limit when known).
 - Reset: billing cycle end date.
 

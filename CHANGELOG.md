@@ -8,6 +8,7 @@
 - Kiro: add CLI-based usage provider via kiro-cli. Thanks @neror!
 - Kiro: clean up provider wiring and show plan name in the menu.
 - Augment: add provider with browser-cookie usage tracking.
+- Cursor: support legacy request-based plans and show individual on-demand usage (#125) — thanks @vltansky
 - Cursor: avoid Intel crash when opening login and harden WebKit teardown. Thanks @meghanto!
 - Cursor: load stored session cookies before reads to make relaunches deterministic.
 - Codex/Claude/Cursor/Factory/MiniMax: cookie sources now include Manual (paste a Cookie header) in addition to Automatic.
