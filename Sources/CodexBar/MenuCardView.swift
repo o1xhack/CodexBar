@@ -614,13 +614,6 @@ extension UsageMenuCardView.Model {
     }
 
     static func make(_ input: Input) -> UsageMenuCardView.Model {
-        let email = PersonalInfoRedactor.redactEmail(
-            Self.email(
-                for: input.provider,
-                snapshot: input.snapshot,
-                account: input.account,
-                metadata: input.metadata),
-            isEnabled: input.hidePersonalInfo)
         let planText = Self.plan(
             for: input.provider,
             snapshot: input.snapshot,
@@ -632,9 +625,6 @@ extension UsageMenuCardView.Model {
         } else {
             Self.creditsLine(metadata: input.metadata, credits: input.credits, error: input.creditsError)
         }
-        let creditsHintText = PersonalInfoRedactor.redactEmails(
-            in: Self.dashboardHint(provider: input.provider, error: input.dashboardError),
-            isEnabled: input.hidePersonalInfo)
         let providerCost: ProviderCostSection? = if input.provider == .claude, !input.showOptionalCreditsAndExtraUsage {
             nil
         } else {
@@ -649,22 +639,20 @@ extension UsageMenuCardView.Model {
             snapshot: input.snapshot,
             isRefreshing: input.isRefreshing,
             lastError: input.lastError)
-        let subtitleText = PersonalInfoRedactor.redactEmails(in: subtitle.text, isEnabled: input.hidePersonalInfo)
+        let redacted = Self.redactedText(input: input, subtitle: subtitle)
         let placeholder = input.snapshot == nil && !input.isRefreshing && input.lastError == nil ? "No usage yet" : nil
 
         return UsageMenuCardView.Model(
             providerName: input.metadata.displayName,
-            email: email,
-            subtitleText: subtitleText ?? subtitle.text,
+            email: redacted.email,
+            subtitleText: redacted.subtitleText,
             subtitleStyle: subtitle.style,
             planText: planText,
             metrics: metrics,
             creditsText: creditsText,
             creditsRemaining: input.credits?.remaining,
-            creditsHintText: creditsHintText,
-            creditsHintCopyText: Self.creditsHintCopyText(
-                dashboardError: input.dashboardError,
-                hidePersonalInfo: input.hidePersonalInfo),
+            creditsHintText: redacted.creditsHintText,
+            creditsHintCopyText: redacted.creditsHintCopyText,
             providerCost: providerCost,
             tokenUsage: tokenUsage,
             placeholder: placeholder,
@@ -726,6 +714,39 @@ extension UsageMenuCardView.Model {
         }
 
         return ("Not fetched yet", .info)
+    }
+
+    private struct RedactedText {
+        let email: String
+        let subtitleText: String
+        let creditsHintText: String?
+        let creditsHintCopyText: String?
+    }
+
+    private static func redactedText(
+        input: Input,
+        subtitle: (text: String, style: SubtitleStyle)) -> RedactedText
+    {
+        let email = PersonalInfoRedactor.redactEmail(
+            Self.email(
+                for: input.provider,
+                snapshot: input.snapshot,
+                account: input.account,
+                metadata: input.metadata),
+            isEnabled: input.hidePersonalInfo)
+        let subtitleText = PersonalInfoRedactor.redactEmails(in: subtitle.text, isEnabled: input.hidePersonalInfo)
+            ?? subtitle.text
+        let creditsHintText = PersonalInfoRedactor.redactEmails(
+            in: Self.dashboardHint(provider: input.provider, error: input.dashboardError),
+            isEnabled: input.hidePersonalInfo)
+        let creditsHintCopyText = Self.creditsHintCopyText(
+            dashboardError: input.dashboardError,
+            hidePersonalInfo: input.hidePersonalInfo)
+        return RedactedText(
+            email: email,
+            subtitleText: subtitleText,
+            creditsHintText: creditsHintText,
+            creditsHintCopyText: creditsHintCopyText)
     }
 
     private static func creditsHintCopyText(dashboardError: String?, hidePersonalInfo: Bool) -> String? {
