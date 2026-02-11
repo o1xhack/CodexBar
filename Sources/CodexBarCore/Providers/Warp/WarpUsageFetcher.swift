@@ -131,6 +131,9 @@ public struct WarpUsageFetcher: Sendable {
     private static let log = CodexBarLog.logger(LogCategories.warpUsage)
     private static let apiURL = URL(string: "https://app.warp.dev/graphql/v2?op=GetRequestLimitInfo")!
     private static let clientID = "warp-app"
+    /// Warp's GraphQL endpoint is fronted by an edge limiter that returns HTTP 429 ("Rate exceeded.")
+    /// unless the User-Agent matches the official client pattern (e.g. "Warp/1.0").
+    private static let userAgent = "Warp/1.0"
 
     private static let graphQLQuery = """
     query GetRequestLimitInfo($requestContext: RequestContext!) {
@@ -176,11 +179,13 @@ public struct WarpUsageFetcher: Sendable {
         request.httpMethod = "POST"
         request.timeoutInterval = 15
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue(self.clientID, forHTTPHeaderField: "x-warp-client-id")
         request.setValue("macOS", forHTTPHeaderField: "x-warp-os-category")
         request.setValue("macOS", forHTTPHeaderField: "x-warp-os-name")
         request.setValue(osVersionString, forHTTPHeaderField: "x-warp-os-version")
         request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue(self.userAgent, forHTTPHeaderField: "User-Agent")
 
         let variables: [String: Any] = [
             "requestContext": [
@@ -228,6 +233,10 @@ public struct WarpUsageFetcher: Sendable {
 
     static func _parseResponseForTesting(_ data: Data) throws -> WarpUsageSnapshot {
         try self.parseResponse(data: data)
+    }
+
+    static func _apiErrorSummaryForTesting(statusCode: Int, data: Data) -> String {
+        self.apiErrorSummary(statusCode: statusCode, data: data)
     }
 
     private static func parseResponse(data: Data) throws -> WarpUsageSnapshot {
@@ -401,6 +410,12 @@ public struct WarpUsageFetcher: Sendable {
         guard let root = try? JSONSerialization.jsonObject(with: data),
               let json = root as? [String: Any]
         else {
+            if let text = String(data: data, encoding: .utf8)?
+                .trimmingCharacters(in: .whitespacesAndNewlines),
+                !text.isEmpty
+            {
+                return self.compactSummaryText(text)
+            }
             return "Unexpected response body (\(data.count) bytes)."
         }
 
@@ -408,21 +423,21 @@ public struct WarpUsageFetcher: Sendable {
             let messages = rawErrors.compactMap(Self.graphQLErrorMessage(from:))
             let joined = messages.prefix(3).joined(separator: " | ")
             if !joined.isEmpty {
-                return Self.compactSummaryText(joined)
+                return self.compactSummaryText(joined)
             }
         }
 
         if let error = json["error"] as? String {
             let trimmed = error.trimmingCharacters(in: .whitespacesAndNewlines)
             if !trimmed.isEmpty {
-                return Self.compactSummaryText(trimmed)
+                return self.compactSummaryText(trimmed)
             }
         }
 
         if let message = json["message"] as? String {
             let trimmed = message.trimmingCharacters(in: .whitespacesAndNewlines)
             if !trimmed.isEmpty {
-                return Self.compactSummaryText(trimmed)
+                return self.compactSummaryText(trimmed)
             }
         }
 

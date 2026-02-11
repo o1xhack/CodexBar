@@ -219,4 +219,13 @@ struct WarpUsageFetcherTests {
         #expect(primary.resetsAt == nil)
         #expect(primary.resetDescription == "Unlimited")
     }
+
+    @Test
+    func apiErrorSummaryIncludesPlainTextBodies() {
+        // Regression: Warp edge returns 429 with a non-JSON body ("Rate exceeded.") when User-Agent is missing/wrong.
+        let summary = WarpUsageFetcher._apiErrorSummaryForTesting(
+            statusCode: 429,
+            data: Data("Rate exceeded.".utf8))
+        #expect(summary.contains("Rate exceeded."))
+    }
 }
