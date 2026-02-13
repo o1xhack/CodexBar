@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(SweetCookieKit)
 import SweetCookieKit
+#endif
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif

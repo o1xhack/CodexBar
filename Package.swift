@@ -15,6 +15,7 @@ let package = Package(
     name: "CodexBar",
     platforms: [
         .macOS(.v14),
+        .iOS(.v17),
     ],
     dependencies: [
         .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.8.1"),
@@ -31,7 +32,10 @@ let package = Package(
                 dependencies: [
                     "CodexBarMacroSupport",
                     .product(name: "Logging", package: "swift-log"),
-                    .product(name: "SweetCookieKit", package: "SweetCookieKit"),
+                    .product(
+                        name: "SweetCookieKit",
+                        package: "SweetCookieKit",
+                        condition: .when(platforms: [.macOS])),
                 ],
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
@@ -65,6 +69,25 @@ let package = Package(
                 swiftSettings: [
                     .enableUpcomingFeature("StrictConcurrency"),
                     .enableExperimentalFeature("SwiftTesting"),
+                ]),
+            .target(
+                name: "CodexBarMobile",
+                dependencies: [
+                    "CodexBarCore",
+                ],
+                path: "Sources/CodexBarMobile",
+                swiftSettings: [
+                    .enableUpcomingFeature("StrictConcurrency"),
+                ]),
+            .executableTarget(
+                name: "CodexBariOS",
+                dependencies: [
+                    "CodexBarCore",
+                    "CodexBarMobile",
+                ],
+                path: "Sources/CodexBariOS",
+                swiftSettings: [
+                    .enableUpcomingFeature("StrictConcurrency"),
                 ]),
         ]
 

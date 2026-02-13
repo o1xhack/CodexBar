@@ -1,5 +1,7 @@
 import Foundation
+#if canImport(SweetCookieKit)
 import SweetCookieKit
+#endif
 
 // swiftformat:disable sortDeclarations
 public enum UsageProvider: String, CaseIterable, Sendable, Codable {
