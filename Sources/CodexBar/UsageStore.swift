@@ -1286,10 +1286,11 @@ extension UsageStore {
                 selectedDataSource: claudeUsageDataSource,
                 webExtrasEnabled: claudeWebExtrasEnabled,
                 hasWebSession: hasKey,
+                hasCLI: hasClaudeBinary,
                 hasOAuthCredentials: hasOAuthCredentials)
 
             if claudeUsageDataSource == .auto {
-                lines.append("pipeline_order=oauth→web→cli")
+                lines.append("pipeline_order=oauth→cli→web")
                 lines.append("auto_heuristic=\(strategy.dataSource.rawValue)")
             } else {
                 lines.append("strategy=\(strategy.dataSource.rawValue)")
