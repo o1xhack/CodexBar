@@ -922,6 +922,10 @@ extension ClaudeUsageTests {
 
     @Test
     func oauthLoad_experimental_background_fallbackBlocked_propagatesOAuthFailure() async throws {
+        final class FlagBox: @unchecked Sendable {
+            var respectPromptCooldownFlags: [Bool] = []
+        }
+        let flags = FlagBox()
         let fetcher = ClaudeUsageFetcher(
             browserDetection: BrowserDetection(cacheTTL: 0),
             environment: [:],
@@ -932,7 +936,8 @@ extension ClaudeUsageTests {
         let loadCredsOverride: (@Sendable (
             [String: String],
             Bool,
-            Bool) async throws -> ClaudeOAuthCredentials)? = { _, _, _ in
+            Bool) async throws -> ClaudeOAuthCredentials)? = { _, _, respectKeychainPromptCooldown in
+            flags.respectPromptCooldownFlags.append(respectKeychainPromptCooldown)
             throw ClaudeOAuthCredentialsError.notFound
         }
 
@@ -949,5 +954,6 @@ extension ClaudeUsageTests {
                     }
                 })
         }
+        #expect(flags.respectPromptCooldownFlags == [true])
     }
 }

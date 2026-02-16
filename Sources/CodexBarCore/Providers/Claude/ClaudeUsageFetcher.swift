@@ -91,7 +91,6 @@ public struct ClaudeUsageFetcher: ClaudeUsageFetching, Sendable {
         /// Respect the Keychain prompt cooldown for background operations to avoid spamming system dialogs.
         /// User actions (menu open / refresh / settings) are allowed to bypass the cooldown.
         var shouldRespectKeychainPromptCooldown: Bool {
-            guard self.isApplicable else { return false }
             return self.interaction != .userInitiated
         }
 
