@@ -291,6 +291,9 @@ public enum ClaudeOAuthCredentialsStore {
                     source: .cacheKeychain)
             }
 
+            let promptMode = ClaudeOAuthKeychainPromptPreference.current()
+            guard self.shouldAllowClaudeCodeKeychainAccess(mode: promptMode) else { return nil }
+
             if self.shouldPreferSecurityCLIKeychainRead(),
                let keychainData = self.loadFromClaudeKeychainViaSecurityCLIIfEnabled(allowKeychainPrompt: true)
             {
@@ -311,7 +314,7 @@ public enum ClaudeOAuthCredentialsStore {
             }
 
             let shouldPreferSecurityCLIKeychainRead = self.shouldPreferSecurityCLIKeychainRead()
-            var fallbackPromptMode = ClaudeOAuthKeychainPromptPreference.current()
+            var fallbackPromptMode = promptMode
             if shouldPreferSecurityCLIKeychainRead {
                 fallbackPromptMode = ClaudeOAuthKeychainPromptPreference.securityFrameworkFallbackMode()
                 let fallbackDecision = self.securityFrameworkFallbackPromptDecision(

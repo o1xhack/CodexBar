@@ -437,4 +437,67 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
             }
         }
     }
+
+    @Test
+    func experimentalReader_loadWithPrompt_doesNotReadWhenGlobalKeychainDisabled() throws {
+        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        try KeychainCacheStore.withServiceOverrideForTesting(service) {
+            try KeychainAccessGate.withTaskOverrideForTesting(true) {
+                KeychainCacheStore.setTestStoreForTesting(true)
+                defer { KeychainCacheStore.setTestStoreForTesting(false) }
+
+                ClaudeOAuthCredentialsStore.invalidateCache()
+                ClaudeOAuthCredentialsStore._resetCredentialsFileTrackingForTesting()
+                defer {
+                    ClaudeOAuthCredentialsStore.invalidateCache()
+                    ClaudeOAuthCredentialsStore._resetCredentialsFileTrackingForTesting()
+                }
+
+                let tempDir = FileManager.default.temporaryDirectory
+                    .appendingPathComponent(UUID().uuidString, isDirectory: true)
+                try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+                let fileURL = tempDir.appendingPathComponent("credentials.json")
+                try ClaudeOAuthCredentialsStore.withCredentialsURLOverrideForTesting(fileURL) {
+                    let securityData = self.makeCredentialsData(
+                        accessToken: "security-should-not-read",
+                        expiresAt: Date(timeIntervalSinceNow: 3600))
+                    var threwNotFound = false
+                    final class ReadCounter: @unchecked Sendable {
+                        var count = 0
+                    }
+                    let securityReadCalls = ReadCounter()
+
+                    do {
+                        _ = try ClaudeOAuthKeychainReadStrategyPreference.withTaskOverrideForTesting(
+                            .securityCLIExperimental,
+                            operation: {
+                                try ClaudeOAuthKeychainPromptPreference.withTaskOverrideForTesting(.always) {
+                                    try ProviderInteractionContext.$current.withValue(.userInitiated) {
+                                        try ClaudeOAuthCredentialsStore.withSecurityCLIReadOverrideForTesting(
+                                            .dynamic { _ in
+                                                securityReadCalls.count += 1
+                                                return securityData
+                                            }) {
+                                                try ClaudeOAuthCredentialsStore.load(
+                                                    environment: [:],
+                                                    allowKeychainPrompt: true,
+                                                    respectKeychainPromptCooldown: false)
+                                            }
+                                    }
+                                }
+                            })
+                    } catch let error as ClaudeOAuthCredentialsError {
+                        if case .notFound = error {
+                            threwNotFound = true
+                        } else {
+                            throw error
+                        }
+                    }
+
+                    #expect(threwNotFound == true)
+                    #expect(securityReadCalls.count.isZero)
+                }
+            }
+        }
+    }
 }
