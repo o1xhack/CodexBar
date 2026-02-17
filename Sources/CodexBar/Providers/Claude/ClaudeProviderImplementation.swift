@@ -63,6 +63,36 @@ struct ClaudeProviderImplementation: ProviderImplementation {
     }
 
     @MainActor
+    func settingsToggles(context: ProviderSettingsContext) -> [ProviderSettingsToggleDescriptor] {
+        let subtitle = if context.settings.debugDisableKeychainAccess {
+            "Inactive while \"Disable Keychain access\" is enabled in Advanced."
+        } else {
+            "Use /usr/bin/security to read Claude credentials and avoid CodexBar keychain prompts."
+        }
+
+        let promptFreeBinding = Binding(
+            get: { context.settings.claudeOAuthPromptFreeCredentialsEnabled },
+            set: { enabled in
+                guard !context.settings.debugDisableKeychainAccess else { return }
+                context.settings.claudeOAuthPromptFreeCredentialsEnabled = enabled
+            })
+
+        return [
+            ProviderSettingsToggleDescriptor(
+                id: "claude-oauth-prompt-free-credentials",
+                title: "Avoid Keychain prompts (experimental)",
+                subtitle: subtitle,
+                binding: promptFreeBinding,
+                statusText: nil,
+                actions: [],
+                isVisible: nil,
+                onChange: nil,
+                onAppDidBecomeActive: nil,
+                onAppearWhenEnabled: nil),
+        ]
+    }
+
+    @MainActor
     func settingsPickers(context: ProviderSettingsContext) -> [ProviderSettingsPickerDescriptor] {
         let usageBinding = Binding(
             get: { context.settings.claudeUsageDataSource.rawValue },
