@@ -68,6 +68,14 @@ let package = Package(
                 ]),
         ]
 
+        // Shared iCloud sync library (used by Mac app and iOS companion app)
+        targets.append(.target(
+            name: "CodexBarSync",
+            path: "Shared",
+            swiftSettings: [
+                .enableUpcomingFeature("StrictConcurrency"),
+            ]))
+
         #if os(macOS)
         targets.append(contentsOf: [
             .executableTarget(
@@ -84,6 +92,7 @@ let package = Package(
                     .product(name: "KeyboardShortcuts", package: "KeyboardShortcuts"),
                     "CodexBarMacroSupport",
                     "CodexBarCore",
+                    "CodexBarSync",
                 ],
                 path: "Sources/CodexBar",
                 resources: [

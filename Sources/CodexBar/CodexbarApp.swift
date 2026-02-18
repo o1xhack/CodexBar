@@ -63,6 +63,7 @@ struct CodexBarApp: App {
         // shows the native toolbar tabs even though the UI is AppKit-based.
         WindowGroup("CodexBarLifecycleKeepalive") {
             HiddenWindowView()
+                .modifier(CloudSyncModifier(store: self.store))
         }
         .defaultSize(width: 20, height: 20)
         .windowStyle(.hiddenTitleBar)
