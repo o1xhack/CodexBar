@@ -4,61 +4,87 @@ import SwiftUI
 struct UsageCardView: View {
     let label: String
     let window: SyncRateWindow
+    var tintColor: Color = .blue
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack {
-                Text(label)
+        VStack(alignment: .leading, spacing: 10) {
+            // Header row
+            HStack(alignment: .firstTextBaseline) {
+                Text(self.label)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .fontWeight(.semibold)
                 Spacer()
-                Text("\(Int(window.usedPercent))% used")
-                    .font(.subheadline.monospacedDigit())
-                    .foregroundStyle(usageColor)
+                Text(self.percentageText)
+                    .font(.title2.monospacedDigit())
+                    .fontWeight(.bold)
+                    .foregroundStyle(self.usageColor)
             }
 
             // Progress bar
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(.quaternary)
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(usageColor.gradient)
-                        .frame(width: geometry.size.width * min(window.usedPercent / 100, 1))
-                }
-            }
-            .frame(height: 8)
+            ProgressView(value: min(self.window.usedPercent / 100, 1))
+                .tint(self.usageColor)
+                .scaleEffect(y: 2, anchor: .center)
 
             // Reset info
-            if let resetsAt = window.resetsAt {
-                HStack(spacing: 4) {
+            if let resetsAt = self.window.resetsAt {
+                HStack(spacing: 6) {
                     Image(systemName: "clock.arrow.circlepath")
-                        .font(.caption2)
+                        .font(.caption)
                     Text("Resets \(resetsAt.formatted(.relative(presentation: .named)))")
-                        .font(.caption2)
+                        .font(.caption)
                 }
                 .foregroundStyle(.secondary)
-            } else if let description = window.resetDescription {
-                HStack(spacing: 4) {
+            } else if let description = self.window.resetDescription {
+                HStack(spacing: 6) {
                     Image(systemName: "clock.arrow.circlepath")
-                        .font(.caption2)
+                        .font(.caption)
                     Text(description)
-                        .font(.caption2)
+                        .font(.caption)
                 }
                 .foregroundStyle(.secondary)
             }
         }
-        .padding(10)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8))
+        .padding(16)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var percentageText: String {
+        "\(Int(self.window.usedPercent))%"
     }
 
     private var usageColor: Color {
-        if window.usedPercent >= 90 {
+        if self.window.usedPercent >= 90 {
             return .red
-        } else if window.usedPercent >= 70 {
+        } else if self.window.usedPercent >= 70 {
             return .orange
         } else {
-            return .green
+            return self.tintColor
         }
     }
+}
+
+// MARK: - Previews
+
+#Preview("Low Usage") {
+    UsageCardView(
+        label: "Session (5h)",
+        window: SyncRateWindow(
+            usedPercent: 25,
+            windowMinutes: 300,
+            resetsAt: Date().addingTimeInterval(3600 * 3),
+            resetDescription: nil),
+        tintColor: Color(red: 0.82, green: 0.55, blue: 0.28))
+    .padding()
+}
+
+#Preview("High Usage") {
+    UsageCardView(
+        label: "Weekly",
+        window: SyncRateWindow(
+            usedPercent: 92,
+            windowMinutes: 10_080,
+            resetsAt: Date().addingTimeInterval(3600 * 24),
+            resetDescription: nil),
+        tintColor: .purple)
+    .padding()
 }
