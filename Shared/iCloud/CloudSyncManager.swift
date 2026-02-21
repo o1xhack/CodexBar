@@ -1,10 +1,16 @@
 import Foundation
 
+/// Protocol for pushing usage snapshots, enabling mock injection in tests.
+public protocol SyncPushing: Sendable {
+    @discardableResult
+    func pushSnapshot(_ snapshot: SyncedUsageSnapshot) -> Bool
+}
+
 /// Manages reading/writing usage snapshots to NSUbiquitousKeyValueStore for iCloud sync.
 ///
 /// - Mac side calls `pushSnapshot(_:)` after each refresh.
 /// - iOS side calls `startObserving(handler:)` to receive updates.
-public final class CloudSyncManager: @unchecked Sendable {
+public final class CloudSyncManager: SyncPushing, @unchecked Sendable {
     public static let shared = CloudSyncManager()
 
     private let store = NSUbiquitousKeyValueStore.default

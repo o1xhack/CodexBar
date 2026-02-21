@@ -6,6 +6,7 @@ import SwiftUI
 struct GeneralPane: View {
     @Bindable var settings: SettingsStore
     @Bindable var store: UsageStore
+    let syncCoordinator: SyncCoordinator
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: true) {
@@ -51,6 +52,24 @@ struct GeneralPane: View {
                                 self.costStatusLine(provider: .codex)
                             }
                         }
+                    }
+                }
+
+                Divider()
+
+                SettingsSection(contentSpacing: 12) {
+                    Text("iCloud Sync")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .textCase(.uppercase)
+
+                    PreferenceToggleRow(
+                        title: "Sync usage to iCloud",
+                        subtitle: "Pushes usage data to iCloud so the iOS companion app can display it.",
+                        binding: self.$settings.iCloudSyncEnabled)
+
+                    if self.settings.iCloudSyncEnabled {
+                        self.syncStatusView
                     }
                 }
 
@@ -113,6 +132,51 @@ struct GeneralPane: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
         }
+    }
+
+    @ViewBuilder
+    private var syncStatusView: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                if self.syncCoordinator.isSyncing {
+                    ProgressView()
+                        .controlSize(.small)
+                    Text("Syncing…")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } else if let lastSync = self.syncCoordinator.lastSyncTime {
+                    Image(systemName: self.syncCoordinator.lastSyncSucceeded
+                        ? "checkmark.icloud"
+                        : "exclamationmark.icloud")
+                        .foregroundColor(self.syncCoordinator.lastSyncSucceeded
+                            ? Color.secondary
+                            : Color.red)
+                        .font(.footnote)
+                    Text("Last sync: \(Self.formatSyncTime(lastSync))")
+                        .font(.footnote)
+                        .foregroundStyle(.tertiary)
+                } else {
+                    Image(systemName: "icloud")
+                        .foregroundStyle(.secondary)
+                        .font(.footnote)
+                    Text("No sync yet")
+                        .font(.footnote)
+                        .foregroundStyle(.tertiary)
+                }
+            }
+
+            Button("Sync Now") {
+                self.syncCoordinator.pushCurrentSnapshot()
+            }
+            .controlSize(.small)
+            .disabled(self.syncCoordinator.isSyncing)
+        }
+    }
+
+    private static func formatSyncTime(_ date: Date) -> String {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter.localizedString(for: date, relativeTo: Date())
     }
 
     private func costStatusLine(provider: UsageProvider) -> some View {

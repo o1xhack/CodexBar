@@ -217,6 +217,7 @@ extension SettingsStore {
         let switcherShowsIcons = userDefaults.object(forKey: "switcherShowsIcons") as? Bool ?? true
         let selectedMenuProviderRaw = userDefaults.string(forKey: "selectedMenuProvider")
         let providerDetectionCompleted = userDefaults.object(forKey: "providerDetectionCompleted") as? Bool ?? false
+        let iCloudSyncEnabled = userDefaults.object(forKey: "iCloudSyncEnabled") as? Bool ?? true
 
         return SettingsDefaultsState(
             refreshFrequency: refreshFrequency,
@@ -248,7 +249,8 @@ extension SettingsStore {
             mergeIcons: mergeIcons,
             switcherShowsIcons: switcherShowsIcons,
             selectedMenuProviderRaw: selectedMenuProviderRaw,
-            providerDetectionCompleted: providerDetectionCompleted)
+            providerDetectionCompleted: providerDetectionCompleted,
+            iCloudSyncEnabled: iCloudSyncEnabled)
     }
 }
 

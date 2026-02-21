@@ -6,18 +6,15 @@ import SwiftUI
 /// Applied in `CodexBarApp.body` to the hidden keepalive window so that
 /// usage data is continuously pushed to iCloud for the iOS companion app.
 struct CloudSyncModifier: ViewModifier {
-    let store: UsageStore
-    @State private var coordinator: SyncCoordinator?
+    let coordinator: SyncCoordinator
 
     func body(content: Content) -> some View {
         content
             .onAppear {
-                let coord = SyncCoordinator(store: self.store)
-                coord.startObserving()
-                self.coordinator = coord
+                self.coordinator.startObserving()
             }
             .onDisappear {
-                self.coordinator?.stopObserving()
+                self.coordinator.stopObserving()
             }
     }
 }

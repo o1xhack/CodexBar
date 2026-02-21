@@ -11,6 +11,7 @@ struct CodexBarApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var settings: SettingsStore
     @State private var store: UsageStore
+    @State private var syncCoordinator: SyncCoordinator
     private let preferencesSelection: PreferencesSelection
     private let account: AccountInfo
 
@@ -48,6 +49,7 @@ struct CodexBarApp: App {
         self.preferencesSelection = preferencesSelection
         _settings = State(wrappedValue: settings)
         _store = State(wrappedValue: store)
+        _syncCoordinator = State(wrappedValue: SyncCoordinator(store: store, settings: settings))
         self.account = account
         CodexBarLog.setLogLevel(settings.debugLogLevel)
         self.appDelegate.configure(
@@ -63,7 +65,7 @@ struct CodexBarApp: App {
         // shows the native toolbar tabs even though the UI is AppKit-based.
         WindowGroup("CodexBarLifecycleKeepalive") {
             HiddenWindowView()
-                .modifier(CloudSyncModifier(store: self.store))
+                .modifier(CloudSyncModifier(coordinator: self.syncCoordinator))
         }
         .defaultSize(width: 20, height: 20)
         .windowStyle(.hiddenTitleBar)
@@ -73,7 +75,8 @@ struct CodexBarApp: App {
                 settings: self.settings,
                 store: self.store,
                 updater: self.appDelegate.updaterController,
-                selection: self.preferencesSelection)
+                selection: self.preferencesSelection,
+                syncCoordinator: self.syncCoordinator)
         }
         .defaultSize(width: PreferencesTab.general.preferredWidth, height: PreferencesTab.general.preferredHeight)
         .windowResizability(.contentSize)

@@ -8,13 +8,21 @@ import Observation
 /// This class bridges the existing Mac app data to the shared iCloud layer without
 /// modifying any existing source files. It uses Swift Observation to track `UsageStore.snapshots`.
 @MainActor
+@Observable
 final class SyncCoordinator {
     private let store: UsageStore
-    private let syncManager: CloudSyncManager
+    private let settings: SettingsStore
+    private let syncManager: any SyncPushing
     private var isObserving = false
 
-    init(store: UsageStore, syncManager: CloudSyncManager = .shared) {
+    // Observable sync status for UI
+    private(set) var lastSyncTime: Date?
+    private(set) var lastSyncSucceeded: Bool = true
+    private(set) var isSyncing: Bool = false
+
+    init(store: UsageStore, settings: SettingsStore, syncManager: any SyncPushing = CloudSyncManager.shared) {
         self.store = store
+        self.settings = settings
         self.syncManager = syncManager
     }
 
@@ -30,6 +38,7 @@ final class SyncCoordinator {
         withObservationTracking {
             _ = self.store.snapshots
             _ = self.store.errors
+            _ = self.settings.iCloudSyncEnabled
         } onChange: { [weak self] in
             Task { @MainActor [weak self] in
                 guard let self, self.isObserving else { return }
@@ -41,8 +50,13 @@ final class SyncCoordinator {
 
     /// Builds and pushes the current state to iCloud.
     func pushCurrentSnapshot() {
+        guard self.settings.iCloudSyncEnabled else { return }
+
         let enabledProviders = self.store.enabledProviders()
         guard !enabledProviders.isEmpty else { return }
+
+        self.isSyncing = true
+        defer { self.isSyncing = false }
 
         var providerSnapshots: [ProviderUsageSnapshot] = []
 
@@ -87,7 +101,9 @@ final class SyncCoordinator {
             syncTimestamp: Date(),
             deviceName: deviceName)
 
-        self.syncManager.pushSnapshot(synced)
+        let success = self.syncManager.pushSnapshot(synced)
+        self.lastSyncTime = Date()
+        self.lastSyncSucceeded = success
     }
 
     func stopObserving() {

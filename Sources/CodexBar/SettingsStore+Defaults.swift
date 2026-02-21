@@ -305,6 +305,14 @@ extension SettingsStore {
         }
     }
 
+    var iCloudSyncEnabled: Bool {
+        get { self.defaultsState.iCloudSyncEnabled }
+        set {
+            self.defaultsState.iCloudSyncEnabled = newValue
+            self.userDefaults.set(newValue, forKey: "iCloudSyncEnabled")
+        }
+    }
+
     var debugLoadingPattern: LoadingPattern? {
         get { self.debugLoadingPatternRaw.flatMap(LoadingPattern.init(rawValue:)) }
         set { self.debugLoadingPatternRaw = newValue?.rawValue }

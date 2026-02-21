@@ -28,12 +28,13 @@ struct PreferencesView: View {
     @Bindable var store: UsageStore
     let updater: UpdaterProviding
     @Bindable var selection: PreferencesSelection
+    let syncCoordinator: SyncCoordinator
     @State private var contentWidth: CGFloat = PreferencesTab.general.preferredWidth
     @State private var contentHeight: CGFloat = PreferencesTab.general.preferredHeight
 
     var body: some View {
         TabView(selection: self.$selection.tab) {
-            GeneralPane(settings: self.settings, store: self.store)
+            GeneralPane(settings: self.settings, store: self.store, syncCoordinator: self.syncCoordinator)
                 .tabItem { Label("General", systemImage: "gearshape") }
                 .tag(PreferencesTab.general)
 
