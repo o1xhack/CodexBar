@@ -24,7 +24,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func doesNotReadClaudeKeychainInBackgroundWhenPromptModeOnlyOnUserAction() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -79,7 +79,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func canReadClaudeKeychainOnUserActionWhenPromptModeOnlyOnUserAction() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -128,7 +128,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func doesNotShowPreAlertWhenClaudeKeychainReadableWithoutInteraction() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -189,7 +189,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func showsPreAlertWhenClaudeKeychainLikelyRequiresInteraction() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -252,7 +252,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func showsPreAlertWhenClaudeKeychainPreflightFails() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -315,7 +315,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func experimentalReader_skipsPreAlertWhenSecurityCLIReadSucceeds() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -377,7 +377,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func experimentalReader_showsPreAlertWhenSecurityCLIFailsAndFallbackNeedsInteraction() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -443,7 +443,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func experimentalReader_doesNotFallbackInBackgroundWhenStoredModeOnlyOnUserAction() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -521,7 +521,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func experimentalReader_doesNotFallbackWhenStoredModeNever() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -596,7 +596,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func experimentalReader_nonInteractiveFallbackBlockedInBackgroundWhenStoredModeOnlyOnUserAction() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -664,7 +664,7 @@ struct ClaudeOAuthCredentialsStorePromptPolicyTests {
 
     @Test
     func experimentalReader_allowsFallbackInBackgroundWhenStoredModeAlways() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)

@@ -24,7 +24,7 @@ struct ClaudeOAuthCredentialsStoreTests {
 
     @Test
     func loadsFromKeychainCacheBeforeExpiredFile() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try ProviderInteractionContext.$current.withValue(.background) {
             try KeychainCacheStore.withServiceOverrideForTesting(service) {
                 try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -92,7 +92,7 @@ struct ClaudeOAuthCredentialsStoreTests {
 
     @Test
     func loadRecord_nonInteractiveRepairCanBeDisabled() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             KeychainCacheStore.setTestStoreForTesting(true)
             defer { KeychainCacheStore.setTestStoreForTesting(false) }
@@ -192,7 +192,7 @@ struct ClaudeOAuthCredentialsStoreTests {
 
     @Test
     func returnsExpiredFileWhenNoOtherSources() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(true) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -274,7 +274,7 @@ struct ClaudeOAuthCredentialsStoreTests {
 
     @Test
     func loadWithAutoRefresh_expiredCodexbarOwner_usesDirectRefreshPath() async throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try await KeychainCacheStore.withServiceOverrideForTesting(service) {
             KeychainCacheStore.setTestStoreForTesting(true)
             defer { KeychainCacheStore.setTestStoreForTesting(false) }
@@ -446,7 +446,7 @@ struct ClaudeOAuthCredentialsStoreTests {
 
     @Test
     func syncsCacheWhenClaudeKeychainFingerprintChangesAndTokenDiffers() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -547,7 +547,7 @@ struct ClaudeOAuthCredentialsStoreTests {
 
     @Test
     func doesNotSyncInBackgroundWhenCacheValidAndPromptModeOnlyOnUserAction() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -746,7 +746,7 @@ struct ClaudeOAuthCredentialsStoreTests {
 
     @Test
     func respectsPromptCooldownGateWhenDisabledPrompting() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             KeychainCacheStore.setTestStoreForTesting(true)
             defer { KeychainCacheStore.setTestStoreForTesting(false) }

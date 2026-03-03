@@ -122,12 +122,12 @@ if [[ -f "$ICON_SOURCE" ]]; then
   iconutil --convert icns --output "$ICON_TARGET" "$ICON_SOURCE"
 fi
 
-BUNDLE_ID="com.steipete.codexbar"
+BUNDLE_ID="com.o1xhack.codexbar"
 FEED_URL="https://raw.githubusercontent.com/steipete/CodexBar/main/appcast.xml"
 AUTO_CHECKS=true
 LOWER_CONF=$(printf "%s" "$CONF" | tr '[:upper:]' '[:lower:]')
 if [[ "$LOWER_CONF" == "debug" ]]; then
-  BUNDLE_ID="com.steipete.codexbar.debug"
+  BUNDLE_ID="com.o1xhack.codexbar.debug"
   FEED_URL=""
   AUTO_CHECKS=false
 fi
@@ -136,10 +136,10 @@ if [[ "$SIGNING_MODE" == "adhoc" ]]; then
   AUTO_CHECKS=false
 fi
 WIDGET_BUNDLE_ID="${BUNDLE_ID}.widget"
-APP_GROUP_ID="group.com.steipete.codexbar"
+APP_GROUP_ID="group.com.o1xhack.codexbar"
 ICLOUD_KVS_ID="${CODEXBAR_ICLOUD_KVS_ID:-3TUERHN53E.com.codexbar.shared}"
 if [[ "$BUNDLE_ID" == *".debug"* ]]; then
-  APP_GROUP_ID="group.com.steipete.codexbar.debug"
+  APP_GROUP_ID="group.com.o1xhack.codexbar.debug"
 fi
 ENTITLEMENTS_DIR="$ROOT/.build/entitlements"
 APP_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBar.entitlements"
@@ -154,7 +154,7 @@ NEEDS_GET_TASK_ALLOW=0
 if [[ "$ALLOW_LLDB" == "1" ]]; then
   NEEDS_GET_TASK_ALLOW=1
 elif [[ "$SIGNING_MODE" != "adhoc" ]]; then
-  _EFFECTIVE_ID="${APP_IDENTITY:-Apple Development: Yuxiao Wang (WB9P2BFD3W)}"
+  _EFFECTIVE_ID="${APP_IDENTITY:-Developer ID Application: Yuxiao Wang (3TUERHN53E)}"
   if [[ "$_EFFECTIVE_ID" == "Apple Development:"* ]]; then
     NEEDS_GET_TASK_ALLOW=1
   fi
@@ -331,7 +331,7 @@ elif [[ "$ALLOW_LLDB" == "1" ]]; then
   CODESIGN_ID="-"
   CODESIGN_ARGS=(--force --sign "$CODESIGN_ID")
 else
-  CODESIGN_ID="${APP_IDENTITY:-Apple Development: Yuxiao Wang (WB9P2BFD3W)}"
+  CODESIGN_ID="${APP_IDENTITY:-Developer ID Application: Yuxiao Wang (3TUERHN53E)}"
   if [[ "$CODESIGN_ID" == "Apple Development:"* ]]; then
     CODESIGN_ARGS=(--force --sign "$CODESIGN_ID")
   else

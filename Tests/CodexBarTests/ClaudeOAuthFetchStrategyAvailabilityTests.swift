@@ -154,7 +154,7 @@ struct ClaudeOAuthFetchStrategyAvailabilityTests {
     func autoMode_onlyOnUserAction_background_startup_withoutCache_isAvailableForBootstrap() async throws {
         let context = self.makeContext(sourceMode: .auto)
         let strategy = ClaudeOAuthFetchStrategy()
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
 
         try await KeychainCacheStore.withServiceOverrideForTesting(service) {
             KeychainCacheStore.setTestStoreForTesting(true)

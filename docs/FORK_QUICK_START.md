@@ -123,7 +123,7 @@ git push origin feature/my-feature
 
 ### Debugging Augment Issues
 1. Enable debug logging: `export CODEXBAR_LOG_LEVEL=debug`
-2. Check Console.app for "com.steipete.codexbar"
+2. Check Console.app for "com.o1xhack.codexbar"
 3. Use Settings → Debug → Augment → Show Debug Info
 4. Check `docs/augment.md` troubleshooting section
 

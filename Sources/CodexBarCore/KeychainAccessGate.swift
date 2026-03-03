@@ -5,7 +5,7 @@ import SweetCookieKit
 
 public enum KeychainAccessGate {
     private static let flagKey = "debugDisableKeychainAccess"
-    private static let appGroupID = "group.com.steipete.codexbar"
+    private static let appGroupID = "group.com.o1xhack.codexbar"
     @TaskLocal private static var taskOverrideValue: Bool?
     private nonisolated(unsafe) static var overrideValue: Bool?
 

@@ -24,7 +24,7 @@ enum CopilotTokenStoreError: LocalizedError {
 struct KeychainCopilotTokenStore: CopilotTokenStoring {
     private static let log = CodexBarLog.logger(LogCategories.copilotTokenStore)
 
-    private let service = "com.steipete.CodexBar"
+    private let service = "com.o1xhack.CodexBar"
     private let account = "copilot-api-token"
 
     func loadToken() throws -> String? {
