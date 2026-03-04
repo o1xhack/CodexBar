@@ -45,6 +45,8 @@ resolve_signing_mode() {
 
   local candidate=""
   for candidate in \
+    "Apple Development: Yuxiao Wang (WB9P2BFD3W)" \
+    "Developer ID Application: Yuxiao Wang (3TUERHN53E)" \
     "Developer ID Application: Peter Steinberger (Y5PE65HELJ)" \
     "CodexBar Development"
   do
@@ -181,9 +183,9 @@ kill_claude_probes
 # (adhoc signature changes on every build, making old keychain entries inaccessible)
 if [[ "${SIGNING_MODE:-adhoc}" == "adhoc" ]]; then
   log "==> Clearing keychain entries (adhoc signing)"
-  security delete-generic-password -s "com.steipete.CodexBar" 2>/dev/null || true
+  security delete-generic-password -s "com.o1xhack.CodexBar" 2>/dev/null || true
   # Clear all keychain items for the app to avoid multiple prompts
-  while security delete-generic-password -s "com.steipete.CodexBar" 2>/dev/null; do
+  while security delete-generic-password -s "com.o1xhack.CodexBar" 2>/dev/null; do
     :
   done
 fi

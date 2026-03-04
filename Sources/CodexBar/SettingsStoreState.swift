@@ -31,4 +31,5 @@ struct SettingsDefaultsState: Sendable {
     var switcherShowsIcons: Bool
     var selectedMenuProviderRaw: String?
     var providerDetectionCompleted: Bool
+    var iCloudSyncEnabled: Bool
 }

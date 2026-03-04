@@ -24,7 +24,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
 
     @Test
     func experimentalReader_prefersSecurityCLIForNonInteractiveLoad() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -78,7 +78,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
 
     @Test
     func experimentalReader_nonInteractiveBackgroundLoad_stillExecutesSecurityCLIRead() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -137,7 +137,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
 
     @Test
     func experimentalReader_fallsBackWhenSecurityCLIThrows() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -194,7 +194,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
 
     @Test
     func experimentalReader_fallsBackWhenSecurityCLIOutputMalformed() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -477,7 +477,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
 
     @Test
     func experimentalReader_freshnessSync_skipsSecurityCLIWhenPreflightRequiresInteraction() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -549,7 +549,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
 
     @Test
     func experimentalReader_freshnessSync_background_respectsStoredOnlyOnUserAction() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -621,7 +621,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
 
     @Test
     func experimentalReader_syncFromClaudeKeychainWithoutPrompt_skipsFingerprintProbeAfterSecurityCLIRead() {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         KeychainCacheStore.withServiceOverrideForTesting(service) {
             KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -673,7 +673,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
 
     @Test
     func experimentalReader_noPromptRepair_skipsFingerprintProbeAfterSecurityCLISuccess() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -737,7 +737,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
 
     @Test
     func experimentalReader_loadWithPrompt_skipsFingerprintProbeAfterSecurityCLISuccess() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
                 KeychainCacheStore.setTestStoreForTesting(true)
@@ -801,7 +801,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
 
     @Test
     func experimentalReader_loadWithPrompt_doesNotReadWhenGlobalKeychainDisabled() throws {
-        let service = "com.steipete.codexbar.cache.tests.\(UUID().uuidString)"
+        let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(true) {
                 KeychainCacheStore.setTestStoreForTesting(true)

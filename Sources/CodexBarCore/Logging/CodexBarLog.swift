@@ -107,7 +107,7 @@ public enum CodexBarLog {
     }
 
     public static func logger(_ category: String) -> CodexBarLogger {
-        let logger = Logger(label: "com.steipete.codexbar.\(category)")
+        let logger = Logger(label: "com.o1xhack.codexbar.\(category)")
         return CodexBarLogger { level, message, metadata in
             guard self.shouldLog(level) else { return }
             let swiftLogLevel = level.asSwiftLogLevel

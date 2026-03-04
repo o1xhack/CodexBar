@@ -108,8 +108,10 @@ for ARCH in "${ARCH_LIST[@]}"; do
   swift build -c "$CONF" --arch "$ARCH"
 done
 
-APP="$ROOT/CodexBar.app"
-rm -rf "$APP"
+# Build the app bundle in /tmp to avoid Dropbox adding resource forks during signing
+APP_FINAL="$ROOT/CodexBar.app"
+APP="/tmp/codexbar-build-$$/CodexBar.app"
+rm -rf "$APP_FINAL" "$(dirname "$APP")"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 mkdir -p "$APP/Contents/Helpers" "$APP/Contents/PlugIns"
 
@@ -120,12 +122,12 @@ if [[ -f "$ICON_SOURCE" ]]; then
   iconutil --convert icns --output "$ICON_TARGET" "$ICON_SOURCE"
 fi
 
-BUNDLE_ID="com.steipete.codexbar"
+BUNDLE_ID="com.o1xhack.codexbar"
 FEED_URL="https://raw.githubusercontent.com/steipete/CodexBar/main/appcast.xml"
 AUTO_CHECKS=true
 LOWER_CONF=$(printf "%s" "$CONF" | tr '[:upper:]' '[:lower:]')
 if [[ "$LOWER_CONF" == "debug" ]]; then
-  BUNDLE_ID="com.steipete.codexbar.debug"
+  BUNDLE_ID="com.o1xhack.codexbar.debug"
   FEED_URL=""
   AUTO_CHECKS=false
 fi
@@ -134,9 +136,10 @@ if [[ "$SIGNING_MODE" == "adhoc" ]]; then
   AUTO_CHECKS=false
 fi
 WIDGET_BUNDLE_ID="${BUNDLE_ID}.widget"
-APP_GROUP_ID="group.com.steipete.codexbar"
+APP_GROUP_ID="group.com.o1xhack.codexbar"
+ICLOUD_KVS_ID="${CODEXBAR_ICLOUD_KVS_ID:-3TUERHN53E.com.codexbar.shared}"
 if [[ "$BUNDLE_ID" == *".debug"* ]]; then
-  APP_GROUP_ID="group.com.steipete.codexbar.debug"
+  APP_GROUP_ID="group.com.o1xhack.codexbar.debug"
 fi
 ENTITLEMENTS_DIR="$ROOT/.build/entitlements"
 APP_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBar.entitlements"
@@ -145,6 +148,16 @@ mkdir -p "$ENTITLEMENTS_DIR"
 if [[ "$ALLOW_LLDB" == "1" && "$LOWER_CONF" != "debug" ]]; then
   echo "ERROR: CODEXBAR_ALLOW_LLDB requires debug configuration" >&2
   exit 1
+fi
+# Determine if we need get-task-allow (Apple Development certs require it to launch)
+NEEDS_GET_TASK_ALLOW=0
+if [[ "$ALLOW_LLDB" == "1" ]]; then
+  NEEDS_GET_TASK_ALLOW=1
+elif [[ "$SIGNING_MODE" != "adhoc" ]]; then
+  _EFFECTIVE_ID="${APP_IDENTITY:-Developer ID Application: Yuxiao Wang (3TUERHN53E)}"
+  if [[ "$_EFFECTIVE_ID" == "Apple Development:"* ]]; then
+    NEEDS_GET_TASK_ALLOW=1
+  fi
 fi
 cat > "$APP_ENTITLEMENTS" <<PLIST
 <?xml version="1.0" encoding="UTF-8"?>
@@ -155,7 +168,10 @@ cat > "$APP_ENTITLEMENTS" <<PLIST
     <array>
         <string>${APP_GROUP_ID}</string>
     </array>
-    $(if [[ "$ALLOW_LLDB" == "1" ]]; then echo "    <key>com.apple.security.get-task-allow</key><true/>"; fi)
+    <key>com.apple.developer.ubiquity-kvstore-identifier</key>
+    <string>${ICLOUD_KVS_ID}</string>
+    $(if [[ "$NEEDS_GET_TASK_ALLOW" == "1" ]]; then echo "    <key>com.apple.security.get-task-allow</key>
+    <true/>"; fi)
 </dict>
 </plist>
 PLIST
@@ -304,10 +320,9 @@ PLIST
 fi
 # Embed Sparkle.framework
 if [[ -d ".build/$CONF/Sparkle.framework" ]]; then
-  cp -R ".build/$CONF/Sparkle.framework" "$APP/Contents/Frameworks/"
-  chmod -R a+rX "$APP/Contents/Frameworks/Sparkle.framework"
+  COPYFILE_DISABLE=1 cp -R ".build/$CONF/Sparkle.framework" "$APP/Contents/Frameworks/"
+  chmod -R u+w "$APP/Contents/Frameworks/Sparkle.framework"
   install_name_tool -add_rpath "@executable_path/../Frameworks" "$APP/Contents/MacOS/CodexBar"
-  # Re-sign Sparkle and all nested components with Developer ID + timestamp
   SPARKLE="$APP/Contents/Frameworks/Sparkle.framework"
 if [[ "$SIGNING_MODE" == "adhoc" ]]; then
   CODESIGN_ID="-"
@@ -316,10 +331,25 @@ elif [[ "$ALLOW_LLDB" == "1" ]]; then
   CODESIGN_ID="-"
   CODESIGN_ARGS=(--force --sign "$CODESIGN_ID")
 else
-  CODESIGN_ID="${APP_IDENTITY:-Developer ID Application: Peter Steinberger (Y5PE65HELJ)}"
-  CODESIGN_ARGS=(--force --timestamp --options runtime --sign "$CODESIGN_ID")
+  CODESIGN_ID="${APP_IDENTITY:-Developer ID Application: Yuxiao Wang (3TUERHN53E)}"
+  if [[ "$CODESIGN_ID" == "Apple Development:"* ]]; then
+    CODESIGN_ARGS=(--force --sign "$CODESIGN_ID")
+  else
+    CODESIGN_ARGS=(--force --timestamp --options runtime --sign "$CODESIGN_ID")
+  fi
 fi
-function resign() { codesign "${CODESIGN_ARGS[@]}" "$1"; }
+CODESIGN_ARGS_NO_TIMESTAMP=(--force --options runtime --sign "${CODESIGN_ID}")
+function resign() {
+  xattr -cr "$1" 2>/dev/null || true
+  if ! codesign "${CODESIGN_ARGS[@]}" "$1" 2>&1; then
+    if [[ " ${CODESIGN_ARGS[*]} " == *" --timestamp "* ]]; then
+      echo "  timestamp failed, retrying without timestamp: $1" >&2
+      codesign "${CODESIGN_ARGS_NO_TIMESTAMP[@]}" "$1"
+    else
+      return 1
+    fi
+  fi
+}
   # Sign innermost binaries first, then the framework root to seal resources
   resign "$SPARKLE"
   resign "$SPARKLE/Versions/B/Sparkle"
@@ -373,27 +403,43 @@ chmod -R u+w "$APP"
 xattr -cr "$APP"
 find "$APP" -name '._*' -delete
 
+# Strip extended attributes again right before signing (Dropbox re-adds them continuously)
+xattr -cr "$APP" 2>/dev/null || true
+find "$APP" -name '._*' -delete 2>/dev/null || true
+
 # Sign helper binaries if present
 if [[ -f "${APP}/Contents/Helpers/CodexBarCLI" ]]; then
-  codesign "${CODESIGN_ARGS[@]}" "${APP}/Contents/Helpers/CodexBarCLI"
+  resign "${APP}/Contents/Helpers/CodexBarCLI"
 fi
 if [[ -f "${APP}/Contents/Helpers/CodexBarClaudeWatchdog" ]]; then
-  codesign "${CODESIGN_ARGS[@]}" "${APP}/Contents/Helpers/CodexBarClaudeWatchdog"
+  resign "${APP}/Contents/Helpers/CodexBarClaudeWatchdog"
 fi
 
 # Sign widget extension if present
 if [[ -d "${APP}/Contents/PlugIns/CodexBarWidget.appex" ]]; then
-  codesign "${CODESIGN_ARGS[@]}" \
-    --entitlements "$WIDGET_ENTITLEMENTS" \
-    "$APP/Contents/PlugIns/CodexBarWidget.appex/Contents/MacOS/CodexBarWidget"
+  resign "${APP}/Contents/PlugIns/CodexBarWidget.appex/Contents/MacOS/CodexBarWidget"
   codesign "${CODESIGN_ARGS[@]}" \
     --entitlements "$WIDGET_ENTITLEMENTS" \
     "$APP/Contents/PlugIns/CodexBarWidget.appex"
 fi
+
+# Embed provisioning profile if available
+PROVISION_PROFILE="$ROOT/Provisioning/CodexBar_Dev.provisionprofile"
+if [[ -f "$PROVISION_PROFILE" ]]; then
+  cp "$PROVISION_PROFILE" "$APP/Contents/embedded.provisionprofile"
+fi
+
+# Strip xattr one final time before signing the app bundle
+xattr -cr "$APP" 2>/dev/null || true
+find "$APP" -name '._*' -delete 2>/dev/null || true
 
 # Finally sign the app bundle itself
 codesign "${CODESIGN_ARGS[@]}" \
   --entitlements "$APP_ENTITLEMENTS" \
   "$APP"
 
+# Move the signed app bundle from /tmp back to the project directory
+COPYFILE_DISABLE=1 cp -R "$APP" "$APP_FINAL"
+rm -rf "$(dirname "$APP")"
+APP="$APP_FINAL"
 echo "Created $APP"

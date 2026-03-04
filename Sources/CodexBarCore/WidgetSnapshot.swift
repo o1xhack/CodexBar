@@ -99,7 +99,7 @@ public struct WidgetSnapshot: Codable, Sendable {
 }
 
 public enum WidgetSnapshotStore {
-    public static let appGroupID = "group.com.steipete.codexbar"
+    public static let appGroupID = "group.com.o1xhack.codexbar"
     private static let filename = "widget-snapshot.json"
 
     public static func load(bundleID: String? = Bundle.main.bundleIdentifier) -> WidgetSnapshot? {
@@ -141,7 +141,7 @@ public enum WidgetSnapshotStore {
     private static func groupID(for bundleID: String?) -> String? {
         guard let bundleID, !bundleID.isEmpty else { return self.appGroupID }
         if bundleID.contains(".debug") {
-            return "group.com.steipete.codexbar.debug"
+            return "group.com.o1xhack.codexbar.debug"
         }
         return self.appGroupID
     }
