@@ -45,8 +45,8 @@ resolve_signing_mode() {
 
   local candidate=""
   for candidate in \
-    "Developer ID Application: Yuxiao Wang (3TUERHN53E)" \
     "Apple Development: Yuxiao Wang (WB9P2BFD3W)" \
+    "Developer ID Application: Yuxiao Wang (3TUERHN53E)" \
     "Developer ID Application: Peter Steinberger (Y5PE65HELJ)" \
     "CodexBar Development"
   do

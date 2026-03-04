@@ -338,7 +338,18 @@ else
     CODESIGN_ARGS=(--force --timestamp --options runtime --sign "$CODESIGN_ID")
   fi
 fi
-function resign() { xattr -cr "$1" 2>/dev/null || true; codesign "${CODESIGN_ARGS[@]}" "$1"; }
+CODESIGN_ARGS_NO_TIMESTAMP=(--force --options runtime --sign "${CODESIGN_ID}")
+function resign() {
+  xattr -cr "$1" 2>/dev/null || true
+  if ! codesign "${CODESIGN_ARGS[@]}" "$1" 2>&1; then
+    if [[ " ${CODESIGN_ARGS[*]} " == *" --timestamp "* ]]; then
+      echo "  timestamp failed, retrying without timestamp: $1" >&2
+      codesign "${CODESIGN_ARGS_NO_TIMESTAMP[@]}" "$1"
+    else
+      return 1
+    fi
+  fi
+}
   # Sign innermost binaries first, then the framework root to seal resources
   resign "$SPARKLE"
   resign "$SPARKLE/Versions/B/Sparkle"
@@ -410,6 +421,12 @@ if [[ -d "${APP}/Contents/PlugIns/CodexBarWidget.appex" ]]; then
   codesign "${CODESIGN_ARGS[@]}" \
     --entitlements "$WIDGET_ENTITLEMENTS" \
     "$APP/Contents/PlugIns/CodexBarWidget.appex"
+fi
+
+# Embed provisioning profile if available
+PROVISION_PROFILE="$ROOT/Provisioning/CodexBar_Dev.provisionprofile"
+if [[ -f "$PROVISION_PROFILE" ]]; then
+  cp "$PROVISION_PROFILE" "$APP/Contents/embedded.provisionprofile"
 fi
 
 # Strip xattr one final time before signing the app bundle
