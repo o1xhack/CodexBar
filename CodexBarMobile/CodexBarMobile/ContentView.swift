@@ -204,6 +204,36 @@ private struct AboutTab: View {
                     Label("This app reads the latest snapshot via iCloud Key-Value Store", systemImage: "icloud")
                     Label("Data syncs automatically when both devices are online", systemImage: "arrow.triangle.2.circlepath")
                 }
+
+                Section("Open Source") {
+                    Link(destination: URL(string: "https://github.com/o1xhack/CodexBar")!) {
+                        Label {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("o1xhack/CodexBar")
+                                    .fontWeight(.medium)
+                                Text("Install the Mac app from this repo")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } icon: {
+                            Image(systemName: "chevron.left.forwardslash.chevron.right")
+                        }
+                    }
+
+                    Link(destination: URL(string: "https://github.com/steipete/CodexBar")!) {
+                        Label {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("steipete/CodexBar")
+                                    .fontWeight(.medium)
+                                Text("Original Mac app — MIT License")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } icon: {
+                            Image(systemName: "arrow.triangle.branch")
+                        }
+                    }
+                }
             }
             .navigationTitle("About")
         }
