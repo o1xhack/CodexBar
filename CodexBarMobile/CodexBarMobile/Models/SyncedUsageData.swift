@@ -20,10 +20,23 @@ final class SyncedUsageData {
 
     /// Starts observing iCloud KVS changes.
     func startObserving() {
-        reader.startObserving { [weak self] newSnapshot in
+        reader.startObserving { [weak self] result in
             guard let self else { return }
-            if let newSnapshot {
+            switch result {
+            case .success(let newSnapshot):
                 self.snapshot = newSnapshot
+                self.lastSyncError = nil
+            case .empty:
+                // No data yet, not necessarily an error
+                break
+            case .quotaExceeded:
+                self.lastSyncError = "iCloud storage quota exceeded"
+            case .accountChanged:
+                self.lastSyncError = "iCloud account changed"
+                // Try to reload with new account
+                self.snapshot = self.reader.latestSnapshot()
+            case .initialSync:
+                // Initial sync in progress, data may arrive soon
                 self.lastSyncError = nil
             }
         }

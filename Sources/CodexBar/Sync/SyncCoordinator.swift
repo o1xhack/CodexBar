@@ -38,6 +38,7 @@ final class SyncCoordinator {
         withObservationTracking {
             _ = self.store.snapshots
             _ = self.store.errors
+            _ = self.store.tokenSnapshots
             _ = self.settings.iCloudSyncEnabled
         } onChange: { [weak self] in
             Task { @MainActor [weak self] in
@@ -65,20 +66,62 @@ final class SyncCoordinator {
             let error = self.store.errors[provider]
             let meta = self.store.providerMetadata[provider]
 
-            let primaryWindow: SyncRateWindow? = snapshot?.primary.map {
-                SyncRateWindow(
-                    usedPercent: $0.usedPercent,
-                    windowMinutes: $0.windowMinutes,
-                    resetsAt: $0.resetsAt,
-                    resetDescription: $0.resetDescription)
+            // Build dynamic rate windows array with labels from metadata
+            var rateWindows: [SyncRateWindow] = []
+            if let p = snapshot?.primary {
+                rateWindows.append(SyncRateWindow(
+                    label: meta?.sessionLabel,
+                    usedPercent: p.usedPercent,
+                    windowMinutes: p.windowMinutes,
+                    resetsAt: p.resetsAt,
+                    resetDescription: p.resetDescription))
+            }
+            if let s = snapshot?.secondary {
+                rateWindows.append(SyncRateWindow(
+                    label: meta?.weeklyLabel,
+                    usedPercent: s.usedPercent,
+                    windowMinutes: s.windowMinutes,
+                    resetsAt: s.resetsAt,
+                    resetDescription: s.resetDescription))
+            }
+            if let meta, meta.supportsOpus, let t = snapshot?.tertiary {
+                rateWindows.append(SyncRateWindow(
+                    label: meta.opusLabel ?? "Sonnet",
+                    usedPercent: t.usedPercent,
+                    windowMinutes: t.windowMinutes,
+                    resetsAt: t.resetsAt,
+                    resetDescription: t.resetDescription))
             }
 
-            let secondaryWindow: SyncRateWindow? = snapshot?.secondary.map {
-                SyncRateWindow(
-                    usedPercent: $0.usedPercent,
-                    windowMinutes: $0.windowMinutes,
-                    resetsAt: $0.resetsAt,
-                    resetDescription: $0.resetDescription)
+            // Legacy primary/secondary for backward compat with older iOS builds
+            let primaryWindow = rateWindows.first
+            let secondaryWindow = rateWindows.count > 1 ? rateWindows[1] : nil
+
+            // Map token/cost snapshot
+            let tokenSnap = self.store.tokenSnapshots[provider]
+            let costSummary: SyncCostSummary? = tokenSnap.map { ts in
+                SyncCostSummary(
+                    sessionCostUSD: ts.sessionCostUSD,
+                    sessionTokens: ts.sessionTokens,
+                    last30DaysCostUSD: ts.last30DaysCostUSD,
+                    last30DaysTokens: ts.last30DaysTokens,
+                    daily: ts.daily.map { entry in
+                        SyncDailyPoint(
+                            dayKey: entry.date,
+                            costUSD: entry.costUSD ?? 0,
+                            totalTokens: entry.totalTokens ?? 0)
+                    })
+            }
+
+            // Map provider budget/spend
+            let providerCost = snapshot?.providerCost
+            let budgetSnap: SyncBudgetSnapshot? = providerCost.map { pc in
+                SyncBudgetSnapshot(
+                    usedAmount: pc.used,
+                    limitAmount: pc.limit,
+                    currencyCode: pc.currencyCode,
+                    period: pc.period,
+                    resetsAt: pc.resetsAt)
             }
 
             let providerSnapshot = ProviderUsageSnapshot(
@@ -90,7 +133,10 @@ final class SyncCoordinator {
                 loginMethod: snapshot?.identity?.loginMethod,
                 statusMessage: error,
                 isError: error != nil,
-                lastUpdated: snapshot?.updatedAt ?? Date())
+                lastUpdated: snapshot?.updatedAt ?? Date(),
+                costSummary: costSummary,
+                budget: budgetSnap,
+                rateWindows: rateWindows)
 
             providerSnapshots.append(providerSnapshot)
         }

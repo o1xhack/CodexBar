@@ -24,6 +24,9 @@
 		A9305459F82B07AAE8ADC1A2 /* ProviderUsageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CAFBA243E25814E22BAAA6B /* ProviderUsageView.swift */; };
 		D5E7E85EEE6528E04FDA9446 /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = C92153BD74B2B08AE61B76E2 /* PreviewData.swift */; };
 		F72DCBEFB2A9EF020F632516 /* UsageCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68E69F28C0538809129FB6D3 /* UsageCardView.swift */; };
+		B1A2C3D4E5F60718091A2B3C /* ProviderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718091A2B3C /* ProviderDetailView.swift */; };
+		C2B3D4E5F6071809A1B2C3D4 /* CostMetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C2B3A4E5F60718091A2B3C /* CostMetricCard.swift */; };
+		D3C4E5F6071809A1B2C3D4E5 /* BudgetProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D2C3B4A5F60718091A2B3C /* BudgetProgressView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -94,6 +97,9 @@
 		D34FB83FA26B8508F5A3D9FB /* CodexBarSync.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CodexBarSync.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DC3A52976034BA3F0CA44327 /* CodexBarMobileApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodexBarMobileApp.swift; sourceTree = "<group>"; };
 		F1706346D05559DDD5AA66F0 /* CodexBarMobileTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CodexBarMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A1B2C3D4E5F60718091A2B3C /* ProviderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDetailView.swift; sourceTree = "<group>"; };
+		D1C2B3A4E5F60718091A2B3C /* CostMetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostMetricCard.swift; sourceTree = "<group>"; };
+		E1D2C3B4A5F60718091A2B3C /* BudgetProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetProgressView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -214,7 +220,10 @@
 		EF6BE6D5AF77B9CC16AAFBA3 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E1D2C3B4A5F60718091A2B3C /* BudgetProgressView.swift */,
+				D1C2B3A4E5F60718091A2B3C /* CostMetricCard.swift */,
 				CCB5B03C39186CBC42C349F8 /* EmptyStateView.swift */,
+				A1B2C3D4E5F60718091A2B3C /* ProviderDetailView.swift */,
 				3CAFBA243E25814E22BAAA6B /* ProviderUsageView.swift */,
 				68E69F28C0538809129FB6D3 /* UsageCardView.swift */,
 			);
@@ -344,11 +353,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D3C4E5F6071809A1B2C3D4E5 /* BudgetProgressView.swift in Sources */,
 				1E05BEE4F76DC16C3AA0C014 /* CloudSyncReader.swift in Sources */,
 				A910B3424F6BF1DCE7543E2E /* CodexBarMobileApp.swift in Sources */,
 				A644FDE234CC676EC59CC891 /* ContentView.swift in Sources */,
+				C2B3D4E5F6071809A1B2C3D4 /* CostMetricCard.swift in Sources */,
 				2F25E64EEAF1963781B976C8 /* EmptyStateView.swift in Sources */,
 				D5E7E85EEE6528E04FDA9446 /* PreviewData.swift in Sources */,
+				B1A2C3D4E5F60718091A2B3C /* ProviderDetailView.swift in Sources */,
 				A9305459F82B07AAE8ADC1A2 /* ProviderUsageView.swift in Sources */,
 				5DF56542F0C2F51860FE8AD8 /* SyncedUsageData.swift in Sources */,
 				F72DCBEFB2A9EF020F632516 /* UsageCardView.swift in Sources */,

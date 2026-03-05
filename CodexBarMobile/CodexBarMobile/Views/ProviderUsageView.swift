@@ -12,19 +12,12 @@ struct ProviderUsageView: View {
                 .padding(.top, 20)
                 .padding(.bottom, 16)
 
-            // Usage metrics
-            VStack(spacing: 12) {
-                if let primary = self.provider.primary {
+            // Usage metrics — dynamic count per provider
+            VStack(spacing: 10) {
+                ForEach(Array(self.provider.allRateWindows.enumerated()), id: \.offset) { index, window in
                     UsageCardView(
-                        label: self.windowLabel(for: primary, fallback: "Session"),
-                        window: primary,
-                        tintColor: self.providerColor)
-                }
-
-                if let secondary = self.provider.secondary {
-                    UsageCardView(
-                        label: self.windowLabel(for: secondary, fallback: "Weekly"),
-                        window: secondary,
+                        label: window.label ?? self.defaultLabel(at: index),
+                        window: window,
                         tintColor: self.providerColor)
                 }
             }
@@ -44,6 +37,19 @@ struct ProviderUsageView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
             }
+
+            // Cost teaser + tap chevron
+            HStack {
+                if let cost = self.provider.costSummary {
+                    self.costTeaserText(cost)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
 
             Spacer().frame(height: 20)
         }
@@ -113,14 +119,25 @@ struct ProviderUsageView: View {
         }
     }
 
-    private func windowLabel(for window: SyncRateWindow, fallback: String) -> String {
-        guard let minutes = window.windowMinutes else { return fallback }
-        if minutes <= 360 {
-            return "Session (\(minutes / 60)h)"
-        } else if minutes <= 10_080 {
-            return "Weekly"
-        } else {
-            return "Period (\(minutes / 60 / 24)d)"
+    @ViewBuilder
+    private func costTeaserText(_ cost: SyncCostSummary) -> some View {
+        let parts: [String] = [
+            cost.sessionCostUSD.map { String(format: "Today: $%.2f", $0) },
+            cost.last30DaysCostUSD.map { String(format: "30d: $%.2f", $0) },
+        ].compactMap { $0 }
+
+        if !parts.isEmpty {
+            Text(parts.joined(separator: " · "))
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private func defaultLabel(at index: Int) -> String {
+        switch index {
+        case 0: return "Session"
+        case 1: return "Weekly"
+        default: return "Limit \(index + 1)"
         }
     }
 }

@@ -55,7 +55,10 @@ private struct UsageTab: View {
                             message: "Enable providers in CodexBar on your Mac to see usage data here.",
                             systemImage: "slider.horizontal.3")
                     } else {
-                        ProviderListView(snapshot: snapshot)
+                        ProviderListView(
+                            snapshot: snapshot,
+                            usageData: self.usageData,
+                            isDemoMode: self.isDemoMode)
                     }
                 } else {
                     EmptyStateView(
@@ -78,15 +81,6 @@ private struct UsageTab: View {
                         }
                     }
                 }
-                ToolbarItem(placement: .bottomBar) {
-                    if self.isDemoMode {
-                        Label("Showing demo data", systemImage: "sparkles")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        SyncStatusBar(usageData: self.usageData)
-                    }
-                }
             }
         }
     }
@@ -96,12 +90,30 @@ private struct UsageTab: View {
 
 private struct ProviderListView: View {
     let snapshot: SyncedUsageSnapshot
+    let usageData: SyncedUsageData
+    let isDemoMode: Bool
 
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 16) {
                 ForEach(self.snapshot.providers, id: \.providerID) { provider in
-                    ProviderUsageView(provider: provider)
+                    NavigationLink {
+                        ProviderDetailView(provider: provider)
+                    } label: {
+                        ProviderUsageView(provider: provider)
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                // Sync status at scroll bottom
+                if self.isDemoMode {
+                    Label("Showing demo data", systemImage: "sparkles")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 4)
+                } else {
+                    SyncStatusBar(usageData: self.usageData)
+                        .padding(.top, 4)
                 }
             }
             .padding(.horizontal, 20)
@@ -116,7 +128,7 @@ private struct ProviderListView: View {
 private struct SoftScrollEdgeModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 26, *) {
-            content.scrollEdgeEffectStyle(.soft, for: .all)
+            content.scrollEdgeEffectStyle(.soft, for: .top)
         } else {
             content
         }
@@ -129,22 +141,35 @@ private struct SyncStatusBar: View {
     let usageData: SyncedUsageData
 
     var body: some View {
-        if let snapshot = self.usageData.snapshot {
-            HStack(spacing: 6) {
-                Image(systemName: "arrow.triangle.2.circlepath")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                Text(snapshot.syncTimestamp.formatted(.relative(presentation: .named)))
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                Text("·")
-                    .foregroundStyle(.quaternary)
-                Image(systemName: "laptopcomputer")
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
-                Text(snapshot.deviceName)
-                    .font(.caption2)
-                    .foregroundStyle(.tertiary)
+        VStack(spacing: 4) {
+            if let error = self.usageData.lastSyncError {
+                HStack(spacing: 5) {
+                    Image(systemName: "exclamationmark.icloud.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.red)
+                    Text(error)
+                        .font(.caption2)
+                        .foregroundStyle(.red)
+                }
+            }
+
+            if let snapshot = self.usageData.snapshot {
+                HStack(spacing: 6) {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text(snapshot.syncTimestamp.formatted(.relative(presentation: .named)))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text("·")
+                        .foregroundStyle(.quaternary)
+                    Image(systemName: "laptopcomputer")
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                    Text(snapshot.deviceName)
+                        .font(.caption2)
+                        .foregroundStyle(.tertiary)
+                }
             }
         }
     }
