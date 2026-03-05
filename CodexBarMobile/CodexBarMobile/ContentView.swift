@@ -205,6 +205,22 @@ private struct AboutTab: View {
                     Label("Data syncs automatically when both devices are online", systemImage: "arrow.triangle.2.circlepath")
                 }
 
+                Section("Developer") {
+                    Link(destination: URL(string: "https://x.com/o1xhack")!) {
+                        Label {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Yuxiao")
+                                    .fontWeight(.medium)
+                                Text("@o1xhack on X")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        } icon: {
+                            Image(systemName: "person.fill")
+                        }
+                    }
+                }
+
                 Section("Open Source") {
                     Link(destination: URL(string: "https://github.com/o1xhack/CodexBar")!) {
                         Label {
