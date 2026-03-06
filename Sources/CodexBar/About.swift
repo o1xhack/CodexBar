@@ -6,7 +6,11 @@ func showAbout() {
 
     let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "–"
     let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? ""
-    let versionString = build.isEmpty ? version : "\(version) (\(build))"
+    let syncVersion = Bundle.main.object(forInfoDictionaryKey: "CodexSyncVersion") as? String
+    var versionString = build.isEmpty ? version : "\(version) (\(build))"
+    if let syncVersion {
+        versionString += " · Sync \(syncVersion)"
+    }
     let buildTimestamp = Bundle.main.object(forInfoDictionaryKey: "CodexBuildTimestamp") as? String
     let gitCommit = Bundle.main.object(forInfoDictionaryKey: "CodexGitCommit") as? String
 

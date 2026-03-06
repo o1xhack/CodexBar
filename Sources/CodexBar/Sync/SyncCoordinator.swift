@@ -142,10 +142,14 @@ final class SyncCoordinator {
         }
 
         let deviceName = Host.current().localizedName ?? "Mac"
+        let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        let syncVersion = Bundle.main.object(forInfoDictionaryKey: "CodexSyncVersion") as? String
         let synced = SyncedUsageSnapshot(
             providers: providerSnapshots,
             syncTimestamp: Date(),
-            deviceName: deviceName)
+            deviceName: deviceName,
+            appVersion: appVersion,
+            syncVersion: syncVersion)
 
         let success = self.syncManager.pushSnapshot(synced)
         self.lastSyncTime = Date()

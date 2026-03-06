@@ -193,6 +193,12 @@ private struct AboutTab: View {
                         LabeledContent("Last Sync", value: snapshot.syncTimestamp.formatted(date: .abbreviated, time: .shortened))
                         LabeledContent("Source Device", value: snapshot.deviceName)
                         LabeledContent("Providers", value: "\(snapshot.providers.count)")
+                        if let appVersion = snapshot.appVersion {
+                            LabeledContent("Mac Version", value: appVersion)
+                        }
+                        if let syncVersion = snapshot.syncVersion {
+                            LabeledContent("Sync Version", value: syncVersion)
+                        }
                     } else {
                         Text("Not yet synced")
                             .foregroundStyle(.secondary)

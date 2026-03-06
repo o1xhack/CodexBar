@@ -168,14 +168,31 @@ public struct SyncedUsageSnapshot: Codable, Sendable, Equatable {
     public let providers: [ProviderUsageSnapshot]
     public let syncTimestamp: Date
     public let deviceName: String
+    /// Mac app version (e.g. "0.18.0-beta.3")
+    public let appVersion: String?
+    /// Sync protocol version (e.g. "0.1.0")
+    public let syncVersion: String?
 
     public init(
         providers: [ProviderUsageSnapshot],
         syncTimestamp: Date,
-        deviceName: String)
+        deviceName: String,
+        appVersion: String? = nil,
+        syncVersion: String? = nil)
     {
         self.providers = providers
         self.syncTimestamp = syncTimestamp
         self.deviceName = deviceName
+        self.appVersion = appVersion
+        self.syncVersion = syncVersion
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.providers = try container.decode([ProviderUsageSnapshot].self, forKey: .providers)
+        self.syncTimestamp = try container.decode(Date.self, forKey: .syncTimestamp)
+        self.deviceName = try container.decode(String.self, forKey: .deviceName)
+        self.appVersion = try container.decodeIfPresent(String.self, forKey: .appVersion)
+        self.syncVersion = try container.decodeIfPresent(String.self, forKey: .syncVersion)
     }
 }

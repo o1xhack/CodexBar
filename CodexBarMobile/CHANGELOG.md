@@ -14,5 +14,6 @@ All notable changes to the CodexBar iOS companion app will be documented in this
 - iCloud sync error display (quota exceeded, account change notifications)
 - iOS 26 Liquid Glass UI support (glass effect cards, soft scroll edges, tab bar minimize)
 - Demo mode for previewing the app without Mac data
-- About tab with sync status and app info
+- About tab with sync status, developer info, and open source credits
+- Display Mac app version and Sync version from iCloud payload in About tab
 - Empty state views for waiting-for-sync and no-providers states
