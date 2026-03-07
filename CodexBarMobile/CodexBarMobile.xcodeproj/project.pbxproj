@@ -27,6 +27,7 @@
 		B1A2C3D4E5F60718091A2B3C /* ProviderDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718091A2B3C /* ProviderDetailView.swift */; };
 		C2B3D4E5F6071809A1B2C3D4 /* CostMetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1C2B3A4E5F60718091A2B3C /* CostMetricCard.swift */; };
 		D3C4E5F6071809A1B2C3D4E5 /* BudgetProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1D2C3B4A5F60718091A2B3C /* BudgetProgressView.swift */; };
+		F1A2B3C4D5E607180A1B2C3D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = F2A3B4C5D6E70819A2B3C4D5 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,6 +101,7 @@
 		A1B2C3D4E5F60718091A2B3C /* ProviderDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDetailView.swift; sourceTree = "<group>"; };
 		D1C2B3A4E5F60718091A2B3C /* CostMetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CostMetricCard.swift; sourceTree = "<group>"; };
 		E1D2C3B4A5F60718091A2B3C /* BudgetProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BudgetProgressView.swift; sourceTree = "<group>"; };
+		F2A3B4C5D6E70819A2B3C4D5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +132,7 @@
 				DC3A52976034BA3F0CA44327 /* CodexBarMobileApp.swift */,
 				6F8B2EE4A4A283389BC42245 /* ContentView.swift */,
 				D094735B11258986C3F6032E /* Info.plist */,
+				F2A3B4C5D6E70819A2B3C4D5 /* PrivacyInfo.xcprivacy */,
 				78C0055577F3BF5232A8324A /* iCloud */,
 				E885519810099589A32096E1 /* Models */,
 				72BD66B5E4391FD19D1AAEF4 /* Preview Content */,
@@ -335,6 +338,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				24899A4840A4D7B044BEC20C /* Assets.xcassets in Resources */,
+				F1A2B3C4D5E607180A1B2C3D /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

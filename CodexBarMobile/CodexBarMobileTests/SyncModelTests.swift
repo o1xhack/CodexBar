@@ -200,6 +200,50 @@ struct SyncModelTests {
 
     // MARK: - Payload Size
 
+    // MARK: - Version Fields
+
+    @Test("SyncedUsageSnapshot includes appVersion and syncVersion")
+    func versionFieldsRoundTrip() throws {
+        let synced = SyncedUsageSnapshot(
+            providers: [],
+            syncTimestamp: Date(timeIntervalSince1970: 1_700_000_000),
+            deviceName: "Test Mac",
+            appVersion: "0.18.0-beta.3",
+            syncVersion: "0.1.0")
+
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        let data = try encoder.encode(synced)
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(SyncedUsageSnapshot.self, from: data)
+
+        #expect(decoded.appVersion == "0.18.0-beta.3")
+        #expect(decoded.syncVersion == "0.1.0")
+    }
+
+    @Test("Old payload without version fields decodes with nil")
+    func versionFieldsBackwardCompat() throws {
+        let oldJSON = """
+        {
+            "providers": [],
+            "syncTimestamp": "2023-11-14T22:13:20Z",
+            "deviceName": "Old Mac"
+        }
+        """
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(SyncedUsageSnapshot.self, from: Data(oldJSON.utf8))
+
+        #expect(decoded.deviceName == "Old Mac")
+        #expect(decoded.appVersion == nil)
+        #expect(decoded.syncVersion == nil)
+    }
+
+    // MARK: - Payload Size
+
     @Test("6 providers x 30 days stays under 1MB KVS limit")
     func payloadSizeCheck() throws {
         let daily = (0..<30).map { day in
