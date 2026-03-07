@@ -208,6 +208,10 @@ private struct SyncStatusBar: View {
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
                 }
+
+                Text("Data pushed by Mac · Pull to check for updates")
+                    .font(.caption2)
+                    .foregroundStyle(.quaternary)
             }
         }
     }
@@ -223,7 +227,11 @@ private struct AboutTab: View {
         NavigationStack {
             List {
                 Section("App") {
-                    LabeledContent("Version", value: "1.0.0")
+                    LabeledContent("Version", value: {
+                        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
+                        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
+                        return "\(version) (\(build))"
+                    }())
                     LabeledContent("Platform", value: "iOS")
                 }
 
