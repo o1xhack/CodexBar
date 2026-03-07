@@ -4,6 +4,15 @@ import SwiftUI
 struct ContentView: View {
     let usageData: SyncedUsageData
     @State private var isDemoMode = false
+    @AppStorage("onboardingSeenVersion") private var onboardingSeenVersion = ""
+
+    private var currentVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
+    }
+
+    private var shouldShowOnboarding: Bool {
+        self.onboardingSeenVersion != self.currentVersion
+    }
 
     var body: some View {
         TabView {
@@ -18,6 +27,36 @@ struct ContentView: View {
                 }
         }
         .modifier(TabBarMinimizeModifier())
+        .fullScreenCover(isPresented: .init(
+            get: { self.shouldShowOnboarding },
+            set: { if !$0 { self.onboardingSeenVersion = self.currentVersion } }
+        )) {
+            OnboardingSheet(onDismiss: {
+                self.onboardingSeenVersion = self.currentVersion
+            }, onDemo: {
+                self.onboardingSeenVersion = self.currentVersion
+                self.isDemoMode = true
+            })
+        }
+    }
+}
+
+private struct OnboardingSheet: View {
+    let onDismiss: () -> Void
+    let onDemo: () -> Void
+
+    var body: some View {
+        NavigationStack {
+            OnboardingView(onDemo: self.onDemo)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") {
+                            self.onDismiss()
+                        }
+                        .fontWeight(.semibold)
+                    }
+                }
+        }
     }
 }
 
@@ -61,11 +100,7 @@ private struct UsageTab: View {
                             isDemoMode: self.isDemoMode)
                     }
                 } else {
-                    EmptyStateView(
-                        title: "Waiting for Sync",
-                        message: "Open CodexBar on your Mac to sync usage data via iCloud.",
-                        systemImage: "icloud.and.arrow.down",
-                        onDemo: { self.isDemoMode = true })
+                    OnboardingView(onDemo: { self.isDemoMode = true })
                 }
             }
             .navigationTitle(self.isDemoMode ? "CodexBar (Demo)" : "CodexBar")
@@ -119,6 +154,9 @@ private struct ProviderListView: View {
             .padding(.horizontal, 20)
             .padding(.top, 8)
             .padding(.bottom, 24)
+        }
+        .refreshable {
+            self.usageData.refresh()
         }
         .modifier(SoftScrollEdgeModifier())
     }
@@ -179,6 +217,7 @@ private struct SyncStatusBar: View {
 
 private struct AboutTab: View {
     let usageData: SyncedUsageData
+    @State private var showingSetupGuide = false
 
     var body: some View {
         NavigationStack {
@@ -209,6 +248,12 @@ private struct AboutTab: View {
                     Label("CodexBar on your Mac pushes usage data to iCloud", systemImage: "laptopcomputer")
                     Label("This app reads the latest snapshot via iCloud Key-Value Store", systemImage: "icloud")
                     Label("Data syncs automatically when both devices are online", systemImage: "arrow.triangle.2.circlepath")
+
+                    Button {
+                        self.showingSetupGuide = true
+                    } label: {
+                        Label("Show Setup Guide", systemImage: "questionmark.circle")
+                    }
                 }
 
                 Section("Developer") {
@@ -258,6 +303,19 @@ private struct AboutTab: View {
                 }
             }
             .navigationTitle("About")
+            .sheet(isPresented: self.$showingSetupGuide) {
+                NavigationStack {
+                    OnboardingView()
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button("Done") {
+                                    self.showingSetupGuide = false
+                                }
+                                .fontWeight(.semibold)
+                            }
+                        }
+                }
+            }
         }
     }
 }
