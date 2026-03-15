@@ -2,12 +2,15 @@
 
 Tiny macOS 14+ menu bar app that keeps your Codex, Claude, Cursor, Gemini, Antigravity, Droid (Factory), Copilot, z.ai, Kiro, Vertex AI, Augment, Amp, JetBrains AI, and OpenRouter limits visible (session + weekly where available) and shows when each window resets. One status item per provider (or Merge Icons mode); enable what you use from Settings. No Dock icon, minimal UI, dynamic bar icons in the menu bar.
 
+**iOS companion app** syncs usage data from your Mac via iCloud — check your AI spend and rate limits on the go.
+
 <img src="codexbar.png" alt="CodexBar menu screenshot" width="520" />
 
 ## Install
 
 ### Requirements
-- macOS 14+ (Sonoma)
+- **macOS app**: macOS 14+ (Sonoma)
+- **iOS app**: iOS 17+, same Apple ID signed into iCloud on both devices
 
 ### GitHub Releases
 Download: <https://github.com/steipete/CodexBar/releases>
@@ -23,6 +26,9 @@ brew install steipete/tap/codexbar
 ```
 Or download `CodexBarCLI-v<tag>-linux-<arch>.tar.gz` from GitHub Releases.
 Linux support via Omarchy: community Waybar module and TUI, driven by the `codexbar` executable.
+
+### iOS Companion App
+Build from source with Xcode (see [Build from source](#build-from-source) below). The iOS app is a read-only viewer — all provider configuration happens on the Mac. Data syncs automatically via iCloud Key-Value Store.
 
 ### First run
 - Open Settings → Providers and enable what you use.
@@ -65,6 +71,7 @@ The menu bar icon is a tiny two-bar meter:
 - Refresh cadence presets (manual, 1m, 2m, 5m, 15m).
 - Bundled CLI (`codexbar`) for scripts and CI (including `codexbar cost --provider codex|claude` for local cost usage); Linux CLI builds available.
 - WidgetKit widget mirrors the menu card snapshot.
+- **iOS companion app**: provider cards, interactive daily spend chart, cost/token tracking, pull-to-refresh — all synced from Mac via iCloud.
 - Privacy-first: on-device parsing by default; browser cookies are opt-in and reused (no passwords stored).
 
 ## Privacy note
@@ -98,6 +105,7 @@ Wondering if CodexBar scans your disk? It doesn’t crawl your filesystem; it re
 - Refresh loop: [docs/refresh-loop.md](docs/refresh-loop.md)
 - Status polling: [docs/status.md](docs/status.md)
 - Sparkle updates: [docs/sparkle.md](docs/sparkle.md)
+- iOS / iCloud sync: [docs/ios-icloud-sync.md](docs/ios-icloud-sync.md)
 - Release checklist: [docs/RELEASING.md](docs/RELEASING.md)
 
 ## Getting started (dev)
@@ -117,6 +125,14 @@ open CodexBar.app
 Dev loop:
 ```bash
 ./Scripts/compile_and_run.sh
+```
+
+iOS companion app:
+```bash
+cd CodexBarMobile
+xcodebuild -project CodexBarMobile.xcodeproj -scheme CodexBarMobile \
+  -destination 'platform=iOS,name=<your-device>' \
+  -allowProvisioningUpdates
 ```
 
 ## Related
