@@ -12,10 +12,14 @@ Tiny macOS 14+ menu bar app that keeps your Codex, Claude, Cursor, Gemini, Antig
 - **macOS app**: macOS 14+ (Sonoma)
 - **iOS app**: iOS 17+, same Apple ID signed into iCloud on both devices
 
-### GitHub Releases
-Download: <https://github.com/steipete/CodexBar/releases>
+### GitHub Releases (Mobile Edition)
+For the iOS companion app to work, you need the **Mobile Edition** of the Mac app (includes iCloud sync):
 
-### Homebrew
+Download: <https://github.com/o1xhack/CodexBar/releases>
+
+> **Note:** The [upstream CodexBar](https://github.com/steipete/CodexBar/releases) does not include iCloud sync. If you only need the macOS menu bar app without iOS sync, either version works.
+
+### Homebrew (upstream only)
 ```bash
 brew install --cask steipete/tap/codexbar
 ```
@@ -28,7 +32,7 @@ Or download `CodexBarCLI-v<tag>-linux-<arch>.tar.gz` from GitHub Releases.
 Linux support via Omarchy: community Waybar module and TUI, driven by the `codexbar` executable.
 
 ### iOS Companion App
-Build from source with Xcode (see [Build from source](#build-from-source) below). The iOS app is a read-only viewer — all provider configuration happens on the Mac. Data syncs automatically via iCloud Key-Value Store.
+Build from source with Xcode (see [Build from source](#build-from-source) below), or install via TestFlight (coming soon). The iOS app is a read-only viewer — all provider configuration happens on the Mac. Data syncs automatically via iCloud Key-Value Store. Requires the **Mobile Edition** Mac app above.
 
 ### First run
 - Open Settings → Providers and enable what you use.
