@@ -260,14 +260,12 @@ extension CostUsageScanner {
 
     private final class ClaudeScanState {
         var cache: CostUsageCache
-        var rootCache: [String: Int64]
         var touched: Set<String>
         let range: CostUsageDayRange
         let providerFilter: ClaudeLogProviderFilter
 
         init(cache: CostUsageCache, range: CostUsageDayRange, providerFilter: ClaudeLogProviderFilter) {
             self.cache = cache
-            self.rootCache = cache.roots ?? [:]
             self.touched = []
             self.range = range
             self.providerFilter = providerFilter
@@ -339,9 +337,6 @@ extension CostUsageScanner {
             path.hasSuffix("/") ? path : "\(path)/"
         }
         let rootExists = rootCandidates.contains { FileManager.default.fileExists(atPath: $0) }
-        let canonicalRootPath = rootCandidates.first(where: {
-            FileManager.default.fileExists(atPath: $0)
-        }) ?? rootPath
 
         guard rootExists else {
             let stale = state.cache.files.keys.filter { path in
@@ -353,43 +348,15 @@ extension CostUsageScanner {
                 }
                 state.cache.files.removeValue(forKey: path)
             }
-            for candidate in rootCandidates {
-                state.rootCache.removeValue(forKey: candidate)
-            }
             return
         }
 
-        let rootAttrs = (try? FileManager.default.attributesOfItem(atPath: canonicalRootPath)) ?? [:]
-        let rootMtime = (rootAttrs[.modificationDate] as? Date)?.timeIntervalSince1970 ?? 0
-        let rootMtimeMs = Int64(rootMtime * 1000)
-        let cachedRootMtime = rootCandidates.compactMap { state.rootCache[$0] }.first
-        let canSkipEnumeration = cachedRootMtime == rootMtimeMs && rootMtimeMs > 0
-
-        if canSkipEnumeration {
-            let cachedPaths = state.cache.files.keys.filter { path in
-                prefixes.contains(where: { path.hasPrefix($0) })
-            }
-            for path in cachedPaths {
-                guard FileManager.default.fileExists(atPath: path) else {
-                    if let old = state.cache.files[path] {
-                        Self.applyFileDays(cache: &state.cache, fileDays: old.days, sign: -1)
-                    }
-                    state.cache.files.removeValue(forKey: path)
-                    continue
-                }
-                let attrs = (try? FileManager.default.attributesOfItem(atPath: path)) ?? [:]
-                let size = (attrs[.size] as? NSNumber)?.int64Value ?? 0
-                if size <= 0 { continue }
-                let mtime = (attrs[.modificationDate] as? Date)?.timeIntervalSince1970 ?? 0
-                let mtimeMs = Int64(mtime * 1000)
-                Self.processClaudeFile(
-                    url: URL(fileURLWithPath: path),
-                    size: size,
-                    mtimeMs: mtimeMs,
-                    state: state)
-            }
-            return
-        }
+        // Always enumerate the full directory tree. The root directory mtime only
+        // changes when direct children are added/removed, but new JSONL log files are
+        // created inside subdirectories (one per conversation). Relying on root mtime
+        // caused newly created log files to be invisible until a new top-level project
+        // directory appeared. Per-file mtime+size caching in processClaudeFile already
+        // prevents redundant parsing, so full enumeration is cheap.
 
         let keys: [URLResourceKey] = [
             .isRegularFileKey,
@@ -417,13 +384,6 @@ extension CostUsageScanner {
                 size: size,
                 mtimeMs: mtimeMs,
                 state: state)
-        }
-
-        if rootMtimeMs > 0 {
-            state.rootCache[canonicalRootPath] = rootMtimeMs
-            for candidate in rootCandidates where candidate != canonicalRootPath {
-                state.rootCache.removeValue(forKey: candidate)
-            }
         }
     }
 
@@ -458,7 +418,7 @@ extension CostUsageScanner {
 
             cache = scanState.cache
             touched = scanState.touched
-            cache.roots = scanState.rootCache.isEmpty ? nil : scanState.rootCache
+            cache.roots = nil
 
             for key in cache.files.keys where !touched.contains(key) {
                 if let old = cache.files[key] {

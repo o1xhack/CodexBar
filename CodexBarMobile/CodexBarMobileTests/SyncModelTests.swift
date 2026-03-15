@@ -202,14 +202,14 @@ struct SyncModelTests {
 
     // MARK: - Version Fields
 
-    @Test("SyncedUsageSnapshot includes appVersion and syncVersion")
+    @Test("SyncedUsageSnapshot includes appVersion and mobileVersion")
     func versionFieldsRoundTrip() throws {
         let synced = SyncedUsageSnapshot(
             providers: [],
             syncTimestamp: Date(timeIntervalSince1970: 1_700_000_000),
             deviceName: "Test Mac",
             appVersion: "0.18.0-beta.3",
-            syncVersion: "0.1.0")
+            mobileVersion: "0.1.1")
 
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -220,7 +220,26 @@ struct SyncModelTests {
         let decoded = try decoder.decode(SyncedUsageSnapshot.self, from: data)
 
         #expect(decoded.appVersion == "0.18.0-beta.3")
-        #expect(decoded.syncVersion == "0.1.0")
+        #expect(decoded.mobileVersion == "0.1.1")
+    }
+
+    @Test("Legacy syncVersion key decodes into mobileVersion")
+    func legacySyncVersionBackwardCompat() throws {
+        let legacyJSON = """
+        {
+            "providers": [],
+            "syncTimestamp": "2023-11-14T22:13:20Z",
+            "deviceName": "Old Mac",
+            "appVersion": "0.17.0",
+            "syncVersion": "0.1.0"
+        }
+        """
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(SyncedUsageSnapshot.self, from: Data(legacyJSON.utf8))
+
+        #expect(decoded.mobileVersion == "0.1.0")
     }
 
     @Test("Old payload without version fields decodes with nil")
@@ -239,7 +258,7 @@ struct SyncModelTests {
 
         #expect(decoded.deviceName == "Old Mac")
         #expect(decoded.appVersion == nil)
-        #expect(decoded.syncVersion == nil)
+        #expect(decoded.mobileVersion == nil)
     }
 
     // MARK: - Payload Size

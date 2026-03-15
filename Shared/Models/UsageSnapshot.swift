@@ -170,21 +170,28 @@ public struct SyncedUsageSnapshot: Codable, Sendable, Equatable {
     public let deviceName: String
     /// Mac app version (e.g. "0.18.0-beta.3")
     public let appVersion: String?
-    /// Sync protocol version (e.g. "0.1.0")
-    public let syncVersion: String?
+    /// Mobile version (e.g. "0.1.1")
+    public let mobileVersion: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case providers, syncTimestamp, deviceName, appVersion
+        case mobileVersion
+        // Legacy key for backward compatibility with older synced data.
+        case syncVersion
+    }
 
     public init(
         providers: [ProviderUsageSnapshot],
         syncTimestamp: Date,
         deviceName: String,
         appVersion: String? = nil,
-        syncVersion: String? = nil)
+        mobileVersion: String? = nil)
     {
         self.providers = providers
         self.syncTimestamp = syncTimestamp
         self.deviceName = deviceName
         self.appVersion = appVersion
-        self.syncVersion = syncVersion
+        self.mobileVersion = mobileVersion
     }
 
     public init(from decoder: Decoder) throws {
@@ -193,6 +200,17 @@ public struct SyncedUsageSnapshot: Codable, Sendable, Equatable {
         self.syncTimestamp = try container.decode(Date.self, forKey: .syncTimestamp)
         self.deviceName = try container.decode(String.self, forKey: .deviceName)
         self.appVersion = try container.decodeIfPresent(String.self, forKey: .appVersion)
-        self.syncVersion = try container.decodeIfPresent(String.self, forKey: .syncVersion)
+        // Read from "mobileVersion" first; fall back to legacy "syncVersion" key.
+        self.mobileVersion = try container.decodeIfPresent(String.self, forKey: .mobileVersion)
+            ?? container.decodeIfPresent(String.self, forKey: .syncVersion)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(providers, forKey: .providers)
+        try container.encode(syncTimestamp, forKey: .syncTimestamp)
+        try container.encode(deviceName, forKey: .deviceName)
+        try container.encodeIfPresent(appVersion, forKey: .appVersion)
+        try container.encodeIfPresent(mobileVersion, forKey: .mobileVersion)
     }
 }

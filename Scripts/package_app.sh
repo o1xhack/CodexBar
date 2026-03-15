@@ -211,7 +211,7 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>SUFeedURL</key><string>${FEED_URL}</string>
     <key>SUPublicEDKey</key><string>eBPpE8Yx+2Dbl/viiieSBqdfSC8t20g657Dgas+Xw3o=</string>
     <key>SUEnableAutomaticChecks</key><${AUTO_CHECKS}/>
-    <key>CodexSyncVersion</key><string>${SYNC_VERSION}</string>
+    <key>CodexMobileVersion</key><string>${MOBILE_VERSION}</string>
     <key>CodexBuildTimestamp</key><string>${BUILD_TIMESTAMP}</string>
     <key>CodexGitCommit</key><string>${GIT_COMMIT}</string>
 </dict>

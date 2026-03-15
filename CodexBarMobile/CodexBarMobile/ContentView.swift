@@ -243,8 +243,8 @@ private struct AboutTab: View {
                         if let appVersion = snapshot.appVersion {
                             LabeledContent("Mac Version", value: appVersion)
                         }
-                        if let syncVersion = snapshot.syncVersion {
-                            LabeledContent("Sync Version", value: syncVersion)
+                        if let mobileVersion = snapshot.mobileVersion {
+                            LabeledContent("Mobile Version", value: mobileVersion)
                         }
                     } else {
                         Text("Not yet synced")

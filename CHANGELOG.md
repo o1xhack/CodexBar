@@ -6,12 +6,13 @@
 - Add OpenRouter provider for credit-based usage tracking (#396). Thanks @chountalas!
 - Add Ollama provider, including token-account support in Settings and CLI (#380). Thanks @CryptoSageSnr!
 
-### iCloud Sync (Sync 0.1.0)
-- Add parallel Sync Version (`SYNC_VERSION`) to track sync protocol independently from upstream.
-- Push Mac app version and sync version in iCloud payload for iOS traceability.
+### iCloud Sync (Mobile 0.1.1)
+- Rename `SYNC_VERSION` to `MOBILE_VERSION` for collaborative mobile-dev branch tracking.
+- Fix cost data scanner missing new JSONL log files created after the root directory mtime.
+- Push Mac app version and mobile version in iCloud payload for iOS traceability.
 - Sync cost/usage data (session cost, 30-day cost, daily spend) to iOS via iCloud KVS.
 - Sync dynamic rate windows with labels (Session, Weekly, Sonnet, etc.).
-- Display "Sync 0.1.0" in Mac About panel alongside app version.
+- Display "Mobile 0.1.1" in Mac About panel alongside app version.
 - Update signing identity and Sparkle keys for o1xhack fork.
 
 
