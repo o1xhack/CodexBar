@@ -6,11 +6,17 @@ APP_IDENTITY="Developer ID Application: Yuxiao Wang (3TUERHN53E)"
 APP_BUNDLE="CodexBar.app"
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 source "$ROOT/version.env"
+# Load local-only release secrets from ~/.codexbar-secrets if available.
+source "$ROOT/Scripts/load-release-secrets.sh"
 ZIP_NAME="${APP_NAME}-${MARKETING_VERSION}.zip"
 DSYM_ZIP="${APP_NAME}-${MARKETING_VERSION}.dSYM.zip"
 
-if [[ -z "${APP_STORE_CONNECT_API_KEY_P8:-}" || -z "${APP_STORE_CONNECT_KEY_ID:-}" || -z "${APP_STORE_CONNECT_ISSUER_ID:-}" ]]; then
-  echo "Missing APP_STORE_CONNECT_* env vars (API key, key id, issuer id)." >&2
+if [[ -z "${APP_STORE_CONNECT_KEY_ID:-}" || -z "${APP_STORE_CONNECT_ISSUER_ID:-}" ]]; then
+  echo "Missing App Store Connect release settings (key id or issuer id)." >&2
+  exit 1
+fi
+if [[ -z "${APP_STORE_CONNECT_API_KEY_FILE:-}" && -z "${APP_STORE_CONNECT_API_KEY_P8:-}" ]]; then
+  echo "Set APP_STORE_CONNECT_API_KEY_FILE or APP_STORE_CONNECT_API_KEY_P8." >&2
   exit 1
 fi
 if [[ -z "${SPARKLE_PRIVATE_KEY_FILE:-}" ]]; then
@@ -27,7 +33,15 @@ if [[ $(printf "%s\n" "$key_lines" | wc -l) -ne 1 ]]; then
   exit 1
 fi
 
-echo "$APP_STORE_CONNECT_API_KEY_P8" | sed 's/\\n/\n/g' > /tmp/codexbar-api-key.p8
+if [[ -n "${APP_STORE_CONNECT_API_KEY_FILE:-}" ]]; then
+  if [[ ! -f "$APP_STORE_CONNECT_API_KEY_FILE" ]]; then
+    echo "App Store Connect API key file not found: $APP_STORE_CONNECT_API_KEY_FILE" >&2
+    exit 1
+  fi
+  cp "$APP_STORE_CONNECT_API_KEY_FILE" /tmp/codexbar-api-key.p8
+else
+  echo "$APP_STORE_CONNECT_API_KEY_P8" | sed 's/\\n/\n/g' > /tmp/codexbar-api-key.p8
+fi
 trap 'rm -f /tmp/codexbar-api-key.p8 /tmp/${APP_NAME}Notarize.zip' EXIT
 
 # Allow building a universal binary if ARCHES is provided; default to universal (arm64 + x86_64).

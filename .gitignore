@@ -4,6 +4,7 @@ xcuserdata/
 .codexbar/config.json
 *.env
 *.local
+.codexbar-release.local.env
 
 # Build products
 .build/

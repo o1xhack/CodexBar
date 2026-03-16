@@ -7,6 +7,7 @@ set -euo pipefail
 # Usage: SPARKLE_PRIVATE_KEY_FILE=/path/to/key ./Scripts/verify_appcast.sh [version]
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
+source "$ROOT/Scripts/load-release-secrets.sh"
 VERSION=${1:-$(source "$ROOT/version.env" && echo "$MARKETING_VERSION")}
 APPCAST="${ROOT}/appcast.xml"
 
