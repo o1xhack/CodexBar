@@ -79,7 +79,7 @@
 </ul>
 <p><a href="https://github.com/o1xhack/CodexBar/blob/main/CHANGELOG.md">View full changelog</a></p>
 ]]></description>
-            <enclosure url="https://github.com/o1xhack/CodexBar/releases/download/v0.18.0-mobile.0.1.1/CodexBar-0.18.0.zip" length="25033649" type="application/octet-stream" sparkle:edSignature="U3XeeVXpHt3EAhmMbvd0ltn4PDAhULVS914XWtDs0bwXkZd+IT3s3kM5dy9qSKL+nvcemmW7KTByj0K7+YfBAw=="/>
+            <enclosure url="https://github.com/o1xhack/CodexBar/releases/download/v0.18.0-mobile.0.1.1/CodexBar-0.18.0-mobile.0.1.1.zip" length="25033649" type="application/octet-stream" sparkle:edSignature="U3XeeVXpHt3EAhmMbvd0ltn4PDAhULVS914XWtDs0bwXkZd+IT3s3kM5dy9qSKL+nvcemmW7KTByj0K7+YfBAw=="/>
         </item>
         <item sparkle:channel="beta">
             <title>0.18.0-beta.3</title>
