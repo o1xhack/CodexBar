@@ -5,6 +5,8 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_BUNDLE="${ROOT_DIR}/CodexBar.app"
+STAGED_APP_BUNDLE="${TMPDIR:-/tmp}/codexbar-staged/CodexBar.app"
+INSTALL_APP_BUNDLE="${CODEXBAR_INSTALL_PATH:-}"
 APP_PROCESS_PATTERN="CodexBar.app/Contents/MacOS/CodexBar"
 DEBUG_PROCESS_PATTERN="${ROOT_DIR}/.build/debug/CodexBar"
 RELEASE_PROCESS_PATTERN="${ROOT_DIR}/.build/release/CodexBar"
@@ -42,21 +44,6 @@ resolve_signing_mode() {
     SIGNING_MODE="adhoc"
     return
   fi
-
-  local candidate=""
-  for candidate in \
-    "Apple Development: Yuxiao Wang (WB9P2BFD3W)" \
-    "Developer ID Application: Yuxiao Wang (3TUERHN53E)" \
-    "Developer ID Application: Peter Steinberger (Y5PE65HELJ)" \
-    "CodexBar Development"
-  do
-    if has_signing_identity "${candidate}"; then
-      APP_IDENTITY="${candidate}"
-      export APP_IDENTITY
-      SIGNING_MODE="identity"
-      return
-    fi
-  done
 
   SIGNING_MODE="adhoc"
 }
@@ -203,20 +190,27 @@ if [[ -n "${RELEASE_ARCHES}" ]]; then
   ARCHES_VALUE="${RELEASE_ARCHES}"
 fi
 if [[ "${DEBUG_LLDB}" == "1" ]]; then
-  run_step "package app" env CODEXBAR_ALLOW_LLDB=1 ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh" debug
+  run_step "package app" env CODEXBAR_ALLOW_LLDB=1 CODEXBAR_STAGED_APP_PATH="${STAGED_APP_BUNDLE}" CODEXBAR_INSTALL_PATH="${INSTALL_APP_BUNDLE}" ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh" debug
 else
   if [[ -n "${SIGNING_MODE}" ]]; then
-    run_step "package app" env CODEXBAR_SIGNING="${SIGNING_MODE}" ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh"
+    run_step "package app" env CODEXBAR_SIGNING="${SIGNING_MODE}" CODEXBAR_STAGED_APP_PATH="${STAGED_APP_BUNDLE}" CODEXBAR_INSTALL_PATH="${INSTALL_APP_BUNDLE}" ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh"
   else
-    run_step "package app" env ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh"
+    run_step "package app" env CODEXBAR_STAGED_APP_PATH="${STAGED_APP_BUNDLE}" CODEXBAR_INSTALL_PATH="${INSTALL_APP_BUNDLE}" ARCHES="${ARCHES_VALUE}" "${ROOT_DIR}/Scripts/package_app.sh"
   fi
 fi
 
 # 4) Launch the packaged app.
+LAUNCH_BUNDLE="${APP_BUNDLE}"
+if [[ -d "${STAGED_APP_BUNDLE}" ]]; then
+  LAUNCH_BUNDLE="${STAGED_APP_BUNDLE}"
+elif [[ -n "${INSTALL_APP_BUNDLE}" && -d "${INSTALL_APP_BUNDLE}" ]]; then
+  LAUNCH_BUNDLE="${INSTALL_APP_BUNDLE}"
+fi
+
 log "==> launch app"
-if ! open "${APP_BUNDLE}"; then
+if ! open "${LAUNCH_BUNDLE}"; then
   log "WARN: launch app returned non-zero; falling back to direct binary launch."
-  "${APP_BUNDLE}/Contents/MacOS/CodexBar" >/dev/null 2>&1 &
+  "${LAUNCH_BUNDLE}/Contents/MacOS/CodexBar" >/dev/null 2>&1 &
   disown
 fi
 
