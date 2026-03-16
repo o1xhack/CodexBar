@@ -10,6 +10,8 @@ source "$ROOT/version.env"
 source "$ROOT/Scripts/load-release-secrets.sh"
 ZIP_NAME="${APP_NAME}-${MARKETING_VERSION}.zip"
 DSYM_ZIP="${APP_NAME}-${MARKETING_VERSION}.dSYM.zip"
+RELEASE_STAGE_DIR=$(mktemp -d /tmp/codexbar-release.XXXXXX)
+STAGED_APP_BUNDLE="${RELEASE_STAGE_DIR}/${APP_BUNDLE}"
 
 if [[ -z "${APP_STORE_CONNECT_KEY_ID:-}" || -z "${APP_STORE_CONNECT_ISSUER_ID:-}" ]]; then
   echo "Missing App Store Connect release settings (key id or issuer id)." >&2
@@ -42,7 +44,7 @@ if [[ -n "${APP_STORE_CONNECT_API_KEY_FILE:-}" ]]; then
 else
   echo "$APP_STORE_CONNECT_API_KEY_P8" | sed 's/\\n/\n/g' > /tmp/codexbar-api-key.p8
 fi
-trap 'rm -f /tmp/codexbar-api-key.p8 /tmp/${APP_NAME}Notarize.zip' EXIT
+trap 'rm -f /tmp/codexbar-api-key.p8 /tmp/${APP_NAME}Notarize.zip; rm -rf "$RELEASE_STAGE_DIR"' EXIT
 
 # Allow building a universal binary if ARCHES is provided; default to universal (arm64 + x86_64).
 ARCHES_VALUE=${ARCHES:-"arm64 x86_64"}
@@ -50,7 +52,8 @@ ARCH_LIST=( ${ARCHES_VALUE} )
 for ARCH in "${ARCH_LIST[@]}"; do
   swift build -c release --arch "$ARCH"
 done
-ARCHES="${ARCHES_VALUE}" ./Scripts/package_app.sh release
+CODEXBAR_STAGED_APP_PATH="$STAGED_APP_BUNDLE" ARCHES="${ARCHES_VALUE}" ./Scripts/package_app.sh release
+APP_BUNDLE="$STAGED_APP_BUNDLE"
 
 ENTITLEMENTS_DIR="$ROOT/.build/entitlements"
 APP_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBar.entitlements"
