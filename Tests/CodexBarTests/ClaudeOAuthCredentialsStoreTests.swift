@@ -94,55 +94,57 @@ struct ClaudeOAuthCredentialsStoreTests {
     func `load record non interactive repair can be disabled`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
-            KeychainCacheStore.setTestStoreForTesting(true)
-            defer { KeychainCacheStore.setTestStoreForTesting(false) }
+            try KeychainAccessGate.withTaskOverrideForTesting(false) {
+                KeychainCacheStore.setTestStoreForTesting(true)
+                defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
-            ClaudeOAuthCredentialsStore._resetCredentialsFileTrackingForTesting()
-            defer { ClaudeOAuthCredentialsStore._resetCredentialsFileTrackingForTesting() }
+                ClaudeOAuthCredentialsStore._resetCredentialsFileTrackingForTesting()
+                defer { ClaudeOAuthCredentialsStore._resetCredentialsFileTrackingForTesting() }
 
-            try ClaudeOAuthCredentialsStore.withIsolatedCredentialsFileTrackingForTesting {
-                try ClaudeOAuthCredentialsStore.withIsolatedMemoryCacheForTesting {
-                    // Ensure file-based lookup doesn't interfere (and avoid touching ~/.claude).
-                    let tempDir = FileManager.default.temporaryDirectory
-                        .appendingPathComponent(UUID().uuidString, isDirectory: true)
-                    try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-                    let fileURL = tempDir.appendingPathComponent("credentials.json")
-                    try ClaudeOAuthCredentialsStore.withCredentialsURLOverrideForTesting(fileURL) {
-                        ClaudeOAuthCredentialsStore.invalidateCache()
+                try ClaudeOAuthCredentialsStore.withIsolatedCredentialsFileTrackingForTesting {
+                    try ClaudeOAuthCredentialsStore.withIsolatedMemoryCacheForTesting {
+                        // Ensure file-based lookup doesn't interfere (and avoid touching ~/.claude).
+                        let tempDir = FileManager.default.temporaryDirectory
+                            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+                        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+                        let fileURL = tempDir.appendingPathComponent("credentials.json")
+                        try ClaudeOAuthCredentialsStore.withCredentialsURLOverrideForTesting(fileURL) {
+                            ClaudeOAuthCredentialsStore.invalidateCache()
 
-                        let keychainData = self.makeCredentialsData(
-                            accessToken: "claude-keychain",
-                            expiresAt: Date(timeIntervalSinceNow: 3600))
+                            let keychainData = self.makeCredentialsData(
+                                accessToken: "claude-keychain",
+                                expiresAt: Date(timeIntervalSinceNow: 3600))
 
-                        // Simulate Claude Keychain containing creds, without querying the real Keychain.
-                        try ProviderInteractionContext.$current.withValue(.userInitiated) {
-                            try ClaudeOAuthCredentialsStore
-                                .withClaudeKeychainOverridesForTesting(data: keychainData, fingerprint: nil) {
-                                    // When repair is disabled, non-interactive loads should not consult Claude's
-                                    // keychain data.
-                                    do {
-                                        _ = try ClaudeOAuthCredentialsStore.loadRecord(
+                            // Simulate Claude Keychain containing creds, without querying the real Keychain.
+                            try ProviderInteractionContext.$current.withValue(.userInitiated) {
+                                try ClaudeOAuthCredentialsStore
+                                    .withClaudeKeychainOverridesForTesting(data: keychainData, fingerprint: nil) {
+                                        // When repair is disabled, non-interactive loads should not consult Claude's
+                                        // keychain data.
+                                        do {
+                                            _ = try ClaudeOAuthCredentialsStore.loadRecord(
+                                                environment: [:],
+                                                allowKeychainPrompt: false,
+                                                respectKeychainPromptCooldown: true,
+                                                allowClaudeKeychainRepairWithoutPrompt: false)
+                                            Issue.record("Expected ClaudeOAuthCredentialsError.notFound")
+                                        } catch let error as ClaudeOAuthCredentialsError {
+                                            guard case .notFound = error else {
+                                                Issue.record("Expected .notFound, got \(error)")
+                                                return
+                                            }
+                                        }
+
+                                        // With repair enabled, we should be able to seed from the "Claude keychain"
+                                        // override.
+                                        let record = try ClaudeOAuthCredentialsStore.loadRecord(
                                             environment: [:],
                                             allowKeychainPrompt: false,
                                             respectKeychainPromptCooldown: true,
-                                            allowClaudeKeychainRepairWithoutPrompt: false)
-                                        Issue.record("Expected ClaudeOAuthCredentialsError.notFound")
-                                    } catch let error as ClaudeOAuthCredentialsError {
-                                        guard case .notFound = error else {
-                                            Issue.record("Expected .notFound, got \(error)")
-                                            return
-                                        }
+                                            allowClaudeKeychainRepairWithoutPrompt: true)
+                                        #expect(record.credentials.accessToken == "claude-keychain")
                                     }
-
-                                    // With repair enabled, we should be able to seed from the "Claude keychain"
-                                    // override.
-                                    let record = try ClaudeOAuthCredentialsStore.loadRecord(
-                                        environment: [:],
-                                        allowKeychainPrompt: false,
-                                        respectKeychainPromptCooldown: true,
-                                        allowClaudeKeychainRepairWithoutPrompt: true)
-                                    #expect(record.credentials.accessToken == "claude-keychain")
-                                }
+                            }
                         }
                     }
                 }

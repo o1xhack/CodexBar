@@ -134,7 +134,6 @@ struct GeneralPane: View {
         }
     }
 
-    @ViewBuilder
     private var syncStatusView: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
