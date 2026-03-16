@@ -30,19 +30,45 @@ has_signing_identity() {
   security find-identity -p codesigning -v 2>/dev/null | grep -F "${identity}" >/dev/null 2>&1
 }
 
+detect_signing_identity() {
+  local identities
+  identities="$(security find-identity -p codesigning -v 2>/dev/null | sed -n 's/.*"\(.*\)"/\1/p')"
+  if [[ -z "${identities}" ]]; then
+    return 1
+  fi
+
+  if [[ -n "${APP_IDENTITY:-}" ]] && grep -Fx "${APP_IDENTITY}" <<<"${identities}" >/dev/null 2>&1; then
+    printf '%s\n' "${APP_IDENTITY}"
+    return 0
+  fi
+
+  local prefix preferred
+  for prefix in 'Developer ID Application:' 'Apple Development:'; do
+    while IFS= read -r preferred; do
+      [[ -n "${preferred}" ]] || continue
+      printf '%s\n' "${preferred}"
+      return 0
+    done < <(grep -E "^${prefix}" <<<"${identities}")
+  done
+
+  return 1
+}
+
 resolve_signing_mode() {
   if [[ -n "${SIGNING_MODE}" ]]; then
     return
   fi
 
-  if [[ -n "${APP_IDENTITY:-}" ]]; then
-    if has_signing_identity "${APP_IDENTITY}"; then
-      SIGNING_MODE="identity"
-      return
-    fi
-    log "WARN: APP_IDENTITY not found in Keychain; falling back to adhoc signing."
-    SIGNING_MODE="adhoc"
+  local detected_identity=""
+  if detected_identity="$(detect_signing_identity)"; then
+    APP_IDENTITY="${detected_identity}"
+    export APP_IDENTITY
+    SIGNING_MODE="identity"
     return
+  fi
+
+  if [[ -n "${APP_IDENTITY:-}" ]]; then
+    log "WARN: APP_IDENTITY not found in Keychain; falling back to adhoc signing."
   fi
 
   SIGNING_MODE="adhoc"

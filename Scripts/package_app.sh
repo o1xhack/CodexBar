@@ -140,8 +140,12 @@ fi
 WIDGET_BUNDLE_ID="${BUNDLE_ID}.widget"
 APP_GROUP_ID="group.com.o1xhack.codexbar"
 ICLOUD_KVS_ID="${CODEXBAR_ICLOUD_KVS_ID:-3TUERHN53E.com.codexbar.shared}"
+INCLUDE_SHARED_ENTITLEMENTS=1
 if [[ "$BUNDLE_ID" == *".debug"* ]]; then
   APP_GROUP_ID="group.com.o1xhack.codexbar.debug"
+fi
+if [[ "$SIGNING_MODE" == "adhoc" ]]; then
+  INCLUDE_SHARED_ENTITLEMENTS=0
 fi
 ENTITLEMENTS_DIR="$ROOT/.build/entitlements"
 APP_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBar.entitlements"
@@ -166,12 +170,15 @@ cat > "$APP_ENTITLEMENTS" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>com.apple.security.application-groups</key>
+    $(if [[ "$INCLUDE_SHARED_ENTITLEMENTS" == "1" ]]; then cat <<EOF
+<key>com.apple.security.application-groups</key>
     <array>
         <string>${APP_GROUP_ID}</string>
     </array>
     <key>com.apple.developer.ubiquity-kvstore-identifier</key>
     <string>${ICLOUD_KVS_ID}</string>
+EOF
+fi)
     $(if [[ "$NEEDS_GET_TASK_ALLOW" == "1" ]]; then echo "    <key>com.apple.security.get-task-allow</key>
     <true/>"; fi)
 </dict>
@@ -184,10 +191,13 @@ cat > "$WIDGET_ENTITLEMENTS" <<PLIST
 <dict>
     <key>com.apple.security.app-sandbox</key>
     <true/>
-    <key>com.apple.security.application-groups</key>
+    $(if [[ "$INCLUDE_SHARED_ENTITLEMENTS" == "1" ]]; then cat <<EOF
+<key>com.apple.security.application-groups</key>
     <array>
         <string>${APP_GROUP_ID}</string>
     </array>
+EOF
+fi)
 </dict>
 </plist>
 PLIST
@@ -370,7 +380,37 @@ seal_app_bundle_copy() {
 
   if [[ "$SIGNING_MODE" == "adhoc" ]]; then
     xattr -cr "$bundle" 2>/dev/null || true
-    codesign --force --deep --sign - "$bundle"
+    if [[ -d "$sparkle" ]]; then
+      resign "$sparkle"
+      resign "$sparkle/Versions/B/Sparkle"
+      resign "$sparkle/Versions/B/Autoupdate"
+      resign "$sparkle/Versions/B/Updater.app"
+      resign "$sparkle/Versions/B/Updater.app/Contents/MacOS/Updater"
+      resign "$sparkle/Versions/B/XPCServices/Downloader.xpc"
+      resign "$sparkle/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader"
+      resign "$sparkle/Versions/B/XPCServices/Installer.xpc"
+      resign "$sparkle/Versions/B/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+      resign "$sparkle/Versions/B"
+      resign "$sparkle"
+    fi
+
+    if [[ -f "${bundle}/Contents/Helpers/CodexBarCLI" ]]; then
+      resign "${bundle}/Contents/Helpers/CodexBarCLI"
+    fi
+    if [[ -f "${bundle}/Contents/Helpers/CodexBarClaudeWatchdog" ]]; then
+      resign "${bundle}/Contents/Helpers/CodexBarClaudeWatchdog"
+    fi
+
+    if [[ -d "$widget" ]]; then
+      resign "${widget}/Contents/MacOS/CodexBarWidget"
+      codesign --force --sign - \
+        --entitlements "$WIDGET_ENTITLEMENTS" \
+        "$widget"
+    fi
+
+    codesign --force --sign - \
+      --entitlements "$APP_ENTITLEMENTS" \
+      "$bundle"
     return
   fi
 
