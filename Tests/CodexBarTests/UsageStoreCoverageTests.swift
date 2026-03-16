@@ -4,10 +4,9 @@ import Testing
 @testable import CodexBar
 
 @MainActor
-@Suite
 struct UsageStoreCoverageTests {
     @Test
-    func providerWithHighestUsageAndIconStyle() throws {
+    func `provider with highest usage and icon style`() throws {
         let settings = Self.makeSettingsStore(suite: "UsageStoreCoverageTests-highest")
         let store = Self.makeUsageStore(settings: settings)
         let metadata = ProviderRegistry.shared.metadata
@@ -50,7 +49,7 @@ struct UsageStoreCoverageTests {
     }
 
     @Test
-    func sourceLabelAddsOpenAIWeb() {
+    func `source label adds open AI web`() {
         let settings = Self.makeSettingsStore(suite: "UsageStoreCoverageTests-source")
         settings.debugDisableKeychainAccess = false
         settings.codexUsageDataSource = .oauth
@@ -72,7 +71,44 @@ struct UsageStoreCoverageTests {
     }
 
     @Test
-    func providerAvailabilityAndSubscriptionDetection() {
+    func `source label uses configured kilo source`() {
+        let settings = Self.makeSettingsStore(suite: "UsageStoreCoverageTests-kilo-source")
+        settings.kiloUsageDataSource = .api
+
+        let store = Self.makeUsageStore(settings: settings)
+        #expect(store.sourceLabel(for: .kilo) == "api")
+    }
+
+    @Test
+    func `provider with highest usage prefers kimi rate limit window`() throws {
+        let settings = Self.makeSettingsStore(suite: "UsageStoreCoverageTests-kimi-highest")
+        let store = Self.makeUsageStore(settings: settings)
+        let metadata = ProviderRegistry.shared.metadata
+
+        try settings.setProviderEnabled(provider: .codex, metadata: #require(metadata[.codex]), enabled: true)
+        try settings.setProviderEnabled(provider: .kimi, metadata: #require(metadata[.kimi]), enabled: true)
+
+        let now = Date()
+        store._setSnapshotForTesting(
+            UsageSnapshot(
+                primary: RateWindow(usedPercent: 60, windowMinutes: nil, resetsAt: nil, resetDescription: nil),
+                secondary: nil,
+                updatedAt: now),
+            provider: .codex)
+        store._setSnapshotForTesting(
+            UsageSnapshot(
+                primary: RateWindow(usedPercent: 10, windowMinutes: nil, resetsAt: nil, resetDescription: nil),
+                secondary: RateWindow(usedPercent: 80, windowMinutes: 300, resetsAt: nil, resetDescription: nil),
+                updatedAt: now),
+            provider: .kimi)
+
+        let highest = store.providerWithHighestUsage()
+        #expect(highest?.provider == .kimi)
+        #expect(highest?.usedPercent == 80)
+    }
+
+    @Test
+    func `provider availability and subscription detection`() {
         let zaiStore = InMemoryZaiTokenStore(value: "zai-token")
         let syntheticStore = InMemorySyntheticTokenStore(value: "synthetic-token")
         let settings = Self.makeSettingsStore(
@@ -98,7 +134,7 @@ struct UsageStoreCoverageTests {
     }
 
     @Test
-    func statusIndicatorsAndFailureGate() {
+    func `status indicators and failure gate`() {
         #expect(!ProviderStatusIndicator.none.hasIssue)
         #expect(ProviderStatusIndicator.maintenance.hasIssue)
         #expect(ProviderStatusIndicator.unknown.label == "Status unknown")

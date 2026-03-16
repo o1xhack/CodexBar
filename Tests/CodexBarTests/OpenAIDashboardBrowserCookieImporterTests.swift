@@ -1,10 +1,9 @@
 import CodexBarCore
 import Testing
 
-@Suite
 struct OpenAIDashboardBrowserCookieImporterTests {
     @Test
-    func mismatchErrorMentionsSourceLabel() {
+    func `mismatch error mentions source label`() {
         let err = OpenAIDashboardBrowserCookieImporter.ImportError.noMatchingAccount(
             found: [
                 .init(sourceLabel: "Safari", email: "a@example.com"),

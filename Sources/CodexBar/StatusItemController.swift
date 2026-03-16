@@ -81,8 +81,17 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
     private var lastProviderOrder: [UsageProvider]
     private var lastMergeIcons: Bool
     private var lastSwitcherShowsIcons: Bool
+    private var lastObservedUsageBarsShowUsed: Bool
+    /// Tracks which `usageBarsShowUsed` mode the provider switcher was built with.
+    /// Used to decide whether we can "smart update" menu content without rebuilding the switcher.
+    var lastSwitcherUsageBarsShowUsed: Bool
+    /// Tracks whether the merged-menu switcher was built with the Overview tab visible.
+    /// Used to force switcher rebuilds when Overview availability toggles.
+    var lastSwitcherIncludesOverview: Bool = false
     /// Tracks which providers the merged menu's switcher was built with, to detect when it needs full rebuild.
     var lastSwitcherProviders: [UsageProvider] = []
+    /// Tracks which switcher tab state was used for the current merged-menu switcher instance.
+    var lastMergedSwitcherSelection: ProviderSwitcherSelection?
     let loginLogger = CodexBarLog.logger(LogCategories.login)
     var selectedMenuProvider: UsageProvider? {
         get { self.settings.selectedMenuProvider }
@@ -125,8 +134,15 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
             let usedPercent = (primary.usedPercent + secondary.usedPercent) / 2
             return RateWindow(usedPercent: usedPercent, windowMinutes: nil, resetsAt: nil, resetDescription: nil)
         case .automatic:
-            if provider == .factory {
+            if provider == .factory || provider == .kimi {
                 return snapshot?.secondary ?? snapshot?.primary
+            }
+            if provider == .copilot,
+               let primary = snapshot?.primary,
+               let secondary = snapshot?.secondary
+            {
+                // Copilot can expose chat + completions quotas; show the more constrained one by default.
+                return primary.usedPercent >= secondary.usedPercent ? primary : secondary
             }
             return snapshot?.primary ?? snapshot?.secondary
         }
@@ -152,6 +168,8 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
         self.lastProviderOrder = settings.providerOrder
         self.lastMergeIcons = settings.mergeIcons
         self.lastSwitcherShowsIcons = settings.switcherShowsIcons
+        self.lastObservedUsageBarsShowUsed = settings.usageBarsShowUsed
+        self.lastSwitcherUsageBarsShowUsed = settings.usageBarsShowUsed
         self.statusBar = statusBar
         let item = statusBar.statusItem(withLength: NSStatusItem.variableLength)
         // Ensure the icon is rendered at 1:1 without resampling (crisper edges for template images).
@@ -291,6 +309,11 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
             self.lastSwitcherShowsIcons = showsIcons
             shouldRefresh = true
         }
+        let usageBarsShowUsed = self.settings.usageBarsShowUsed
+        if usageBarsShowUsed != self.lastObservedUsageBarsShowUsed {
+            self.lastObservedUsageBarsShowUsed = usageBarsShowUsed
+            shouldRefresh = true
+        }
         return shouldRefresh
     }
 
@@ -336,7 +359,7 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
     }
 
     private func updateVisibility() {
-        let anyEnabled = !self.store.enabledProviders().isEmpty
+        let anyEnabled = !self.store.enabledProvidersForDisplay().isEmpty
         let force = self.store.debugForceAnimation
         let mergeIcons = self.shouldMergeIcons
         if mergeIcons {
@@ -365,6 +388,8 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
     }
 
     var fallbackProvider: UsageProvider? {
+        // Intentionally uses availability-filtered list: fallback activates when no provider
+        // can actually work, ensuring at least a codex icon is always visible.
         self.store.enabledProviders().isEmpty ? .codex : nil
     }
 
@@ -441,7 +466,7 @@ final class StatusItemController: NSObject, NSMenuDelegate, StatusItemControllin
     }
 
     var shouldMergeIcons: Bool {
-        self.settings.mergeIcons && self.store.enabledProviders().count > 1
+        self.settings.mergeIcons && self.store.enabledProvidersForDisplay().count > 1
     }
 
     func switchAccountSubtitle(for target: UsageProvider) -> String? {

@@ -102,7 +102,7 @@ extension ClaudeOAuthCredentialsStore {
         }
     }
 
-    enum SecurityCLIReadOverride: Sendable {
+    enum SecurityCLIReadOverride {
         case data(Data?)
         case timedOut
         case nonZeroExit
@@ -185,6 +185,10 @@ extension ClaudeOAuthCredentialsStore {
         try await self.$taskSecurityCLIReadOverride.withValue(readOverride) {
             try await operation()
         }
+    }
+
+    static func currentSecurityCLIReadOverrideForTesting() -> SecurityCLIReadOverride? {
+        self.taskSecurityCLIReadOverride ?? self.securityCLIReadOverride
     }
 
     static func withSecurityCLIReadAccountOverrideForTesting<T>(

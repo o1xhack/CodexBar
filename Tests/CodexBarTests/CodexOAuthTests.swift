@@ -2,10 +2,9 @@ import Foundation
 import Testing
 @testable import CodexBarCore
 
-@Suite
 struct CodexOAuthTests {
     @Test
-    func parsesOAuthCredentials() throws {
+    func `parses O auth credentials`() throws {
         let json = """
         {
           "OPENAI_API_KEY": null,
@@ -27,7 +26,7 @@ struct CodexOAuthTests {
     }
 
     @Test
-    func parsesAPIKeyCredentials() throws {
+    func `parses API key credentials`() throws {
         let json = """
         {
           "OPENAI_API_KEY": "sk-test"
@@ -41,7 +40,7 @@ struct CodexOAuthTests {
     }
 
     @Test
-    func decodesCreditsBalanceString() throws {
+    func `decodes credits balance string`() throws {
         let json = """
         {
           "plan_type": "pro",
@@ -67,7 +66,7 @@ struct CodexOAuthTests {
     }
 
     @Test
-    func mapsUsageWindowsFromOAuth() throws {
+    func `maps usage windows from O auth`() throws {
         let json = """
         {
           "rate_limit": {
@@ -100,21 +99,21 @@ struct CodexOAuthTests {
     }
 
     @Test
-    func resolvesChatGPTUsageURLFromConfig() {
+    func `resolves chat GPT usage URL from config`() {
         let config = "chatgpt_base_url = \"https://chatgpt.com/backend-api/\"\n"
         let url = CodexOAuthUsageFetcher._resolveUsageURLForTesting(configContents: config)
         #expect(url.absoluteString == "https://chatgpt.com/backend-api/wham/usage")
     }
 
     @Test
-    func resolvesCodexUsageURLFromConfig() {
+    func `resolves codex usage URL from config`() {
         let config = "chatgpt_base_url = \"https://api.openai.com\"\n"
         let url = CodexOAuthUsageFetcher._resolveUsageURLForTesting(configContents: config)
         #expect(url.absoluteString == "https://api.openai.com/api/codex/usage")
     }
 
     @Test
-    func normalizesChatGPTBaseURLWithoutBackendAPI() {
+    func `normalizes chat GPT base URL without backend API`() {
         let config = "chatgpt_base_url = \"https://chat.openai.com\"\n"
         let url = CodexOAuthUsageFetcher._resolveUsageURLForTesting(configContents: config)
         #expect(url.absoluteString == "https://chat.openai.com/backend-api/wham/usage")

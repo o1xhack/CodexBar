@@ -590,7 +590,7 @@ public struct FactoryStatusProbe: Sendable {
         "client_01HNM792M5G5G1A2THWPXKFMXB",
     ]
 
-    private struct WorkOSAuthResponse: Decodable, Sendable {
+    private struct WorkOSAuthResponse: Decodable {
         let access_token: String
         let refresh_token: String?
         let organization_id: String?
@@ -685,7 +685,7 @@ public struct FactoryStatusProbe: Sendable {
         throw FactoryStatusProbeError.noSessionCookie
     }
 
-    private enum FetchAttemptResult: Sendable {
+    private enum FetchAttemptResult {
         case success(FactoryStatusSnapshot)
         case failure(Error)
         case skipped

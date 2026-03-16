@@ -1,6 +1,6 @@
 import Foundation
 
-struct SettingsDefaultsState: Sendable {
+struct SettingsDefaultsState {
     var refreshFrequency: RefreshFrequency
     var launchAtLogin: Bool
     var debugMenuEnabled: Bool
@@ -15,6 +15,7 @@ struct SettingsDefaultsState: Sendable {
     var resetTimesShowAbsolute: Bool
     var menuBarShowsBrandIconWithPercent: Bool
     var menuBarDisplayModeRaw: String?
+    var historicalTrackingEnabled: Bool
     var showAllTokenAccountsInMenu: Bool
     var menuBarMetricPreferencesRaw: [String: String]
     var costUsageEnabled: Bool
@@ -29,6 +30,8 @@ struct SettingsDefaultsState: Sendable {
     var jetbrainsIDEBasePath: String
     var mergeIcons: Bool
     var switcherShowsIcons: Bool
+    var mergedMenuLastSelectedWasOverview: Bool
+    var mergedOverviewSelectedProvidersRaw: [String]
     var selectedMenuProviderRaw: String?
     var providerDetectionCompleted: Bool
     var iCloudSyncEnabled: Bool

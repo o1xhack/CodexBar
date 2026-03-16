@@ -4,6 +4,8 @@ import QuartzCore
 
 extension StatusItemController {
     private static let loadingPercentEpsilon = 0.0001
+    private static let blinkActiveTickInterval: Duration = .milliseconds(75)
+    private static let blinkIdleFallbackInterval: Duration = .seconds(1)
 
     func needsMenuBarIconAnimation() -> Bool {
         if self.shouldMergeIcons {
@@ -21,18 +23,21 @@ extension StatusItemController {
         }
 
         let blinkingEnabled = self.isBlinkingAllowed()
-        // Cache enabled providers to avoid repeated enablement lookups.
-        let enabledProviders = self.store.enabledProviders()
-        let anyEnabled = !enabledProviders.isEmpty || self.store.debugForceAnimation
+        // Use display list so merged-mode visibility stays consistent with shouldMergeIcons.
+        let displayProviders = self.store.enabledProvidersForDisplay()
+        let anyEnabled = !displayProviders.isEmpty || self.store.debugForceAnimation
         let anyVisible = UsageProvider.allCases.contains { self.isVisible($0) }
-        let mergeIcons = self.settings.mergeIcons && enabledProviders.count > 1
+        let mergeIcons = self.shouldMergeIcons
         let shouldBlink = mergeIcons ? anyEnabled : anyVisible
         if blinkingEnabled, shouldBlink {
             if self.blinkTask == nil {
                 self.seedBlinkStatesIfNeeded()
                 self.blinkTask = Task { [weak self] in
                     while !Task.isCancelled {
-                        try? await Task.sleep(for: .milliseconds(75))
+                        let delay = await MainActor.run {
+                            self?.blinkTickSleepDuration(now: Date()) ?? Self.blinkIdleFallbackInterval
+                        }
+                        try? await Task.sleep(for: delay)
                         await MainActor.run { self?.tickBlink() }
                     }
                 }
@@ -61,6 +66,36 @@ extension StatusItemController {
                 self.applyIcon(for: provider, phase: phase)
             }
         }
+    }
+
+    private func blinkTickSleepDuration(now: Date) -> Duration {
+        let mergeIcons = self.shouldMergeIcons
+        var nextWakeAt: Date?
+
+        for provider in UsageProvider.allCases {
+            let shouldRender = mergeIcons ? self.isEnabled(provider) : self.isVisible(provider)
+            guard shouldRender, !self.shouldAnimate(provider: provider, mergeIcons: mergeIcons) else { continue }
+
+            let state = self
+                .blinkStates[provider] ?? BlinkState(nextBlink: now.addingTimeInterval(BlinkState.randomDelay()))
+            if state.blinkStart != nil {
+                return Self.blinkActiveTickInterval
+            }
+
+            let candidate: Date = state.pendingSecondStart ?? state.nextBlink
+            if let current = nextWakeAt {
+                if candidate < current {
+                    nextWakeAt = candidate
+                }
+            } else {
+                nextWakeAt = candidate
+            }
+        }
+
+        guard let nextWakeAt else { return Self.blinkIdleFallbackInterval }
+        let delay = nextWakeAt.timeIntervalSince(now)
+        if delay <= 0 { return Self.blinkActiveTickInterval }
+        return .seconds(delay)
     }
 
     private func tickBlink(now: Date = .init()) {
@@ -243,7 +278,7 @@ extension StatusItemController {
         let tilt: CGFloat = style == .combined ? 0 : self.tiltAmount(for: primaryProvider) * .pi / 28
 
         let statusIndicator: ProviderStatusIndicator = {
-            for provider in self.store.enabledProviders() {
+            for provider in self.store.enabledProvidersForDisplay() {
                 let indicator = self.store.statusIndicator(for: provider)
                 if indicator.hasIssue { return indicator }
             }
@@ -406,12 +441,39 @@ extension StatusItemController {
     }
 
     func menuBarDisplayText(for provider: UsageProvider, snapshot: UsageSnapshot?) -> String? {
-        MenuBarDisplayText.displayText(
-            mode: self.settings.menuBarDisplayMode,
-            provider: provider,
-            percentWindow: self.menuBarPercentWindow(for: provider, snapshot: snapshot),
-            paceWindow: snapshot?.secondary,
+        let percentWindow = self.menuBarPercentWindow(for: provider, snapshot: snapshot)
+        let mode = self.settings.menuBarDisplayMode
+        let now = Date()
+        let pace: UsagePace? = switch mode {
+        case .percent:
+            nil
+        case .pace, .both:
+            snapshot?.secondary.flatMap { window in
+                self.store.weeklyPace(provider: provider, window: window, now: now)
+            }
+        }
+        let displayText = MenuBarDisplayText.displayText(
+            mode: mode,
+            percentWindow: percentWindow,
+            pace: pace,
             showUsed: self.settings.usageBarsShowUsed)
+
+        let sessionExhausted = (snapshot?.primary?.remainingPercent ?? 100) <= 0
+        let weeklyExhausted = (snapshot?.secondary?.remainingPercent ?? 100) <= 0
+
+        if provider == .codex,
+           mode == .percent,
+           !self.settings.usageBarsShowUsed,
+           sessionExhausted || weeklyExhausted,
+           let creditsRemaining = self.store.credits?.remaining,
+           creditsRemaining > 0
+        {
+            return UsageFormatter
+                .creditsString(from: creditsRemaining)
+                .replacingOccurrences(of: " left", with: "")
+        }
+
+        return displayText
     }
 
     private func menuBarPercentWindow(for provider: UsageProvider, snapshot: UsageSnapshot?) -> RateWindow? {
@@ -437,6 +499,8 @@ extension StatusItemController {
                 return provider
             }
         }
+        // Use availability-filtered list: fallback must pick a provider that can
+        // actually animate, otherwise shouldAnimate() fails on credential-less providers.
         if let enabled = self.store.enabledProviders().first {
             return enabled
         }
@@ -465,6 +529,10 @@ extension StatusItemController {
             self.assignMotion(amount: 0, for: provider, effect: state.effect)
         }
 
+        // If the blink task is currently in a long idle sleep, restart it so this forced blink
+        // keeps animating on the active frame cadence immediately.
+        self.blinkTask?.cancel()
+        self.blinkTask = nil
         self.updateBlinkingState()
         self.tickBlink(now: now)
     }

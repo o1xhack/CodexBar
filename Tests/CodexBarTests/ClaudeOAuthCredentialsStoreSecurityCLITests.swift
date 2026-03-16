@@ -23,7 +23,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_prefersSecurityCLIForNonInteractiveLoad() throws {
+    func `experimental reader prefers security CLI for non interactive load`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -77,7 +77,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_nonInteractiveBackgroundLoad_stillExecutesSecurityCLIRead() throws {
+    func `experimental reader non interactive background load still executes security CLI read`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -136,7 +136,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_fallsBackWhenSecurityCLIThrows() throws {
+    func `experimental reader falls back when security CLI throws`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -193,7 +193,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_fallsBackWhenSecurityCLIOutputMalformed() throws {
+    func `experimental reader falls back when security CLI output malformed`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -249,7 +249,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_loadFromClaudeKeychainUsesSecurityCLI() throws {
+    func `experimental reader load from claude keychain uses security CLI`() throws {
         let securityData = self.makeCredentialsData(
             accessToken: "security-direct",
             expiresAt: Date(timeIntervalSinceNow: 3600),
@@ -292,7 +292,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_hasClaudeKeychainCredentialsWithoutPrompt_usesSecurityCLI() {
+    func `experimental reader has claude keychain credentials without prompt uses security CLI`() {
         let securityData = self.makeCredentialsData(
             accessToken: "security-available",
             expiresAt: Date(timeIntervalSinceNow: 3600))
@@ -317,7 +317,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_hasClaudeKeychainCredentialsWithoutPrompt_fallsBackWhenSecurityCLIFails() {
+    func `experimental reader has claude keychain credentials without prompt falls back when security CLI fails`() {
         let fallbackData = self.makeCredentialsData(
             accessToken: "fallback-available",
             expiresAt: Date(timeIntervalSinceNow: 3600))
@@ -347,7 +347,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_ignoresPromptPolicyAndCooldownForBackgroundSilentCheck() {
+    func `experimental reader ignores prompt policy and cooldown for background silent check`() {
         let securityData = self.makeCredentialsData(
             accessToken: "security-background",
             expiresAt: Date(timeIntervalSinceNow: 3600))
@@ -376,7 +376,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_loadFromClaudeKeychainFallbackBlockedWhenStoredModeNever() throws {
+    func `experimental reader load from claude keychain fallback blocked when stored mode never`() throws {
         var threwNotFound = false
         do {
             _ = try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -406,7 +406,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_securityCLIRead_pinsPreferredAccountWhenAvailable() throws {
+    func `experimental reader security CLI read pins preferred account when available`() throws {
         let securityData = self.makeCredentialsData(
             accessToken: "security-account-pinned",
             expiresAt: Date(timeIntervalSinceNow: 3600))
@@ -441,7 +441,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_securityCLIRead_doesNotPinAccountInBackground() throws {
+    func `experimental reader security CLI read does not pin account in background`() throws {
         let securityData = self.makeCredentialsData(
             accessToken: "security-account-not-pinned",
             expiresAt: Date(timeIntervalSinceNow: 3600))
@@ -476,7 +476,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_freshnessSync_skipsSecurityCLIWhenPreflightRequiresInteraction() throws {
+    func `experimental reader freshness sync skips security CLI when preflight requires interaction`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -548,7 +548,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_freshnessSync_background_respectsStoredOnlyOnUserAction() throws {
+    func `experimental reader freshness sync background respects stored only on user action`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -620,7 +620,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_syncFromClaudeKeychainWithoutPrompt_skipsFingerprintProbeAfterSecurityCLIRead() {
+    func `experimental reader sync skips fingerprint probe after security CLI read`() {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         KeychainCacheStore.withServiceOverrideForTesting(service) {
             KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -672,7 +672,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_noPromptRepair_skipsFingerprintProbeAfterSecurityCLISuccess() throws {
+    func `experimental reader no prompt repair skips fingerprint probe after security CLI success`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -736,7 +736,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_loadWithPrompt_skipsFingerprintProbeAfterSecurityCLISuccess() throws {
+    func `experimental reader load with prompt skips fingerprint probe after security CLI success`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -800,7 +800,7 @@ struct ClaudeOAuthCredentialsStoreSecurityCLITests {
     }
 
     @Test
-    func experimentalReader_loadWithPrompt_doesNotReadWhenGlobalKeychainDisabled() throws {
+    func `experimental reader load with prompt does not read when global keychain disabled`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(true) {

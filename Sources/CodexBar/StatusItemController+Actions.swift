@@ -277,7 +277,7 @@ extension StatusItemController {
         self.presentLoginAlert(title: info.title, message: info.message)
     }
 
-    struct LoginAlertInfo: Equatable, Sendable {
+    struct LoginAlertInfo: Equatable {
         let title: String
         let message: String
     }

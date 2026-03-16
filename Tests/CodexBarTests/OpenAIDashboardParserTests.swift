@@ -3,10 +3,9 @@ import Foundation
 import Testing
 @testable import CodexBar
 
-@Suite
 struct OpenAIDashboardParserTests {
     @Test
-    func parsesSignedInEmailFromClientBootstrapHTML() {
+    func `parses signed in email from client bootstrap HTML`() {
         let html = """
         <html>
         <head></head>
@@ -22,26 +21,26 @@ struct OpenAIDashboardParserTests {
     }
 
     @Test
-    func parsesCodeReviewRemainingPercent_inline() {
+    func `parses code review remaining percent inline`() {
         let body = "Balance\nCode review 42% remaining\nCredits remaining 291"
         #expect(OpenAIDashboardParser.parseCodeReviewRemainingPercent(bodyText: body) == 42)
     }
 
     @Test
-    func parsesCodeReviewRemainingPercent_multiline() {
+    func `parses code review remaining percent multiline`() {
         let body = "Balance\nCode review\n100% remaining\nWeekly usage limit\n0% remaining"
         #expect(OpenAIDashboardParser.parseCodeReviewRemainingPercent(bodyText: body) == 100)
     }
 
     @Test
-    func parsesCreditsRemaining() {
+    func `parses credits remaining`() {
         let body = "Balance\nCredits remaining 1,234.56\nUsage"
         let value = OpenAIDashboardParser.parseCreditsRemaining(bodyText: body)
         #expect(abs((value ?? 0) - 1234.56) < 0.001)
     }
 
     @Test
-    func parsesRateLimits() {
+    func `parses rate limits`() {
         let body = """
         Usage limits
         5h limit
@@ -60,7 +59,7 @@ struct OpenAIDashboardParserTests {
     }
 
     @Test
-    func parsesPlanFromClientBootstrap() {
+    func `parses plan from client bootstrap`() {
         let html = """
         <html>
         <body>
@@ -74,7 +73,7 @@ struct OpenAIDashboardParserTests {
     }
 
     @Test
-    func parsesCreditEventsFromTableRows() {
+    func `parses credit events from table rows`() {
         let rows: [[String]] = [
             ["Dec 18, 2025", "CLI", "397.205 credits"],
             ["Dec 17, 2025", "GitHub Code Review", "506.235 credits"],
@@ -88,7 +87,7 @@ struct OpenAIDashboardParserTests {
     }
 
     @Test
-    func buildsDailyBreakdownFromEvents() throws {
+    func `builds daily breakdown from events`() throws {
         let calendar = Calendar(identifier: .gregorian)
         var components = DateComponents()
         components.calendar = calendar
@@ -116,7 +115,7 @@ struct OpenAIDashboardParserTests {
     }
 
     @Test
-    func decodesSnapshotWithoutUsageBreakdownField() throws {
+    func `decodes snapshot without usage breakdown field`() throws {
         let json = """
         {
           "signedInEmail": "user@example.com",

@@ -3,14 +3,13 @@ import Foundation
 import Testing
 @testable import CodexBar
 
-@Suite
 struct StatusItemControllerMenuTests {
     private func makeSnapshot(primary: RateWindow?, secondary: RateWindow?) -> UsageSnapshot {
         UsageSnapshot(primary: primary, secondary: secondary, updatedAt: Date())
     }
 
     @Test
-    func cursorSwitcherFallsBackToSecondaryWhenPlanExhaustedAndShowingRemaining() {
+    func `cursor switcher falls back to secondary when plan exhausted and showing remaining`() {
         let primary = RateWindow(usedPercent: 100, windowMinutes: nil, resetsAt: nil, resetDescription: nil)
         let secondary = RateWindow(usedPercent: 36, windowMinutes: nil, resetsAt: nil, resetDescription: nil)
         let snapshot = self.makeSnapshot(primary: primary, secondary: secondary)
@@ -24,7 +23,7 @@ struct StatusItemControllerMenuTests {
     }
 
     @Test
-    func cursorSwitcherUsesPrimaryWhenShowingUsed() {
+    func `cursor switcher uses primary when showing used`() {
         let primary = RateWindow(usedPercent: 100, windowMinutes: nil, resetsAt: nil, resetDescription: nil)
         let secondary = RateWindow(usedPercent: 36, windowMinutes: nil, resetsAt: nil, resetDescription: nil)
         let snapshot = self.makeSnapshot(primary: primary, secondary: secondary)
@@ -38,7 +37,7 @@ struct StatusItemControllerMenuTests {
     }
 
     @Test
-    func cursorSwitcherKeepsPrimaryWhenRemainingIsPositive() {
+    func `cursor switcher keeps primary when remaining is positive`() {
         let primary = RateWindow(usedPercent: 20, windowMinutes: nil, resetsAt: nil, resetDescription: nil)
         let secondary = RateWindow(usedPercent: 40, windowMinutes: nil, resetsAt: nil, resetDescription: nil)
         let snapshot = self.makeSnapshot(primary: primary, secondary: secondary)
@@ -52,7 +51,7 @@ struct StatusItemControllerMenuTests {
     }
 
     @Test
-    func openRouterBrandFallbackEnabledWhenNoKeyLimitConfigured() {
+    func `open router brand fallback enabled when no key limit configured`() {
         let snapshot = OpenRouterUsageSnapshot(
             totalCredits: 50,
             totalUsage: 45,
@@ -71,7 +70,7 @@ struct StatusItemControllerMenuTests {
     }
 
     @Test
-    func openRouterBrandFallbackDisabledWhenKeyQuotaFetchUnavailable() {
+    func `open router brand fallback disabled when key quota fetch unavailable`() {
         let snapshot = OpenRouterUsageSnapshot(
             totalCredits: 50,
             totalUsage: 45,
@@ -89,7 +88,7 @@ struct StatusItemControllerMenuTests {
     }
 
     @Test
-    func openRouterBrandFallbackDisabledWhenKeyQuotaAvailable() {
+    func `open router brand fallback disabled when key quota available`() {
         let snapshot = OpenRouterUsageSnapshot(
             totalCredits: 50,
             totalUsage: 45,

@@ -4,10 +4,9 @@ import Testing
 @testable import CodexBar
 
 @MainActor
-@Suite
 struct ProvidersPaneCoverageTests {
     @Test
-    func exercisesProvidersPaneViews() {
+    func `exercises providers pane views`() {
         let settings = Self.makeSettingsStore(suite: "ProvidersPaneCoverageTests")
         let store = Self.makeUsageStore(settings: settings)
 
@@ -15,7 +14,7 @@ struct ProvidersPaneCoverageTests {
     }
 
     @Test
-    func openRouterMenuBarMetricPicker_showsOnlyAutomaticAndPrimary() {
+    func `open router menu bar metric picker shows only automatic and primary`() {
         let settings = Self.makeSettingsStore(suite: "ProvidersPaneCoverageTests-openrouter-picker")
         let store = Self.makeUsageStore(settings: settings)
         let pane = ProvidersPane(settings: settings, store: store)
@@ -32,7 +31,7 @@ struct ProvidersPaneCoverageTests {
     }
 
     @Test
-    func providerDetailPlanRow_formatsOpenRouterAsBalance() {
+    func `provider detail plan row formats open router as balance`() {
         let row = ProviderDetailView.planRow(provider: .openrouter, planText: "Balance: $4.61")
 
         #expect(row?.label == "Balance")
@@ -40,7 +39,7 @@ struct ProvidersPaneCoverageTests {
     }
 
     @Test
-    func providerDetailPlanRow_keepsPlanLabelForNonOpenRouter() {
+    func `provider detail plan row keeps plan label for non open router`() {
         let row = ProviderDetailView.planRow(provider: .codex, planText: "Pro")
 
         #expect(row?.label == "Plan")

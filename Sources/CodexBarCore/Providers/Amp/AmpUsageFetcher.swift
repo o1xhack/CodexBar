@@ -323,7 +323,7 @@ public struct AmpUsageFetcher: Sendable {
         }
     }
 
-    private struct ResponseInfo: Sendable {
+    private struct ResponseInfo {
         let statusCode: Int
         let url: String
     }
