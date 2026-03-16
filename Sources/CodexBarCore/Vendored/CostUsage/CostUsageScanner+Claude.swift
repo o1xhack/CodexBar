@@ -350,14 +350,13 @@ extension CostUsageScanner {
             }
             return
         }
-
-        // Always enumerate the full directory tree. The root directory mtime only
-        // changes when direct children are added/removed, but new JSONL log files are
-        // created inside subdirectories (one per conversation). Relying on root mtime
-        // caused newly created log files to be invisible until a new top-level project
-        // directory appeared. Per-file mtime+size caching in processClaudeFile already
-        // prevents redundant parsing, so full enumeration is cheap.
-
+        // Always enumerate the directory tree. The per-file mtime/size cache in
+        // processClaudeFile already skips unchanged files, so the only cost here is
+        // the directory walk itself. The previous root-mtime optimization skipped
+        // enumeration entirely when the root directory mtime was unchanged, but on
+        // POSIX systems a directory mtime only updates for direct child changes —
+        // not for files created or modified inside subdirectories. This caused new
+        // session logs to go undetected until the cache was manually cleared.
         let keys: [URLResourceKey] = [
             .isRegularFileKey,
             .contentModificationDateKey,

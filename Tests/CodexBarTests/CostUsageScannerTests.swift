@@ -2,10 +2,9 @@ import Foundation
 import Testing
 @testable import CodexBarCore
 
-@Suite
 struct CostUsageScannerTests {
     @Test
-    func codexDailyReportParsesTokenCountsAndCaches() throws {
+    func `codex daily report parses token counts and caches`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -56,7 +55,10 @@ struct CostUsageScannerTests {
             now: day,
             options: options)
         #expect(first.data.count == 1)
-        #expect(first.data[0].modelsUsed == ["gpt-5.2"])
+        #expect(first.data[0].modelsUsed == ["gpt-5.2-codex"])
+        #expect(first.data[0].modelBreakdowns == [
+            CostUsageDailyReport.ModelBreakdown(modelName: "gpt-5.2-codex", costUSD: first.data[0].costUSD),
+        ])
         #expect(first.data[0].totalTokens == 110)
         #expect((first.data[0].costUSD ?? 0) > 0)
 
@@ -85,12 +87,13 @@ struct CostUsageScannerTests {
             now: day,
             options: options)
         #expect(second.data.count == 1)
+        #expect(second.data[0].modelsUsed == ["gpt-5.2-codex"])
         #expect(second.data[0].totalTokens == 176)
         #expect((second.data[0].costUSD ?? 0) > (first.data[0].costUSD ?? 0))
     }
 
     @Test
-    func codexDailyReportIncludesArchivedSessionsAndDedupes() throws {
+    func `codex daily report includes archived sessions and dedupes`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -161,7 +164,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func claudeDailyReportParsesUsageAndCaches() throws {
+    func `claude daily report parses usage and caches`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -208,7 +211,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func vertexDailyReportFiltersClaudeLogs() throws {
+    func `vertex daily report filters claude logs`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -274,7 +277,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func vertexDailyReportDetectsByVrtxIdPrefix() throws {
+    func `vertex daily report detects by vrtx id prefix`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -355,7 +358,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func claudeParsesLargeLinesWithUsageAtTail() throws {
+    func `claude parses large lines with usage at tail`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -400,7 +403,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func claudeDailyReportRefreshesWhenFileChanges() throws {
+    func `claude daily report refreshes when file changes`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -465,7 +468,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func codexIncrementalParsingUsesPreviousTotals() throws {
+    func `codex incremental parsing uses previous totals`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -476,6 +479,7 @@ struct CostUsageScannerTests {
 
         let model = "openai/gpt-5.2-codex"
         let normalized = CostUsagePricing.normalizeCodexModel(model)
+        #expect(normalized == "gpt-5.2-codex")
         let turnContext: [String: Any] = [
             "type": "turn_context",
             "timestamp": iso0,
@@ -544,7 +548,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func claudeIncrementalParsingReadsAppendedLinesOnly() throws {
+    func `claude incremental parsing reads appended lines only`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -608,7 +612,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func dayKeyFromTimestampMatchesISOParsing() {
+    func `day key from timestamp matches ISO parsing`() {
         let timestamps = [
             "2025-12-20T23:59:59Z",
             "2025-12-20T23:59:59+02:00",
@@ -622,7 +626,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func claudeDeduplicatesStreamingChunks() throws {
+    func `claude deduplicates streaming chunks`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -710,7 +714,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func claudeCountsEntriesWithoutIdsAsSeparate() throws {
+    func `claude counts entries without ids as separate`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 
@@ -774,7 +778,7 @@ struct CostUsageScannerTests {
     }
 
     @Test
-    func claudeCountsDifferentRequestIdsSeparately() throws {
+    func `claude counts different request ids separately`() throws {
         let env = try CostUsageTestEnvironment()
         defer { env.cleanup() }
 

@@ -23,7 +23,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func loadsFromKeychainCacheBeforeExpiredFile() throws {
+    func `loads from keychain cache before expired file`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try ProviderInteractionContext.$current.withValue(.background) {
             try KeychainCacheStore.withServiceOverrideForTesting(service) {
@@ -91,7 +91,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func loadRecord_nonInteractiveRepairCanBeDisabled() throws {
+    func `load record non interactive repair can be disabled`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             KeychainCacheStore.setTestStoreForTesting(true)
@@ -151,7 +151,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func invalidatesCacheWhenCredentialsFileChanges() throws {
+    func `invalidates cache when credentials file changes`() throws {
         KeychainCacheStore.setTestStoreForTesting(true)
         defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
@@ -191,7 +191,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func returnsExpiredFileWhenNoOtherSources() throws {
+    func `returns expired file when no other sources`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(true) {
@@ -226,7 +226,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func loadWithAutoRefresh_expiredClaudeCLIOwner_throwsDelegatedRefresh() async throws {
+    func `load with auto refresh expired claude CLI owner throws delegated refresh`() async throws {
         KeychainCacheStore.setTestStoreForTesting(true)
         defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
@@ -273,7 +273,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func loadWithAutoRefresh_expiredCodexbarOwner_usesDirectRefreshPath() async throws {
+    func `load with auto refresh expired codexbar owner uses direct refresh path`() async throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try await KeychainCacheStore.withServiceOverrideForTesting(service) {
             KeychainCacheStore.setTestStoreForTesting(true)
@@ -325,7 +325,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func loadRecord_legacyCacheEntryWithoutOwner_defaultsToClaudeCLIOwner() throws {
+    func `load record legacy cache entry without owner defaults to claude CLI owner`() throws {
         KeychainCacheStore.setTestStoreForTesting(true)
         defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
@@ -363,7 +363,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func hasCachedCredentials_returnsFalseForExpiredUnrefreshableCodexbarCacheEntry() throws {
+    func `has cached credentials returns false for expired unrefreshable codexbar cache entry`() throws {
         KeychainCacheStore.setTestStoreForTesting(true)
         defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
@@ -393,7 +393,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func hasCachedCredentials_returnsTrueForExpiredRefreshableCacheEntry() throws {
+    func `has cached credentials returns true for expired refreshable cache entry`() throws {
         KeychainCacheStore.setTestStoreForTesting(true)
         defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
@@ -420,7 +420,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func hasCachedCredentials_returnsTrueForExpiredClaudeCLIBackedCredentialsFile() throws {
+    func `has cached credentials returns true for expired claude CLI backed credentials file`() throws {
         KeychainCacheStore.setTestStoreForTesting(true)
         defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
@@ -445,7 +445,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func syncsCacheWhenClaudeKeychainFingerprintChangesAndTokenDiffers() throws {
+    func `syncs cache when claude keychain fingerprint changes and token differs`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -546,7 +546,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func doesNotSyncInBackgroundWhenCacheValidAndPromptModeOnlyOnUserAction() throws {
+    func `does not sync in background when cache valid and prompt mode only on user action`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             try KeychainAccessGate.withTaskOverrideForTesting(false) {
@@ -633,7 +633,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func doesNotSyncWhenClaudeKeychainFingerprintUnchanged() throws {
+    func `does not sync when claude keychain fingerprint unchanged`() throws {
         KeychainCacheStore.setTestStoreForTesting(true)
         defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
@@ -686,7 +686,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func doesNotSyncWhenKeychainCredentialsExpiredButCacheValid() throws {
+    func `does not sync when keychain credentials expired but cache valid`() throws {
         KeychainCacheStore.setTestStoreForTesting(true)
         defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
@@ -745,7 +745,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func respectsPromptCooldownGateWhenDisabledPrompting() throws {
+    func `respects prompt cooldown gate when disabled prompting`() throws {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
         try KeychainCacheStore.withServiceOverrideForTesting(service) {
             KeychainCacheStore.setTestStoreForTesting(true)
@@ -820,7 +820,7 @@ struct ClaudeOAuthCredentialsStoreTests {
     }
 
     @Test
-    func syncFromClaudeKeychainWithoutPrompt_respectsBackoffInBackground() {
+    func `sync from claude keychain without prompt respects backoff in background`() {
         ProviderInteractionContext.$current.withValue(.background) {
             KeychainAccessGate.withTaskOverrideForTesting(true) {
                 ClaudeOAuthCredentialsStore.withKeychainAccessOverrideForTesting(true) {

@@ -4,10 +4,9 @@ import Testing
 @testable import CodexBar
 
 @MainActor
-@Suite
 struct SettingsStoreAdditionalTests {
     @Test
-    func menuBarMetricPreferenceHandlesZaiAndAverage() {
+    func `menu bar metric preference handles zai and average`() {
         let settings = Self.makeSettingsStore(suite: "SettingsStoreAdditionalTests-metric")
 
         settings.setMenuBarMetricPreference(.average, for: .zai)
@@ -21,7 +20,7 @@ struct SettingsStoreAdditionalTests {
     }
 
     @Test
-    func menuBarMetricPreferenceRestrictsOpenRouterToAutomaticOrPrimary() {
+    func `menu bar metric preference restricts open router to automatic or primary`() {
         let settings = Self.makeSettingsStore(suite: "SettingsStoreAdditionalTests-openrouter-metric")
 
         settings.setMenuBarMetricPreference(.secondary, for: .openrouter)
@@ -35,7 +34,7 @@ struct SettingsStoreAdditionalTests {
     }
 
     @Test
-    func minimaxAuthModeUsesStoredValues() {
+    func `minimax auth mode uses stored values`() {
         let settings = Self.makeSettingsStore(suite: "SettingsStoreAdditionalTests-minimax")
         settings.minimaxAPIToken = "sk-api-test-token"
         settings.minimaxCookieHeader = "cookie=value"
@@ -47,7 +46,7 @@ struct SettingsStoreAdditionalTests {
     }
 
     @Test
-    func tokenAccountsSetManualCookieSourceWhenRequired() {
+    func `token accounts set manual cookie source when required`() {
         let settings = Self.makeSettingsStore(suite: "SettingsStoreAdditionalTests-token-accounts")
 
         settings.addTokenAccount(provider: .claude, label: "Primary", token: "token-1")
@@ -57,7 +56,7 @@ struct SettingsStoreAdditionalTests {
     }
 
     @Test
-    func ollamaTokenAccountsSetManualCookieSourceWhenRequired() {
+    func `ollama token accounts set manual cookie source when required`() {
         let settings = Self.makeSettingsStore(suite: "SettingsStoreAdditionalTests-ollama-token-accounts")
 
         settings.addTokenAccount(provider: .ollama, label: "Primary", token: "session=token-1")
@@ -67,7 +66,7 @@ struct SettingsStoreAdditionalTests {
     }
 
     @Test
-    func detectsTokenCostUsageSourcesFromFilesystem() throws {
+    func `detects token cost usage sources from filesystem`() throws {
         let fm = FileManager.default
         let root = fm.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         let sessions = root.appendingPathComponent("sessions", isDirectory: true)

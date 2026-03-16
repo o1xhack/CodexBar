@@ -719,7 +719,7 @@ public enum ClaudeWebAPIFetcher {
         return nil
     }
 
-    private struct ProbeParseResult: Sendable {
+    private struct ProbeParseResult {
         let keys: [String]
         let emails: [String]
         let planHints: [String]

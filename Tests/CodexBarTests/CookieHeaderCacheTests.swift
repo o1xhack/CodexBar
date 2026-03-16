@@ -5,7 +5,7 @@ import Testing
 @Suite(.serialized)
 struct CookieHeaderCacheTests {
     @Test
-    func storesAndLoadsEntry() {
+    func `stores and loads entry`() {
         KeychainCacheStore.setTestStoreForTesting(true)
         defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
@@ -26,7 +26,7 @@ struct CookieHeaderCacheTests {
     }
 
     @Test
-    func migratesLegacyFileToKeychain() {
+    func `migrates legacy file to keychain`() {
         KeychainCacheStore.setTestStoreForTesting(true)
         defer { KeychainCacheStore.setTestStoreForTesting(false) }
 

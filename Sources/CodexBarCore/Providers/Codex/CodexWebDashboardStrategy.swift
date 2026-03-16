@@ -43,7 +43,7 @@ public struct CodexWebDashboardStrategy: ProviderFetchStrategy {
     }
 }
 
-private struct OpenAIWebCodexResult: Sendable {
+private struct OpenAIWebCodexResult {
     let usage: UsageSnapshot
     let credits: CreditsSnapshot?
     let dashboard: OpenAIDashboardSnapshot
@@ -60,7 +60,7 @@ private enum OpenAIWebCodexError: LocalizedError {
     }
 }
 
-private struct OpenAIWebOptions: Sendable {
+private struct OpenAIWebOptions {
     let timeout: TimeInterval
     let debugDumpHTML: Bool
     let verbose: Bool

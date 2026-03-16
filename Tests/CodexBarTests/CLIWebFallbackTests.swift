@@ -2,7 +2,6 @@ import Testing
 @testable import CodexBarCLI
 @testable import CodexBarCore
 
-@Suite
 struct CLIWebFallbackTests {
     private func makeContext(
         runtime: ProviderRuntime = .cli,
@@ -34,7 +33,7 @@ struct CLIWebFallbackTests {
     }
 
     @Test
-    func codexFallsBackWhenCookiesMissing() {
+    func `codex falls back when cookies missing`() {
         let context = self.makeContext()
         let strategy = CodexWebDashboardStrategy()
         #expect(strategy.shouldFallback(
@@ -55,7 +54,7 @@ struct CLIWebFallbackTests {
     }
 
     @Test
-    func codexFallsBackForDashboardDataErrorsInAuto() {
+    func `codex falls back for dashboard data errors in auto`() {
         let context = self.makeContext()
         let strategy = CodexWebDashboardStrategy()
         #expect(strategy.shouldFallback(
@@ -64,7 +63,7 @@ struct CLIWebFallbackTests {
     }
 
     @Test
-    func claudeFallsBackWhenNoSessionKey() {
+    func `claude falls back when no session key`() {
         let context = self.makeContext()
         let strategy = ClaudeWebFetchStrategy(browserDetection: BrowserDetection(cacheTTL: 0))
         #expect(strategy.shouldFallback(on: ClaudeWebAPIFetcher.FetchError.noSessionKeyFound, context: context))
@@ -72,7 +71,7 @@ struct CLIWebFallbackTests {
     }
 
     @Test
-    func claudeCLIFallbackIsEnabledOnlyForAppAuto() {
+    func `claude CLI fallback is enabled only for app auto`() {
         let strategy = ClaudeCLIFetchStrategy(
             useWebExtras: false,
             manualCookieHeader: nil,
@@ -94,7 +93,7 @@ struct CLIWebFallbackTests {
     }
 
     @Test
-    func claudeWebFallbackIsDisabledForAppAuto() {
+    func `claude web fallback is disabled for app auto`() {
         let strategy = ClaudeWebFetchStrategy(browserDetection: BrowserDetection(cacheTTL: 0))
         let error = ClaudeWebAPIFetcher.FetchError.unauthorized
         #expect(strategy.shouldFallback(on: error, context: self.makeContext(runtime: .cli, sourceMode: .auto)))

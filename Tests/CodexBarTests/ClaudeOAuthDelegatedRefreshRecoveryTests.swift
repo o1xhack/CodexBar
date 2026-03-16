@@ -58,7 +58,7 @@ struct ClaudeOAuthDelegatedRefreshRecoveryTests {
     }
 
     @Test
-    func silentKeychainRepair_recoversWithoutDelegation() async throws {
+    func `silent keychain repair recovers without delegation`() async throws {
         let delegatedCounter = AsyncCounter()
         let usageResponse = try Self.makeOAuthUsageResponse()
         let tokenCapture = TokenCapture()
@@ -162,7 +162,7 @@ struct ClaudeOAuthDelegatedRefreshRecoveryTests {
     }
 
     @Test
-    func delegatedRefresh_attemptedSucceeded_recoversAfterKeychainSync() async throws {
+    func `delegated refresh attempted succeeded recovers after keychain sync`() async throws {
         let delegatedCounter = AsyncCounter()
         let usageResponse = try Self.makeOAuthUsageResponse()
         let tokenCapture = TokenCapture()
@@ -274,7 +274,9 @@ struct ClaudeOAuthDelegatedRefreshRecoveryTests {
     }
 
     @Test
-    func delegatedRefresh_attemptedSucceeded_backgroundOnlyOnUserAction_doesNotRecoverFromKeychain() async throws {
+    func `delegated refresh attempted succeeded background only on user action does not recover from keychain`()
+        async throws
+    {
         let delegatedCounter = AsyncCounter()
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
 

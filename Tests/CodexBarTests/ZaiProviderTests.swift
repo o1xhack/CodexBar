@@ -2,38 +2,36 @@ import Foundation
 import Testing
 @testable import CodexBarCore
 
-@Suite
 struct ZaiSettingsReaderTests {
     @Test
-    func apiTokenReadsFromEnvironment() {
+    func `api token reads from environment`() {
         let token = ZaiSettingsReader.apiToken(environment: ["Z_AI_API_KEY": "abc123"])
         #expect(token == "abc123")
     }
 
     @Test
-    func apiTokenStripsQuotes() {
+    func `api token strips quotes`() {
         let token = ZaiSettingsReader.apiToken(environment: ["Z_AI_API_KEY": "\"token-xyz\""])
         #expect(token == "token-xyz")
     }
 
     @Test
-    func apiHostReadsFromEnvironment() {
+    func `api host reads from environment`() {
         let host = ZaiSettingsReader.apiHost(environment: [ZaiSettingsReader.apiHostKey: " open.bigmodel.cn "])
         #expect(host == "open.bigmodel.cn")
     }
 
     @Test
-    func quotaURLInfersScheme() {
+    func `quota URL infers scheme`() {
         let url = ZaiSettingsReader
             .quotaURL(environment: [ZaiSettingsReader.quotaURLKey: "open.bigmodel.cn/api/coding"])
         #expect(url?.absoluteString == "https://open.bigmodel.cn/api/coding")
     }
 }
 
-@Suite
 struct ZaiUsageSnapshotTests {
     @Test
-    func mapsUsageSnapshotWindows() {
+    func `maps usage snapshot windows`() {
         let reset = Date(timeIntervalSince1970: 123)
         let tokenLimit = ZaiLimitEntry(
             type: .tokensLimit,
@@ -73,7 +71,7 @@ struct ZaiUsageSnapshotTests {
     }
 
     @Test
-    func mapsUsageSnapshotWindowsWithMissingFields() {
+    func `maps usage snapshot windows with missing fields`() {
         let reset = Date(timeIntervalSince1970: 123)
         let tokenLimit = ZaiLimitEntry(
             type: .tokensLimit,
@@ -101,7 +99,7 @@ struct ZaiUsageSnapshotTests {
     }
 
     @Test
-    func mapsUsageSnapshotWindowsWithMissingRemainingUsesCurrentValue() {
+    func `maps usage snapshot windows with missing remaining uses current value`() {
         let reset = Date(timeIntervalSince1970: 123)
         let tokenLimit = ZaiLimitEntry(
             type: .tokensLimit,
@@ -125,7 +123,7 @@ struct ZaiUsageSnapshotTests {
     }
 
     @Test
-    func mapsUsageSnapshotWindowsWithMissingCurrentValueUsesRemaining() {
+    func `maps usage snapshot windows with missing current value uses remaining`() {
         let reset = Date(timeIntervalSince1970: 123)
         let tokenLimit = ZaiLimitEntry(
             type: .tokensLimit,
@@ -149,7 +147,7 @@ struct ZaiUsageSnapshotTests {
     }
 
     @Test
-    func mapsUsageSnapshotWindowsWithMissingRemainingAndCurrentValueFallsBackToPercentage() {
+    func `maps usage snapshot windows with missing remaining and current value falls back to percentage`() {
         let reset = Date(timeIntervalSince1970: 123)
         let tokenLimit = ZaiLimitEntry(
             type: .tokensLimit,
@@ -173,10 +171,9 @@ struct ZaiUsageSnapshotTests {
     }
 }
 
-@Suite
 struct ZaiUsageParsingTests {
     @Test
-    func emptyBodyReturnsParseFailed() {
+    func `empty body returns parse failed`() {
         #expect {
             _ = try ZaiUsageFetcher.parseUsageSnapshot(from: Data())
         } throws: { error in
@@ -186,7 +183,7 @@ struct ZaiUsageParsingTests {
     }
 
     @Test
-    func parsesUsageResponse() throws {
+    func `parses usage response`() throws {
         let json = """
         {
           "code": 200,
@@ -231,7 +228,7 @@ struct ZaiUsageParsingTests {
     }
 
     @Test
-    func missingDataReturnsApiError() {
+    func `missing data returns api error`() {
         let json = """
         { "code": 1001, "msg": "Authorization Token Missing", "success": false }
         """
@@ -245,7 +242,7 @@ struct ZaiUsageParsingTests {
     }
 
     @Test
-    func successWithoutDataReturnsParseFailed() {
+    func `success without data returns parse failed`() {
         let json = """
         { "code": 200, "msg": "Operation successful", "success": true }
         """
@@ -259,7 +256,7 @@ struct ZaiUsageParsingTests {
     }
 
     @Test
-    func successWithoutLimitsParsesEmptyUsage() throws {
+    func `success without limits parses empty usage`() throws {
         let json = """
         {
           "code": 200,
@@ -277,7 +274,7 @@ struct ZaiUsageParsingTests {
     }
 
     @Test
-    func parsesNewSchemaWithMissingTokenLimitFields() throws {
+    func `parses new schema with missing token limit fields`() throws {
         let json = """
         {
           "code": 200,
@@ -323,29 +320,28 @@ struct ZaiUsageParsingTests {
     }
 }
 
-@Suite
 struct ZaiAPIRegionTests {
     @Test
-    func defaultsToGlobalEndpoint() {
+    func `defaults to global endpoint`() {
         let url = ZaiUsageFetcher.resolveQuotaURL(region: .global, environment: [:])
         #expect(url.absoluteString == "https://api.z.ai/api/monitor/usage/quota/limit")
     }
 
     @Test
-    func usesBigModelRegionWhenSelected() {
+    func `uses big model region when selected`() {
         let url = ZaiUsageFetcher.resolveQuotaURL(region: .bigmodelCN, environment: [:])
         #expect(url.absoluteString == "https://open.bigmodel.cn/api/monitor/usage/quota/limit")
     }
 
     @Test
-    func quotaUrlEnvironmentOverrideWins() {
+    func `quota url environment override wins`() {
         let env = [ZaiSettingsReader.quotaURLKey: "https://open.bigmodel.cn/api/coding/paas/v4"]
         let url = ZaiUsageFetcher.resolveQuotaURL(region: .global, environment: env)
         #expect(url.absoluteString == "https://open.bigmodel.cn/api/coding/paas/v4")
     }
 
     @Test
-    func apiHostEnvironmentAppendsQuotaPath() {
+    func `api host environment appends quota path`() {
         let env = [ZaiSettingsReader.apiHostKey: "open.bigmodel.cn"]
         let url = ZaiUsageFetcher.resolveQuotaURL(region: .global, environment: env)
         #expect(url.absoluteString == "https://open.bigmodel.cn/api/monitor/usage/quota/limit")

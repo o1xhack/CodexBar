@@ -5,7 +5,7 @@ import Testing
 @Suite(.serialized)
 struct ClaudeOAuthKeychainAccessGateTests {
     @Test
-    func blocksUntilCooldownExpires() {
+    func `blocks until cooldown expires`() {
         KeychainAccessGate.withTaskOverrideForTesting(false) {
             let store = ClaudeOAuthKeychainAccessGate.DeniedUntilStore()
             ClaudeOAuthKeychainAccessGate.withDeniedUntilStoreOverrideForTesting(store) {
@@ -23,7 +23,7 @@ struct ClaudeOAuthKeychainAccessGateTests {
     }
 
     @Test
-    func persistsDeniedUntil() {
+    func `persists denied until`() {
         KeychainAccessGate.withTaskOverrideForTesting(false) {
             ClaudeOAuthKeychainAccessGate.resetForTesting()
             defer { ClaudeOAuthKeychainAccessGate.resetForTesting() }
@@ -39,7 +39,7 @@ struct ClaudeOAuthKeychainAccessGateTests {
     }
 
     @Test
-    func respectsDebugDisableKeychainAccess() {
+    func `respects debug disable keychain access`() {
         KeychainAccessGate.withTaskOverrideForTesting(true) {
             ClaudeOAuthKeychainAccessGate.resetForTesting()
             defer { ClaudeOAuthKeychainAccessGate.resetForTesting() }
@@ -48,7 +48,7 @@ struct ClaudeOAuthKeychainAccessGateTests {
     }
 
     @Test
-    func clearDeniedAllowsImmediateRetry() {
+    func `clear denied allows immediate retry`() {
         KeychainAccessGate.withTaskOverrideForTesting(false) {
             ClaudeOAuthKeychainAccessGate.resetForTesting()
             defer { ClaudeOAuthKeychainAccessGate.resetForTesting() }

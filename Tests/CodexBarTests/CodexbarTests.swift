@@ -4,10 +4,9 @@ import Foundation
 import Testing
 @testable import CodexBar
 
-@Suite
 struct CodexBarTests {
     @Test
-    func iconRendererProducesTemplateImage() {
+    func `icon renderer produces template image`() {
         let image = IconRenderer.makeIcon(
             primaryRemaining: 50,
             weeklyRemaining: 75,
@@ -19,7 +18,7 @@ struct CodexBarTests {
     }
 
     @Test
-    func iconRendererRendersAtPixelAlignedSize() {
+    func `icon renderer renders at pixel aligned size`() {
         let image = IconRenderer.makeIcon(
             primaryRemaining: 50,
             weeklyRemaining: 75,
@@ -33,7 +32,7 @@ struct CodexBarTests {
     }
 
     @Test
-    func iconRendererCachesStaticIcons() {
+    func `icon renderer caches static icons`() {
         let first = IconRenderer.makeIcon(
             primaryRemaining: 42,
             weeklyRemaining: 17,
@@ -50,7 +49,7 @@ struct CodexBarTests {
     }
 
     @Test
-    func iconRendererCodexEyesPunchThroughWhenUnknown() {
+    func `icon renderer codex eyes punch through when unknown`() {
         // Regression: when remaining is nil, CoreGraphics inherits the previous fill alpha which caused
         // destinationOut “eyes” to become semi-transparent instead of fully punched through.
         let image = IconRenderer.makeIcon(
@@ -116,7 +115,7 @@ struct CodexBarTests {
     }
 
     @Test
-    func iconRendererWarpEyesCutOutAtExpectedCenters() {
+    func `icon renderer warp eyes cut out at expected centers`() {
         // Regression: Warp eyes should be tilted in-place and remain centered on the face.
         let image = IconRenderer.makeIcon(
             primaryRemaining: 50,
@@ -169,7 +168,7 @@ struct CodexBarTests {
     }
 
     @Test
-    func accountInfoParsesAuthToken() throws {
+    func `account info parses auth token`() throws {
         let tmp = try FileManager.default.url(
             for: .itemReplacementDirectory,
             in: .userDomainMask,

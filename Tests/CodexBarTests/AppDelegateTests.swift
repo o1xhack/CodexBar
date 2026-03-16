@@ -4,10 +4,9 @@ import Testing
 @testable import CodexBar
 
 @MainActor
-@Suite
 struct AppDelegateTests {
     @Test
-    func buildsStatusControllerAfterLaunch() {
+    func `builds status controller after launch`() {
         let appDelegate = AppDelegate()
         var factoryCalls = 0
 

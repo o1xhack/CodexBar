@@ -8,7 +8,7 @@ public struct MiniMaxUsageFetcher: Sendable {
     private static let codingPlanPath = "user-center/payment/coding-plan"
     private static let codingPlanQuery = "cycle_type=3"
     private static let codingPlanRemainsPath = "v1/api/openplatform/coding_plan/remains"
-    private struct RemainsContext: Sendable {
+    private struct RemainsContext {
         let authorizationToken: String?
         let groupID: String?
     }
@@ -325,7 +325,7 @@ public struct MiniMaxUsageFetcher: Sendable {
     }
 }
 
-struct MiniMaxCodingPlanPayload: Decodable, Sendable {
+struct MiniMaxCodingPlanPayload: Decodable {
     let baseResp: MiniMaxBaseResponse?
     let data: MiniMaxCodingPlanData
 
@@ -346,7 +346,7 @@ struct MiniMaxCodingPlanPayload: Decodable, Sendable {
     }
 }
 
-struct MiniMaxCodingPlanData: Decodable, Sendable {
+struct MiniMaxCodingPlanData: Decodable {
     let baseResp: MiniMaxBaseResponse?
     let currentSubscribeTitle: String?
     let planName: String?
@@ -377,11 +377,11 @@ struct MiniMaxCodingPlanData: Decodable, Sendable {
     }
 }
 
-struct MiniMaxComboCard: Decodable, Sendable {
+struct MiniMaxComboCard: Decodable {
     let title: String?
 }
 
-struct MiniMaxModelRemains: Decodable, Sendable {
+struct MiniMaxModelRemains: Decodable {
     let currentIntervalTotalCount: Int?
     let currentIntervalUsageCount: Int?
     let startTime: Int?
@@ -406,7 +406,7 @@ struct MiniMaxModelRemains: Decodable, Sendable {
     }
 }
 
-struct MiniMaxBaseResponse: Decodable, Sendable {
+struct MiniMaxBaseResponse: Decodable {
     let statusCode: Int?
     let statusMessage: String?
 

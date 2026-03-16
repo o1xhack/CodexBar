@@ -3,7 +3,6 @@ import Testing
 @testable import CodexBar
 @testable import CodexBarCore
 
-@Suite
 struct ClaudeUsageTests {
     private actor AsyncCounter {
         private var value = 0
@@ -29,7 +28,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesUsageJSONWithSonnetLimit() {
+    func `parses usage JSON with sonnet limit`() {
         let json = """
         {
           "ok": true,
@@ -47,7 +46,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func oauthDelegatedRetry_retriesOnce_thenSucceeds() async throws {
+    func `oauth delegated retry retries once then succeeds`() async throws {
         let loadCounter = AsyncCounter()
         let delegatedCounter = AsyncCounter()
         let usageResponse = try Self.makeOAuthUsageResponse()
@@ -102,7 +101,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func oauthDelegatedRetry_secondAttemptStillExpired_failsCleanly() async throws {
+    func `oauth delegated retry second attempt still expired fails cleanly`() async throws {
         let loadCounter = AsyncCounter()
         let delegatedCounter = AsyncCounter()
         let fetcher = ClaudeUsageFetcher(
@@ -155,7 +154,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func oauthDelegatedRetry_autoMode_cliUnavailable_failsFast() async throws {
+    func `oauth delegated retry auto mode cli unavailable fails fast`() async throws {
         let loadCounter = AsyncCounter()
         let delegatedCounter = AsyncCounter()
 
@@ -209,7 +208,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func oauthDelegatedRetry_autoMode_attemptedFailed_thenNonInteractiveReloadSucceeds() async throws {
+    func `oauth delegated retry auto mode attempted failed then non interactive reload succeeds`() async throws {
         let loadCounter = AsyncCounter()
         let delegatedCounter = AsyncCounter()
         let usageResponse = try Self.makeOAuthUsageResponse()
@@ -274,7 +273,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func oauthDelegatedRetry_onlyOnUserAction_background_suppressesDelegation() async throws {
+    func `oauth delegated retry only on user action background suppresses delegation`() async throws {
         let loadCounter = AsyncCounter()
         let delegatedCounter = AsyncCounter()
 
@@ -324,7 +323,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func oauthDelegatedRetry_never_background_suppressesDelegationEvenForCLI() async throws {
+    func `oauth delegated retry never background suppresses delegation even for CLI`() async throws {
         let loadCounter = AsyncCounter()
         let delegatedCounter = AsyncCounter()
 
@@ -375,7 +374,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func oauthBootstrap_onlyOnUserAction_background_startup_allowsInteractiveReadWhenNoCache() async throws {
+    func `oauth bootstrap only on user action background startup allows interactive read when no cache`() async throws {
         final class FlagBox: @unchecked Sendable {
             var allowKeychainPromptFlags: [Bool] = []
         }
@@ -422,7 +421,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func oauthDelegatedRetry_onlyOnUserAction_background_allowsDelegationForCLI() async throws {
+    func `oauth delegated retry only on user action background allows delegation for CLI`() async throws {
         let loadCounter = AsyncCounter()
         let delegatedCounter = AsyncCounter()
         let usageResponse = try Self.makeOAuthUsageResponse()
@@ -482,7 +481,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesUsageJSONWhenWeeklyMissing() {
+    func `parses usage JSON when weekly missing`() {
         let json = """
         {
           "ok": true,
@@ -497,7 +496,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesLegacyOpusAndAccount() {
+    func `parses legacy opus and account`() {
         let json = """
         {
           "ok": true,
@@ -517,7 +516,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesUsageJSONWhenOnlySonnetLimitIsPresent() {
+    func `parses usage JSON when only sonnet limit is present`() {
         let json = """
         {
           "ok": true,
@@ -534,7 +533,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func trimsAccountFields() throws {
+    func `trims account fields`() throws {
         let cases: [[String: String?]] = [
             ["email": " steipete@gmail.com ", "org": "  Org  "],
             ["email": "", "org": " Claude Max Account "],
@@ -563,7 +562,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func liveClaudeFetchPTY() async throws {
+    func `live claude fetch PTY`() async throws {
         guard ProcessInfo.processInfo.environment["LIVE_CLAUDE_FETCH"] == "1" else {
             return
         }
@@ -620,7 +619,7 @@ struct ClaudeUsageTests {
     // MARK: - Web API tests
 
     @Test
-    func liveClaudeFetchWebAPI() async throws {
+    func `live claude fetch web API`() async throws {
         // Set LIVE_CLAUDE_WEB_FETCH=1 to run this test with real browser cookies
         guard ProcessInfo.processInfo.environment["LIVE_CLAUDE_WEB_FETCH"] == "1" else {
             return
@@ -641,7 +640,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func claudeWebAPIHasSessionKeyCheck() {
+    func `claude web API has session key check`() {
         // Quick check that hasSessionKey returns a boolean (doesn't crash)
         let hasKey = ClaudeWebAPIFetcher.hasSessionKey(browserDetection: BrowserDetection(cacheTTL: 0))
         // We can't assert the value since it depends on the test environment
@@ -649,7 +648,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesClaudeWebAPIUsageResponse() throws {
+    func `parses claude web API usage response`() throws {
         let json = """
         {
           "five_hour": { "utilization": 9, "resets_at": "2025-12-23T16:00:00.000Z" },
@@ -667,7 +666,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesClaudeWebAPIUsageResponseWhenWeeklyMissing() throws {
+    func `parses claude web API usage response when weekly missing`() throws {
         let json = """
         {
           "five_hour": { "utilization": 9, "resets_at": "2025-12-23T16:00:00.000Z" }
@@ -680,7 +679,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesClaudeWebAPIOverageSpendLimit() {
+    func `parses claude web API overage spend limit`() {
         let json = """
         {
           "monthly_credit_limit": 2000,
@@ -699,7 +698,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesClaudeWebAPIOverageSpendLimitCents() {
+    func `parses claude web API overage spend limit cents`() {
         let json = """
         {
           "monthly_credit_limit": 12345,
@@ -716,7 +715,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesClaudeWebAPIOrganizationsResponse() throws {
+    func `parses claude web API organizations response`() throws {
         let json = """
         [
           { "uuid": "org-123", "name": "Example Org", "capabilities": [] }
@@ -729,7 +728,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesClaudeWebAPIOrganizationsPrefersChatCapabilityOverApiOnly() throws {
+    func `parses claude web API organizations prefers chat capability over api only`() throws {
         let json = """
         [
           { "uuid": "org-api", "name": "API Org", "capabilities": ["api"] },
@@ -743,7 +742,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesClaudeWebAPIOrganizationsPrefersHybridChatOrg() throws {
+    func `parses claude web API organizations prefers hybrid chat org`() throws {
         let json = """
         [
           { "uuid": "org-api", "name": "API Org", "capabilities": ["api"] },
@@ -757,7 +756,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesClaudeWebAPIAccountInfo() {
+    func `parses claude web API account info`() {
         let json = """
         {
           "email_address": "steipete@gmail.com",
@@ -780,7 +779,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesClaudeWebAPIAccountInfoSelectsMatchingOrg() {
+    func `parses claude web API account info selects matching org`() {
         let json = """
         {
           "email_address": "steipete@gmail.com",
@@ -810,7 +809,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func parsesClaudeWebAPIAccountInfoFallsBackToFirstMembership() {
+    func `parses claude web API account info falls back to first membership`() {
         let json = """
         {
           "email_address": "steipete@gmail.com",
@@ -840,7 +839,7 @@ struct ClaudeUsageTests {
     }
 
     @Test
-    func claudeUsageFetcherInitWithDataSources() {
+    func `claude usage fetcher init with data sources`() {
         // Verify we can create fetchers with both configurations
         let browserDetection = BrowserDetection(cacheTTL: 0)
         let defaultFetcher = ClaudeUsageFetcher(browserDetection: browserDetection)
@@ -858,7 +857,7 @@ struct ClaudeUsageTests {
 
 extension ClaudeUsageTests {
     @Test
-    func oauthDelegatedRetry_experimental_background_ignoresOnlyOnUserActionSuppression() async throws {
+    func `oauth delegated retry experimental background ignores only on user action suppression`() async throws {
         let loadCounter = AsyncCounter()
         let delegatedCounter = AsyncCounter()
         let usageResponse = try Self.makeOAuthUsageResponse()
@@ -921,7 +920,7 @@ extension ClaudeUsageTests {
     }
 
     @Test
-    func oauthLoad_experimental_background_fallbackBlocked_propagatesOAuthFailure() async throws {
+    func `oauth load experimental background fallback blocked propagates O auth failure`() async throws {
         final class FlagBox: @unchecked Sendable {
             var respectPromptCooldownFlags: [Bool] = []
         }

@@ -16,6 +16,7 @@ extension SettingsStore {
         _ = self.menuBarShowsBrandIconWithPercent
         _ = self.menuBarShowsHighestUsage
         _ = self.menuBarDisplayMode
+        _ = self.historicalTrackingEnabled
         _ = self.showAllTokenAccountsInMenu
         _ = self.menuBarMetricPreferencesRaw
         _ = self.costUsageEnabled
@@ -28,6 +29,8 @@ extension SettingsStore {
         _ = self.openAIWebAccessEnabled
         _ = self.codexUsageDataSource
         _ = self.claudeUsageDataSource
+        _ = self.kiloUsageDataSource
+        _ = self.kiloExtrasEnabled
         _ = self.codexCookieSource
         _ = self.claudeCookieSource
         _ = self.cursorCookieSource
@@ -41,6 +44,8 @@ extension SettingsStore {
         _ = self.ollamaCookieSource
         _ = self.mergeIcons
         _ = self.switcherShowsIcons
+        _ = self.mergedMenuLastSelectedWasOverview
+        _ = self.mergedOverviewSelectedProviders
         _ = self.zaiAPIToken
         _ = self.syntheticAPIToken
         _ = self.codexCookieHeader
@@ -53,6 +58,7 @@ extension SettingsStore {
         _ = self.minimaxAPIToken
         _ = self.kimiManualCookieHeader
         _ = self.kimiK2APIToken
+        _ = self.kiloAPIToken
         _ = self.augmentCookieHeader
         _ = self.ampCookieHeader
         _ = self.ollamaCookieHeader

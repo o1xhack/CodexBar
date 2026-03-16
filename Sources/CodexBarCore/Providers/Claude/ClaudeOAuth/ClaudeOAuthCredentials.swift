@@ -41,18 +41,18 @@ public enum ClaudeOAuthCredentialsStore {
     private static let claudeKeychainChangeCheckMinimumInterval: TimeInterval = 60
     private static let reauthenticateHint = "Run `claude` to re-authenticate."
 
-    struct ClaudeKeychainFingerprint: Codable, Equatable, Sendable {
+    struct ClaudeKeychainFingerprint: Codable, Equatable {
         let modifiedAt: Int?
         let createdAt: Int?
         let persistentRefHash: String?
     }
 
-    struct CredentialsFileFingerprint: Codable, Equatable, Sendable {
+    struct CredentialsFileFingerprint: Codable, Equatable {
         let modifiedAtMs: Int?
         let size: Int
     }
 
-    struct CacheEntry: Codable, Sendable {
+    struct CacheEntry: Codable {
         let data: Data
         let storedAt: Date
         let owner: ClaudeOAuthCredentialOwner?
@@ -1084,7 +1084,7 @@ public enum ClaudeOAuthCredentialsStore {
     }
 
     #if os(macOS)
-    private struct ClaudeKeychainCandidate: Sendable {
+    private struct ClaudeKeychainCandidate {
         let persistentRef: Data
         let account: String?
         let modifiedAt: Date?
@@ -1730,7 +1730,7 @@ extension ClaudeOAuthCredentialsStore {
             rateLimitTier: existingRateLimitTier)
     }
 
-    private enum RefreshFailureDisposition: String, Sendable {
+    private enum RefreshFailureDisposition: String {
         case terminalInvalidGrant
         case transientBackoff
     }

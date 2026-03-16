@@ -4,16 +4,15 @@ import Testing
 @testable import CodexBar
 
 @MainActor
-@Suite
 struct PreferencesPaneSmokeTests {
     @Test
-    func buildsPreferencePanesWithDefaultSettings() {
+    func `builds preference panes with default settings`() {
         let settings = Self.makeSettingsStore(suite: "PreferencesPaneSmokeTests-default")
         let store = Self.makeUsageStore(settings: settings)
         let syncCoordinator = SyncCoordinator(store: store, settings: settings, syncManager: MockSyncPusher())
 
         _ = GeneralPane(settings: settings, store: store, syncCoordinator: syncCoordinator).body
-        _ = DisplayPane(settings: settings).body
+        _ = DisplayPane(settings: settings, store: store).body
         _ = AdvancedPane(settings: settings).body
         _ = ProvidersPane(settings: settings, store: store).body
         _ = DebugPane(settings: settings, store: store).body
@@ -23,7 +22,7 @@ struct PreferencesPaneSmokeTests {
     }
 
     @Test
-    func buildsPreferencePanesWithToggledSettings() {
+    func `builds preference panes with toggled settings`() {
         let settings = Self.makeSettingsStore(suite: "PreferencesPaneSmokeTests-toggled")
         settings.menuBarShowsBrandIconWithPercent = true
         settings.menuBarShowsHighestUsage = true
@@ -39,7 +38,7 @@ struct PreferencesPaneSmokeTests {
         store._setErrorForTesting("Example error", provider: .codex)
 
         _ = GeneralPane(settings: settings, store: store, syncCoordinator: syncCoordinator).body
-        _ = DisplayPane(settings: settings).body
+        _ = DisplayPane(settings: settings, store: store).body
         _ = AdvancedPane(settings: settings).body
         _ = ProvidersPane(settings: settings, store: store).body
         _ = DebugPane(settings: settings, store: store).body

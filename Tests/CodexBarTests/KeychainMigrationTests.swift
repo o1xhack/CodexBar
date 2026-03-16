@@ -1,12 +1,11 @@
 import Testing
 @testable import CodexBar
 
-@Suite
 struct KeychainMigrationTests {
     @Test
-    func migrationListCoversKnownKeychainItems() {
+    func `migration list covers known keychain items`() {
         let items = Set(KeychainMigration.itemsToMigrate.map(\.label))
-        let expected: Set<String> = [
+        let expected: Set = [
             "com.o1xhack.CodexBar:codex-cookie",
             "com.o1xhack.CodexBar:claude-cookie",
             "com.o1xhack.CodexBar:cursor-cookie",

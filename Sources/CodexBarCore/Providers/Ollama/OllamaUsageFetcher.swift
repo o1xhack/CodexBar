@@ -228,12 +228,12 @@ public struct OllamaUsageFetcher: Sendable {
     private static let settingsURL = URL(string: "https://ollama.com/settings")!
     @MainActor private static var recentDumps: [String] = []
 
-    private struct CookieCandidate: Sendable {
+    private struct CookieCandidate {
         let cookieHeader: String
         let sourceLabel: String
     }
 
-    enum RetryableParseFailure: Error, Sendable {
+    enum RetryableParseFailure: Error {
         case missingUsageData
     }
 
@@ -568,7 +568,7 @@ public struct OllamaUsageFetcher: Sendable {
         }
     }
 
-    private struct ResponseInfo: Sendable {
+    private struct ResponseInfo {
         let statusCode: Int
         let url: String
     }

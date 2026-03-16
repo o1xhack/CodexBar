@@ -2,10 +2,9 @@ import CodexBarCore
 import Foundation
 import Testing
 
-@Suite
 struct AntigravityStatusProbeTests {
     @Test
-    func parsesUserStatusResponse() throws {
+    func `parses user status response`() throws {
         let json = """
         {
           "code": 0,

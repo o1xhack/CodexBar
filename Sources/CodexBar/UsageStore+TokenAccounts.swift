@@ -1,7 +1,7 @@
 import CodexBarCore
 import Foundation
 
-struct TokenAccountUsageSnapshot: Identifiable, Sendable {
+struct TokenAccountUsageSnapshot: Identifiable {
     let id: UUID
     let account: ProviderTokenAccount
     let snapshot: UsageSnapshot?
