@@ -8,7 +8,7 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 source "$ROOT/version.env"
 # Load local-only release secrets from ~/.codexbar-secrets if available.
 source "$ROOT/Scripts/load-release-secrets.sh"
-RELEASE_ASSET_BASENAME="${APP_NAME} ${MARKETING_VERSION} (Mobile ${MOBILE_VERSION})"
+RELEASE_ASSET_BASENAME="${APP_NAME}-${MARKETING_VERSION}-mobile.${MOBILE_VERSION}"
 ZIP_NAME="${RELEASE_ASSET_BASENAME}.zip"
 DSYM_ZIP="${RELEASE_ASSET_BASENAME}.dSYM.zip"
 RELEASE_STAGE_DIR=$(mktemp -d /tmp/codexbar-release.XXXXXX)

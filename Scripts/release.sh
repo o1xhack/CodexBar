@@ -10,7 +10,7 @@ source "$HOME/Projects/agent-scripts/release/sparkle_lib.sh"
 
 APPCAST="$ROOT/appcast.xml"
 APP_NAME="CodexBar"
-RELEASE_ASSET_BASENAME="${APP_NAME} ${MARKETING_VERSION} (Mobile ${MOBILE_VERSION})"
+RELEASE_ASSET_BASENAME="${APP_NAME}-${MARKETING_VERSION}-mobile.${MOBILE_VERSION}"
 ARTIFACT_PREFIX="CodexBar-"
 BUNDLE_ID="com.o1xhack.codexbar"
 TAG="v${MARKETING_VERSION}"

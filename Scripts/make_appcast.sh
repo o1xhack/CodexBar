@@ -22,10 +22,13 @@ ZIP_NAME=$(basename "$ZIP")
 ZIP_BASE="${ZIP_NAME%.zip}"
 VERSION=${SPARKLE_RELEASE_VERSION:-}
 if [[ -z "$VERSION" ]]; then
-  if [[ "$ZIP_NAME" =~ ^CodexBar-([0-9]+(\.[0-9]+){1,2}([-.][^.]*)?)\.zip$ ]]; then
+  if [[ "$ZIP_NAME" == *"-mobile."* && -f "$ROOT/version.env" ]]; then
+    # Fork release assets append the mobile companion version to the file name.
+    VERSION=$(source "$ROOT/version.env" && printf "%s" "$MARKETING_VERSION")
+  elif [[ "$ZIP_NAME" =~ ^CodexBar-([0-9]+(\.[0-9]+){1,2}([-.][^.]*)?)\.zip$ ]]; then
     VERSION="${BASH_REMATCH[1]}"
   elif [[ -f "$ROOT/version.env" ]]; then
-    # Support release asset names like "CodexBar 0.18.0 (Mobile 0.1.1).zip".
+    # Support custom release asset names when running inside the repo.
     VERSION=$(source "$ROOT/version.env" && printf "%s" "$MARKETING_VERSION")
   else
     echo "Could not infer version from $ZIP_NAME; set SPARKLE_RELEASE_VERSION." >&2
