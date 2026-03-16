@@ -10,6 +10,7 @@ source "$HOME/Projects/agent-scripts/release/sparkle_lib.sh"
 
 APPCAST="$ROOT/appcast.xml"
 APP_NAME="CodexBar"
+RELEASE_ASSET_BASENAME="${APP_NAME} ${MARKETING_VERSION} (Mobile ${MOBILE_VERSION})"
 ARTIFACT_PREFIX="CodexBar-"
 BUNDLE_ID="com.o1xhack.codexbar"
 TAG="v${MARKETING_VERSION}"
@@ -41,13 +42,14 @@ trap 'rm -f "$KEY_FILE" "$NOTES_FILE"' EXIT
 git tag -s -f -m "${APP_NAME} ${MARKETING_VERSION}" "$TAG"
 git push -f origin "$TAG"
 
-gh release create "$TAG" ${APP_NAME}-${MARKETING_VERSION}.zip ${APP_NAME}-${MARKETING_VERSION}.dSYM.zip \
+gh release create "$TAG" "${RELEASE_ASSET_BASENAME}.zip" "${RELEASE_ASSET_BASENAME}.dSYM.zip" \
   --title "${APP_NAME} ${MARKETING_VERSION}" \
   --notes-file "$NOTES_FILE"
 
 SPARKLE_PRIVATE_KEY_FILE="$KEY_FILE" \
+  SPARKLE_RELEASE_VERSION="$MARKETING_VERSION" \
   "$ROOT/Scripts/make_appcast.sh" \
-  "${APP_NAME}-${MARKETING_VERSION}.zip" \
+  "${RELEASE_ASSET_BASENAME}.zip" \
   "https://raw.githubusercontent.com/o1xhack/CodexBar/main/appcast.xml"
 
 verify_appcast_entry "$APPCAST" "$MARKETING_VERSION" "$KEY_FILE"
