@@ -3,7 +3,7 @@ import SwiftUI
 struct OnboardingView: View {
     var onDemo: (() -> Void)?
 
-    private let steps: [(icon: String, title: String, detail: String)] = [
+    private let steps: [(icon: String, title: LocalizedStringResource, detail: LocalizedStringResource)] = [
         ("laptopcomputer.and.arrow.down", "Install CodexBar on Mac", "Download from the GitHub release page and move to Applications."),
         ("gearshape", "Enable iCloud Sync", "Open CodexBar on your Mac → Settings → turn on iCloud Sync."),
         ("icloud.and.arrow.up", "Wait for Sync", "Usage data will appear here automatically once your Mac pushes data to iCloud."),
@@ -43,7 +43,7 @@ struct OnboardingView: View {
                             }
 
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Step \(index + 1)")
+                                Text("\(String(localized: "Step")) \(index + 1)")
                                     .font(.caption)
                                     .fontWeight(.semibold)
                                     .foregroundStyle(.tint)

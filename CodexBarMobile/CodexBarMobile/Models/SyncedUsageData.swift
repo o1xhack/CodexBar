@@ -30,9 +30,9 @@ final class SyncedUsageData {
                 // No data yet, not necessarily an error
                 break
             case .quotaExceeded:
-                self.lastSyncError = "iCloud storage quota exceeded"
+                self.lastSyncError = String(localized: "iCloud storage quota exceeded")
             case .accountChanged:
-                self.lastSyncError = "iCloud account changed"
+                self.lastSyncError = String(localized: "iCloud account changed")
                 // Try to reload with new account
                 self.snapshot = self.reader.latestSnapshot()
             case .initialSync:
@@ -52,16 +52,16 @@ final class SyncedUsageData {
         guard let timestamp = snapshot?.syncTimestamp else { return nil }
         let interval = Date().timeIntervalSince(timestamp)
         if interval < 60 {
-            return "Just now"
+            return String(localized: "Just now")
         } else if interval < 3600 {
             let minutes = Int(interval / 60)
-            return "\(minutes) min ago"
+            return "\(minutes.formatted()) \(String(localized: "min ago"))"
         } else if interval < 86400 {
             let hours = Int(interval / 3600)
-            return "\(hours)h ago"
+            return "\(hours.formatted())\(String(localized: "h ago"))"
         } else {
             let days = Int(interval / 86400)
-            return "\(days)d ago"
+            return "\(days.formatted())\(String(localized: "d ago"))"
         }
     }
 }

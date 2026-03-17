@@ -9,6 +9,7 @@ All notable changes to the CodexBar iOS companion app will be documented in this
 - In-app release notes page with the latest update summary and collapsible version history
 - Privacy manifest, privacy policy, and dark mode app icon
 - Onboarding flow, setup guide, and pull-to-refresh support
+- Native localization for English, Simplified Chinese, Traditional Chinese, and Japanese
 
 ### Changed
 - Usage and Cost charts support both Bar Chart and Line Chart styles
@@ -16,6 +17,7 @@ All notable changes to the CodexBar iOS companion app will be documented in this
 - Setting tab now groups About & Sync, Release Notes, Usage Setting, and Cost Setting
 - Mobile versioning is now aligned directly with the iOS app version number
 - Dynamic version display now surfaces synced iPhone and Mac versions more clearly
+- Build 7 refreshes the 1.1.0 release line without changing the public version number
 
 ## [1.0.0]
 

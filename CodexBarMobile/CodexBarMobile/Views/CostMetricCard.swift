@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CostMetricCard: View {
-    let title: String
+    let title: LocalizedStringResource
     let value: String
     let subtitle: String?
     var tintColor: Color = .secondary

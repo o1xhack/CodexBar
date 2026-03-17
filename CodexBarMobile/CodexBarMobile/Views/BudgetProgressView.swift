@@ -46,7 +46,7 @@ struct BudgetProgressView: View {
                     HStack(spacing: 4) {
                         Image(systemName: "clock.arrow.circlepath")
                             .font(.caption)
-                        Text("Resets \(resetsAt.formatted(.relative(presentation: .named)))")
+                        Text("\(String(localized: "Resets")) \(resetsAt.formatted(.relative(presentation: .named)))")
                             .font(.caption)
                     }
                     .foregroundStyle(.secondary)

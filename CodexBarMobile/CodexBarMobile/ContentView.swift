@@ -13,9 +13,9 @@ enum CostChartStyle: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .bars:
-            "Bar Chart"
+            String(localized: "Bar Chart")
         case .line:
-            "Line Chart"
+            String(localized: "Line Chart")
         }
     }
 }
@@ -149,7 +149,7 @@ private struct UsageTab: View {
                     OnboardingView(onDemo: { self.isDemoMode = true })
                 }
             }
-            .navigationTitle(self.isDemoMode ? "CodexBar (Demo)" : "CodexBar")
+            .navigationTitle(self.isDemoMode ? String(localized: "CodexBar (Demo)") : String(localized: "CodexBar"))
             .toolbar {
                 if self.isDemoMode {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -296,7 +296,7 @@ private struct CostTab: View {
                     OnboardingView(onDemo: { self.isDemoMode = true })
                 }
             }
-            .navigationTitle(self.isDemoMode ? "Cost (Demo)" : "Cost")
+            .navigationTitle(self.isDemoMode ? String(localized: "Cost (Demo)") : String(localized: "Cost"))
             .toolbar {
                 if self.isDemoMode {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -408,7 +408,7 @@ private struct CostDashboardView: View {
                 CostMetricCard(
                     title: "Today",
                     value: Self.formatUSD(self.insights.totalTodayCost),
-                    subtitle: "\(self.insights.providerRows.count(where: { $0.todayCost > 0 })) providers active",
+                    subtitle: self.providersActiveSubtitle,
                     tintColor: .mint)
 
                 CostMetricCard(
@@ -436,14 +436,14 @@ private struct CostDashboardView: View {
                 switch self.chartStyle {
                 case .bars:
                     BarMark(
-                        x: .value("Date", point.date),
-                        y: .value("Cost", point.costUSD))
+                        x: .value(String(localized: "Date"), point.date),
+                        y: .value(String(localized: "Cost"), point.costUSD))
                         .foregroundStyle(Color.orange.gradient)
                         .cornerRadius(4)
                 case .line:
                     AreaMark(
-                        x: .value("Date", point.date),
-                        y: .value("Cost", point.costUSD))
+                        x: .value(String(localized: "Date"), point.date),
+                        y: .value(String(localized: "Cost"), point.costUSD))
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [Color.orange.opacity(0.35), Color.orange.opacity(0.04)],
@@ -452,21 +452,21 @@ private struct CostDashboardView: View {
                         .interpolationMethod(.catmullRom)
 
                     LineMark(
-                        x: .value("Date", point.date),
-                        y: .value("Cost", point.costUSD))
+                        x: .value(String(localized: "Date"), point.date),
+                        y: .value(String(localized: "Cost"), point.costUSD))
                         .foregroundStyle(Color.orange)
                         .lineStyle(.init(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                         .interpolationMethod(.catmullRom)
                 }
 
                 if let selectedPoint = self.selectedPoint, selectedPoint.id == point.id {
-                    RuleMark(x: .value("Selected Date", selectedPoint.date))
+                    RuleMark(x: .value(String(localized: "Selected Date"), selectedPoint.date))
                         .foregroundStyle(Color.orange.opacity(0.35))
                         .lineStyle(.init(lineWidth: 1, dash: [4, 4]))
 
                     PointMark(
-                        x: .value("Selected Date", selectedPoint.date),
-                        y: .value("Selected Cost", selectedPoint.costUSD))
+                        x: .value(String(localized: "Selected Date"), selectedPoint.date),
+                        y: .value(String(localized: "Selected Cost"), selectedPoint.costUSD))
                         .foregroundStyle(Color.orange)
                         .symbolSize(80)
                 }
@@ -512,10 +512,10 @@ private struct CostDashboardView: View {
             } else {
                 HStack(spacing: 12) {
                     Label(
-                        "Peak \(Self.formatUSD(self.insights.highestDay?.costUSD ?? 0))",
+                        "\(String(localized: "Peak")) \(Self.formatUSD(self.insights.highestDay?.costUSD ?? 0))",
                         systemImage: "arrow.up.right.circle.fill")
                     Label(
-                        self.insights.highestDay.map { Self.shortDate($0.date) } ?? "No data",
+                        self.insights.highestDay.map { Self.shortDate($0.date) } ?? String(localized: "No data"),
                         systemImage: "calendar")
                 }
                 .font(.caption)
@@ -525,8 +525,8 @@ private struct CostDashboardView: View {
     }
 
     private func contributionSection(
-        title: String,
-        subtitle: String,
+        title: LocalizedStringResource,
+        subtitle: LocalizedStringResource,
         rows: [CostBreakdownRow],
         total: Double) -> some View
     {
@@ -616,8 +616,10 @@ private struct CostDashboardView: View {
     }
 
     private func providerSubtitle(for row: CostDashboardInsights.ProviderRow) -> String {
-        let today = row.todayCost > 0 ? "Today \(Self.formatUSD(row.todayCost))" : "No spend today"
-        let tokens = row.thirtyDayTokens > 0 ? Self.formatTokens(row.thirtyDayTokens) : "No token data"
+        let today = row.todayCost > 0
+            ? "\(String(localized: "Today")) \(Self.formatUSD(row.todayCost))"
+            : String(localized: "No spend today")
+        let tokens = row.thirtyDayTokens > 0 ? Self.formatTokens(row.thirtyDayTokens) : String(localized: "No token data")
         return "\(today) · \(tokens)"
     }
 
@@ -629,7 +631,11 @@ private struct CostDashboardView: View {
     private var activeDaySubtitle: String? {
         guard self.insights.activeDayCount > 0 else { return nil }
         let average = self.insights.total30DayCost / Double(self.insights.activeDayCount)
-        return "Avg \(Self.formatUSD(average)) per active day"
+        return "\(String(localized: "Avg")) \(Self.formatUSD(average)) \(String(localized: "per active day"))"
+    }
+
+    private var providersActiveSubtitle: String {
+        "\(self.insights.providerRows.count(where: { $0.todayCost > 0 }).formatted()) \(String(localized: "providers active"))"
     }
 
     private var selectedPoint: CostDashboardInsights.DailyPoint? {
@@ -650,20 +656,24 @@ private struct CostDashboardView: View {
     }
 
     private static func formatUSD(_ value: Double) -> String {
-        String(format: "$%.2f", value)
+        value.formatted(.currency(code: "USD").precision(.fractionLength(2)))
     }
 
     private static func formatTokens(_ count: Int) -> String {
         if count >= 1_000_000 {
-            return String(format: "%.1fM tokens", Double(count) / 1_000_000)
+            return "\(Self.formatCompactNumber(Double(count) / 1_000_000)) \(String(localized: "M tokens"))"
         } else if count >= 1000 {
-            return String(format: "%.1fK tokens", Double(count) / 1000)
+            return "\(Self.formatCompactNumber(Double(count) / 1000)) \(String(localized: "K tokens"))"
         }
-        return "\(count) tokens"
+        return "\(count.formatted()) \(String(localized: "tokens"))"
     }
 
     private static func shortDate(_ value: Date) -> String {
         value.formatted(.dateTime.month(.abbreviated).day())
+    }
+
+    private static func formatCompactNumber(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(1)))
     }
 }
 
@@ -891,7 +901,7 @@ private struct SettingsTab: View {
                         SettingSummaryRow(
                             title: "About & Sync",
                             symbolName: "iphone.and.arrow.forward",
-                            summary: "iPhone \(self.mobileVersionSummary) · Mac \(self.macVersionSummary)")
+                            summary: "\(String(localized: "iPhone")) \(self.mobileVersionSummary) · \(String(localized: "Mac")) \(self.macVersionSummary)")
                     }
 
                     NavigationLink {
@@ -900,7 +910,7 @@ private struct SettingsTab: View {
                         SettingSummaryRow(
                             title: "Release Notes",
                             symbolName: "text.document",
-                            summary: "Latest updates and version history")
+                            summary: String(localized: "Latest updates and version history"))
                     }
                 }
 
@@ -911,7 +921,7 @@ private struct SettingsTab: View {
                         SettingSummaryRow(
                             title: "Usage Setting",
                             symbolName: "chart.bar.fill",
-                            summary: "Configure the Usage page")
+                            summary: String(localized: "Configure the Usage page"))
                     }
 
                     NavigationLink {
@@ -920,7 +930,7 @@ private struct SettingsTab: View {
                         SettingSummaryRow(
                             title: "Cost Setting",
                             symbolName: "dollarsign.circle.fill",
-                            summary: "Configure the Cost page")
+                            summary: String(localized: "Configure the Cost page"))
                     }
                 }
 
@@ -1008,13 +1018,13 @@ private struct SettingsTab: View {
     }
 
     private var macVersionSummary: String {
-        guard let snapshot = self.usageData.snapshot else { return "Not synced" }
-        return snapshot.appVersion ?? "Unknown"
+        guard let snapshot = self.usageData.snapshot else { return String(localized: "Not synced") }
+        return snapshot.appVersion ?? String(localized: "Unknown")
     }
 }
 
 private struct SettingSummaryRow: View {
-    let title: String
+    let title: LocalizedStringResource
     let symbolName: String
     let summary: String
 
@@ -1054,12 +1064,12 @@ private struct AboutSyncDetailView: View {
             Section("Versions") {
                 LabeledContent("iPhone App", value: self.appDisplayVersion)
                 if let snapshot = self.usageData.snapshot {
-                    LabeledContent("Mac App", value: snapshot.appVersion ?? "Unknown")
+                    LabeledContent("Mac App", value: snapshot.appVersion ?? String(localized: "Unknown"))
                     if let mobileVersion = snapshot.mobileVersion {
                         LabeledContent("Synced Mobile Version", value: mobileVersion)
                     }
                 } else {
-                    LabeledContent("Mac App", value: "Not synced")
+                    LabeledContent("Mac App", value: String(localized: "Not synced"))
                 }
             }
 
@@ -1112,36 +1122,38 @@ private enum MobileReleaseNotesCatalog {
     static let versions: [ReleaseNotesVersion] = [
         ReleaseNotesVersion(
             version: "1.1.0",
-            status: "Latest",
-            summary: "Cost analytics, configurable charts, release notes, and unified mobile versioning.",
+            status: String(localized: "Latest"),
+            summary: String(localized: "Cost analytics, localization, configurable charts, release notes, and unified mobile versioning."),
             sections: [
                 .init(
-                    title: "Added",
+                    title: String(localized: "Added"),
                     items: [
-                        "A dedicated Cost tab with provider share, model mix, service mix, and 30-day spend analysis.",
-                        "An in-app Release Notes page that shows the latest update first and keeps older versions collapsed below.",
-                        "Setup guidance, pull-to-refresh support, and the App Store privacy additions needed for distribution.",
+                        String(localized: "A dedicated Cost tab with provider share, model mix, service mix, and 30-day spend analysis."),
+                        String(localized: "An in-app Release Notes page that shows the latest update first and keeps older versions collapsed below."),
+                        String(localized: "Native localization for English, Simplified Chinese, Traditional Chinese, and Japanese that follows both system language and the per-app language setting on iPhone."),
+                        String(localized: "Setup guidance, pull-to-refresh support, and the App Store privacy additions needed for distribution."),
                     ]),
                 .init(
-                    title: "Improved",
+                    title: String(localized: "Improved"),
                     items: [
-                        "Usage and Cost charts now support both Bar Chart and Line Chart display styles.",
-                        "Press-and-hold chart inspection now surfaces exact daily values directly on the graph.",
-                        "Settings are reorganized into About & Sync, Release Notes, Usage Setting, and Cost Setting.",
-                        "Mobile version naming is now aligned directly with the iOS app version number.",
+                        String(localized: "Usage and Cost charts now support both Bar Chart and Line Chart display styles."),
+                        String(localized: "Press-and-hold chart inspection now surfaces exact daily values directly on the graph."),
+                        String(localized: "Settings are reorganized into About & Sync, Release Notes, Usage Setting, and Cost Setting."),
+                        String(localized: "Mobile version naming is now aligned directly with the iOS app version number."),
+                        String(localized: "Build 7 refreshes the 1.1.0 release line without changing the public app version."),
                     ]),
             ]),
         ReleaseNotesVersion(
             version: "1.0.0",
-            status: "Previous",
-            summary: "Initial App Store release line, mapped from the earlier Mobile 0.1.0 build.",
+            status: String(localized: "Previous"),
+            summary: String(localized: "Initial App Store release line, mapped from the earlier Mobile 0.1.0 build."),
             sections: [
                 .init(
-                    title: "Added",
+                    title: String(localized: "Added"),
                     items: [
-                        "The first iPhone companion app for CodexBar with iCloud Key-Value Store sync from Mac.",
-                        "Provider cards with usage windows, budget progress, sync status, and detail screens.",
-                        "Liquid Glass styling, demo mode, About information, and Mac version display.",
+                        String(localized: "The first iPhone companion app for CodexBar with iCloud Key-Value Store sync from Mac."),
+                        String(localized: "Provider cards with usage windows, budget progress, sync status, and detail screens."),
+                        String(localized: "Liquid Glass styling, demo mode, About information, and Mac version display."),
                     ]),
             ]),
     ]
@@ -1179,7 +1191,7 @@ private struct ReleaseNotesView: View {
                         } label: {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(spacing: 8) {
-                                    Text("Version \(version.version)")
+                    Text("\(String(localized: "Version")) \(version.version)")
                                         .fontWeight(.semibold)
                                     ReleaseNotesBadge(title: version.status)
                                 }
@@ -1205,7 +1217,7 @@ private struct ReleaseNotesCard: View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Version \(self.version.version)")
+                    Text("\(String(localized: "Version")) \(self.version.version)")
                         .font(.headline)
                     Text(self.version.summary)
                         .font(.subheadline)

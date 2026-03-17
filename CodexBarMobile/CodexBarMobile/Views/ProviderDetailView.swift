@@ -99,33 +99,33 @@ struct ProviderDetailView: View {
                 switch self.chartStyle {
                 case .bars:
                     BarMark(
-                        x: .value("Date", point.dayKey),
-                        y: .value("Cost", point.costUSD))
+                        x: .value(String(localized: "Date"), point.dayKey),
+                        y: .value(String(localized: "Cost"), point.costUSD))
                         .foregroundStyle(self.providerColor.gradient)
                         .cornerRadius(3)
                 case .line:
                     AreaMark(
-                        x: .value("Date", point.dayKey),
-                        y: .value("Cost", point.costUSD))
+                        x: .value(String(localized: "Date"), point.dayKey),
+                        y: .value(String(localized: "Cost"), point.costUSD))
                         .foregroundStyle(self.providerColor.opacity(0.16))
                         .interpolationMethod(.catmullRom)
 
                     LineMark(
-                        x: .value("Date", point.dayKey),
-                        y: .value("Cost", point.costUSD))
+                        x: .value(String(localized: "Date"), point.dayKey),
+                        y: .value(String(localized: "Cost"), point.costUSD))
                         .foregroundStyle(self.providerColor)
                         .lineStyle(.init(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
                         .interpolationMethod(.catmullRom)
                 }
 
                 if self.selectedDate == point.dayKey {
-                    RuleMark(x: .value("Selected Date", point.dayKey))
+                    RuleMark(x: .value(String(localized: "Selected Date"), point.dayKey))
                         .foregroundStyle(self.providerColor.opacity(0.3))
                         .lineStyle(.init(lineWidth: 1, dash: [4, 4]))
 
                     PointMark(
-                        x: .value("Selected Date", point.dayKey),
-                        y: .value("Selected Cost", point.costUSD))
+                        x: .value(String(localized: "Selected Date"), point.dayKey),
+                        y: .value(String(localized: "Selected Cost"), point.costUSD))
                         .foregroundStyle(self.providerColor)
                         .symbolSize(80)
                 }
@@ -189,23 +189,27 @@ struct ProviderDetailView: View {
 
     private func defaultLabel(at index: Int) -> String {
         switch index {
-        case 0: "Session"
-        case 1: "Weekly"
-        default: "Limit \(index + 1)"
+        case 0: String(localized: "Session")
+        case 1: String(localized: "Weekly")
+        default: "\(String(localized: "Limit")) \(index + 1)"
         }
     }
 
     static func formatUSD(_ value: Double) -> String {
-        String(format: "$%.2f", value)
+        value.formatted(.currency(code: "USD").precision(.fractionLength(2)))
     }
 
     static func formatTokens(_ count: Int) -> String {
         if count >= 1_000_000 {
-            return String(format: "%.1fM tokens", Double(count) / 1_000_000)
+            return "\(Self.formatCompactNumber(Double(count) / 1_000_000)) \(String(localized: "M tokens"))"
         } else if count >= 1000 {
-            return String(format: "%.1fK tokens", Double(count) / 1000)
+            return "\(Self.formatCompactNumber(Double(count) / 1000)) \(String(localized: "K tokens"))"
         }
-        return "\(count) tokens"
+        return "\(count.formatted()) \(String(localized: "tokens"))"
+    }
+
+    private static func formatCompactNumber(_ value: Double) -> String {
+        value.formatted(.number.precision(.fractionLength(1)))
     }
 }
 

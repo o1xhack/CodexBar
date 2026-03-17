@@ -123,8 +123,8 @@ struct ProviderUsageView: View {
     @ViewBuilder
     private func costTeaserText(_ cost: SyncCostSummary) -> some View {
         let parts: [String] = [
-            cost.sessionCostUSD.map { String(format: "Today: $%.2f", $0) },
-            cost.last30DaysCostUSD.map { String(format: "30d: $%.2f", $0) },
+            cost.sessionCostUSD.map { "\(String(localized: "Today")): \(Self.formatUSD($0))" },
+            cost.last30DaysCostUSD.map { "\(String(localized: "30d")): \(Self.formatUSD($0))" },
         ].compactMap { $0 }
 
         if !parts.isEmpty {
@@ -136,15 +136,21 @@ struct ProviderUsageView: View {
 
     private func defaultLabel(at index: Int) -> String {
         switch index {
-        case 0: return "Session"
-        case 1: return "Weekly"
-        default: return "Limit \(index + 1)"
+        case 0: return String(localized: "Session")
+        case 1: return String(localized: "Weekly")
+        default: return "\(String(localized: "Limit")) \(index + 1)"
         }
+    }
+
+    private static func formatUSD(_ value: Double) -> String {
+        value.formatted(.currency(code: "USD").precision(.fractionLength(2)))
     }
 }
 
 private enum MobilePersonalInfoRedactor {
-    private static let emailPlaceholder = "Hidden"
+    private static var emailPlaceholder: String {
+        String(localized: "Hidden")
+    }
 
     private static let emailRegex: NSRegularExpression? = {
         let pattern = #"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}"#
