@@ -233,14 +233,6 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "當兩台裝置都在線時，資料會自動同步" } }
       }
     },
-    "Build 7 refreshes the 1.1.0 release line without changing the public app version." : {
-      "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Build 7 refreshes the 1.1.0 release line without changing the public app version." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Build 7 では公開バージョン番号を変えずに 1.1.0 系列を更新しています。" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Build 7 在不改变公开版本号的前提下刷新了 1.1.0 版本线。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Build 7 在不改變公開版本號的前提下更新了 1.1.0 版本線。" } }
-      }
-    },
     "Date" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Date" } },
@@ -473,6 +465,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Mac App" } }
       }
     },
+    "Mac sync status now reports missing iCloud entitlements or unavailable iCloud accounts instead of showing a false success state." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac sync status now reports missing iCloud entitlements or unavailable iCloud accounts instead of showing a false success state." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac 側の同期状態は、誤った成功表示ではなく、iCloud entitlement の欠落や iCloud アカウント未利用を明示的に表示するようになりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Mac 端同步状态现在会明确显示缺少 iCloud entitlement 或 iCloud 账户不可用，而不是错误地显示同步成功。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Mac 端同步狀態現在會明確顯示缺少 iCloud entitlement 或 iCloud 帳戶不可用，而不是錯誤地顯示同步成功。" } }
+      }
+    },
     "Mobile version naming is now aligned directly with the iOS app version number." : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Mobile version naming is now aligned directly with the iOS app version number." } },
@@ -655,6 +655,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "以前" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "旧版本" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "舊版本" } }
+      }
+    },
+    "Pull to refresh now asks iCloud Key-Value Store to synchronize before reading the latest snapshot." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Pull to refresh now asks iCloud Key-Value Store to synchronize before reading the latest snapshot." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "下に引いて更新すると、最新スナップショットを読む前に iCloud Key-Value Store の同期を要求するようになりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "现在下拉刷新会先要求 iCloud Key-Value Store 同步，再读取最新快照。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "現在下拉重新整理會先要求 iCloud Key-Value Store 同步，再讀取最新快照。" } }
       }
     },
     "Preview with Demo Data" : {
@@ -959,6 +967,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud アカウントが変更されました" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 账户已更改" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 帳戶已變更" } }
+      }
+    },
+    "iCloud sync unavailable" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud sync unavailable" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 同期を利用できません" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 同步不可用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 同步不可用" } }
       }
     },
     "iCloud storage quota exceeded" : {

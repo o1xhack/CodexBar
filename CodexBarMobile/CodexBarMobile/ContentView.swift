@@ -45,7 +45,7 @@ struct ContentView: View {
     }
 
     private var currentVersion: String {
-        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.1.0"
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
     }
 
     private var shouldShowOnboarding: Bool {
@@ -1013,7 +1013,7 @@ private struct SettingsTab: View {
     }
 
     private var mobileVersionSummary: String {
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.1.0"
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
         return version
     }
 
@@ -1054,7 +1054,7 @@ private struct AboutSyncDetailView: View {
     let usageData: SyncedUsageData
 
     private var appDisplayVersion: String {
-        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.1.0"
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0.0"
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
         return "\(version) (\(build))"
     }
@@ -1121,17 +1121,20 @@ private struct ReleaseNotesVersion: Identifiable {
 private enum MobileReleaseNotesCatalog {
     static let versions: [ReleaseNotesVersion] = [
         ReleaseNotesVersion(
-            version: "1.1.0",
+            version: "1.0.0",
             status: String(localized: "Latest"),
-            summary: String(localized: "Cost analytics, localization, configurable charts, release notes, and unified mobile versioning."),
+            summary: String(localized: "Initial App Store release line, mapped from the earlier Mobile 0.1.0 build."),
             sections: [
                 .init(
                     title: String(localized: "Added"),
                     items: [
+                        String(localized: "The first iPhone companion app for CodexBar with iCloud Key-Value Store sync from Mac."),
                         String(localized: "A dedicated Cost tab with provider share, model mix, service mix, and 30-day spend analysis."),
                         String(localized: "An in-app Release Notes page that shows the latest update first and keeps older versions collapsed below."),
                         String(localized: "Native localization for English, Simplified Chinese, Traditional Chinese, and Japanese that follows both system language and the per-app language setting on iPhone."),
                         String(localized: "Setup guidance, pull-to-refresh support, and the App Store privacy additions needed for distribution."),
+                        String(localized: "Provider cards with usage windows, budget progress, sync status, and detail screens."),
+                        String(localized: "Liquid Glass styling, demo mode, About information, and Mac version display."),
                     ]),
                 .init(
                     title: String(localized: "Improved"),
@@ -1140,20 +1143,12 @@ private enum MobileReleaseNotesCatalog {
                         String(localized: "Press-and-hold chart inspection now surfaces exact daily values directly on the graph."),
                         String(localized: "Settings are reorganized into About & Sync, Release Notes, Usage Setting, and Cost Setting."),
                         String(localized: "Mobile version naming is now aligned directly with the iOS app version number."),
-                        String(localized: "Build 7 refreshes the 1.1.0 release line without changing the public app version."),
                     ]),
-            ]),
-        ReleaseNotesVersion(
-            version: "1.0.0",
-            status: String(localized: "Previous"),
-            summary: String(localized: "Initial App Store release line, mapped from the earlier Mobile 0.1.0 build."),
-            sections: [
                 .init(
-                    title: String(localized: "Added"),
+                    title: String(localized: "Fixed"),
                     items: [
-                        String(localized: "The first iPhone companion app for CodexBar with iCloud Key-Value Store sync from Mac."),
-                        String(localized: "Provider cards with usage windows, budget progress, sync status, and detail screens."),
-                        String(localized: "Liquid Glass styling, demo mode, About information, and Mac version display."),
+                        String(localized: "Mac sync status now reports missing iCloud entitlements or unavailable iCloud accounts instead of showing a false success state."),
+                        String(localized: "Pull to refresh now asks iCloud Key-Value Store to synchronize before reading the latest snapshot."),
                     ]),
             ]),
     ]

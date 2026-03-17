@@ -202,7 +202,7 @@ public struct SyncedUsageSnapshot: Codable, Sendable, Equatable {
     public let deviceName: String
     /// Mac app version (e.g. "0.18.0-beta.3")
     public let appVersion: String?
-    /// Mobile version (e.g. "1.1.0")
+    /// Mobile version (e.g. "1.0.0")
     public let mobileVersion: String?
 
     private enum CodingKeys: String, CodingKey {

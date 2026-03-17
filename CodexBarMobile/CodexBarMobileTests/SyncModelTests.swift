@@ -225,7 +225,7 @@ struct SyncModelTests {
             syncTimestamp: Date(timeIntervalSince1970: 1_700_000_000),
             deviceName: "Test Mac",
             appVersion: "0.18.0-beta.3",
-            mobileVersion: "1.1.0")
+            mobileVersion: "1.0.0")
 
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -236,7 +236,7 @@ struct SyncModelTests {
         let decoded = try decoder.decode(SyncedUsageSnapshot.self, from: data)
 
         #expect(decoded.appVersion == "0.18.0-beta.3")
-        #expect(decoded.mobileVersion == "1.1.0")
+        #expect(decoded.mobileVersion == "1.0.0")
     }
 
     @Test("Legacy syncVersion key decodes into mobileVersion")

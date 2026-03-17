@@ -177,7 +177,7 @@ enum PreviewData {
         syncTimestamp: Date().addingTimeInterval(-45),
         deviceName: "MacBook Pro",
         appVersion: "0.18.0",
-        mobileVersion: "1.1.0")
+        mobileVersion: "1.0.0")
 
     @MainActor
     static func makeSyncedUsageData() -> SyncedUsageData {

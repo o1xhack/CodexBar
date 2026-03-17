@@ -2,24 +2,7 @@
 
 All notable changes to the CodexBar iOS companion app will be documented in this file.
 
-## [1.1.0] — Unreleased
-
-### Added
-- Cost tab with provider share, model/service mix, and 30-day spend analysis
-- In-app release notes page with the latest update summary and collapsible version history
-- Privacy manifest, privacy policy, and dark mode app icon
-- Onboarding flow, setup guide, and pull-to-refresh support
-- Native localization for English, Simplified Chinese, Traditional Chinese, and Japanese
-
-### Changed
-- Usage and Cost charts support both Bar Chart and Line Chart styles
-- 30-day charts support press-and-hold inspection for exact daily values
-- Setting tab now groups About & Sync, Release Notes, Usage Setting, and Cost Setting
-- Mobile versioning is now aligned directly with the iOS app version number
-- Dynamic version display now surfaces synced iPhone and Mac versions more clearly
-- Build 7 refreshes the 1.1.0 release line without changing the public version number
-
-## [1.0.0]
+## [1.0.0] — 2026-03-17
 
 Initial App Store release line, corresponding to the earlier Mobile `0.1.0` build.
 
@@ -36,3 +19,19 @@ Initial App Store release line, corresponding to the earlier Mobile `0.1.0` buil
 - About tab with sync status, developer info, and open source credits
 - Display Mac app version and Sync version from iCloud payload in About tab
 - Empty state views for waiting-for-sync and no-providers states
+- Cost tab with provider share, model/service mix, and 30-day spend analysis
+- In-app release notes page with the latest update summary and collapsible version history
+- Privacy manifest, privacy policy, and dark mode app icon
+- Onboarding flow, setup guide, and pull-to-refresh support
+- Native localization for English, Simplified Chinese, Traditional Chinese, and Japanese
+
+### Changed
+- Usage and Cost charts support both Bar Chart and Line Chart styles
+- 30-day charts support press-and-hold inspection for exact daily values
+- Setting tab now groups About & Sync, Release Notes, Usage Setting, and Cost Setting
+- Mobile versioning is now aligned directly with the iOS app version number
+- Dynamic version display now surfaces synced iPhone and Mac versions more clearly
+
+### Fixed
+- Pull to refresh now asks iCloud Key-Value Store to synchronize before reading the latest snapshot
+- Mac sync status now reports missing iCloud entitlements or unavailable iCloud accounts instead of showing a false success state
