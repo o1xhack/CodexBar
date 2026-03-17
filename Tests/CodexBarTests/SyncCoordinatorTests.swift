@@ -8,13 +8,13 @@ import Testing
 final class MockSyncPusher: SyncPushing, @unchecked Sendable {
     var pushCount = 0
     var lastSnapshot: SyncedUsageSnapshot?
-    var shouldSucceed = true
+    var nextResult: SyncPushResult = .success
 
     @discardableResult
-    func pushSnapshot(_ snapshot: SyncedUsageSnapshot) -> Bool {
+    func pushSnapshot(_ snapshot: SyncedUsageSnapshot) -> SyncPushResult {
         self.pushCount += 1
         self.lastSnapshot = snapshot
-        return self.shouldSucceed
+        return self.nextResult
     }
 }
 
@@ -68,6 +68,7 @@ struct SyncCoordinatorTests {
         if mock.pushCount > 0 {
             #expect(coordinator.lastSyncTime != nil)
             #expect(coordinator.lastSyncSucceeded == true)
+            #expect(coordinator.lastSyncMessage == nil)
         }
     }
 
@@ -77,7 +78,7 @@ struct SyncCoordinatorTests {
         settings.iCloudSyncEnabled = true
         let store = self.makeUsageStore(settings: settings)
         let mock = MockSyncPusher()
-        mock.shouldSucceed = false
+        mock.nextResult = .failure("iCloud sync unavailable")
         let coordinator = SyncCoordinator(store: store, settings: settings, syncManager: mock)
 
         coordinator.pushCurrentSnapshot()
@@ -85,6 +86,7 @@ struct SyncCoordinatorTests {
         if mock.pushCount > 0 {
             #expect(coordinator.lastSyncTime != nil)
             #expect(coordinator.lastSyncSucceeded == false)
+            #expect(coordinator.lastSyncMessage == "iCloud sync unavailable")
         }
     }
 

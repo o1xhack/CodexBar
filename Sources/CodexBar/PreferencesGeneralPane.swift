@@ -151,7 +151,9 @@ struct GeneralPane: View {
                             ? Color.secondary
                             : Color.red)
                         .font(.footnote)
-                    Text("Last sync: \(Self.formatSyncTime(lastSync))")
+                    Text(
+                        "\(self.syncCoordinator.lastSyncSucceeded ? "Last sync" : "Last attempt"): "
+                            + Self.formatSyncTime(lastSync))
                         .font(.footnote)
                         .foregroundStyle(.tertiary)
                 } else {
@@ -162,6 +164,13 @@ struct GeneralPane: View {
                         .font(.footnote)
                         .foregroundStyle(.tertiary)
                 }
+            }
+
+            if let message = self.syncCoordinator.lastSyncMessage, !message.isEmpty {
+                Text(message)
+                    .font(.footnote)
+                    .foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
             }
 
             Button("Sync Now") {

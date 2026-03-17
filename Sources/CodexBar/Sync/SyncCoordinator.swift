@@ -18,6 +18,7 @@ final class SyncCoordinator {
     // Observable sync status for UI
     private(set) var lastSyncTime: Date?
     private(set) var lastSyncSucceeded: Bool = true
+    private(set) var lastSyncMessage: String?
     private(set) var isSyncing: Bool = false
 
     init(store: UsageStore, settings: SettingsStore, syncManager: any SyncPushing = CloudSyncManager.shared) {
@@ -138,9 +139,10 @@ final class SyncCoordinator {
             appVersion: appVersion,
             mobileVersion: mobileVersion)
 
-        let success = self.syncManager.pushSnapshot(synced)
+        let result = self.syncManager.pushSnapshot(synced)
         self.lastSyncTime = Date()
-        self.lastSyncSucceeded = success
+        self.lastSyncSucceeded = result.succeeded
+        self.lastSyncMessage = result.message
     }
 
     func stopObserving() {

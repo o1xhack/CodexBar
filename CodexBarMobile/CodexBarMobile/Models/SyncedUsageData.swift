@@ -44,7 +44,13 @@ final class SyncedUsageData {
 
     /// Force-reads the latest snapshot from iCloud.
     func refresh() {
-        snapshot = reader.latestSnapshot()
+        let syncAttempted = self.reader.synchronize()
+        self.snapshot = self.reader.latestSnapshot()
+        if self.snapshot != nil {
+            self.lastSyncError = nil
+        } else if !syncAttempted {
+            self.lastSyncError = String(localized: "iCloud sync unavailable")
+        }
     }
 
     /// Returns the age of the last sync in a human-readable format, or nil if no sync exists.

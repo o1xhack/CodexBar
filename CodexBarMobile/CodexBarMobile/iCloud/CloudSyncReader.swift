@@ -23,6 +23,11 @@ final class CloudSyncReader: @unchecked Sendable {
         syncManager.startObserving(handler: handler)
     }
 
+    @discardableResult
+    func synchronize() -> Bool {
+        syncManager.synchronizeStore()
+    }
+
     func stopObserving() {
         syncManager.stopObserving()
     }
