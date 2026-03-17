@@ -5,19 +5,24 @@ import SwiftUI
 struct ProviderDetailView: View {
     let provider: ProviderUsageSnapshot
 
+    @AppStorage(MobileSettingsKeys.usageCostChartStyle) private var chartStyleRawValue = CostChartStyle.bars.rawValue
     @State private var selectedDate: String?
+
+    private var chartStyle: CostChartStyle {
+        CostChartStyle(rawValue: self.chartStyleRawValue) ?? .bars
+    }
 
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
                 // Rate limit cards
-                rateLimitSection
+                self.rateLimitSection
 
                 // Cost summary grid
                 if let cost = self.provider.costSummary,
                    cost.sessionCostUSD != nil || cost.last30DaysCostUSD != nil
                 {
-                    costSummarySection(cost)
+                    self.costSummarySection(cost)
                 }
 
                 // Budget progress
@@ -27,7 +32,7 @@ struct ProviderDetailView: View {
 
                 // Daily chart
                 if let cost = self.provider.costSummary, !cost.daily.isEmpty {
-                    dailyChartSection(cost.daily)
+                    self.dailyChartSection(cost.daily)
                 }
             }
             .padding(.horizontal, 20)
@@ -57,7 +62,6 @@ struct ProviderDetailView: View {
 
     // MARK: - Cost Summary
 
-    @ViewBuilder
     private func costSummarySection(_ cost: SyncCostSummary) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Cost & Usage")
@@ -85,7 +89,6 @@ struct ProviderDetailView: View {
 
     // MARK: - Daily Chart
 
-    @ViewBuilder
     private func dailyChartSection(_ daily: [SyncDailyPoint]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Daily Spend")
@@ -93,11 +96,39 @@ struct ProviderDetailView: View {
                 .padding(.top, 4)
 
             Chart(daily, id: \.dayKey) { point in
-                BarMark(
-                    x: .value("Date", point.dayKey),
-                    y: .value("Cost", point.costUSD))
-                    .foregroundStyle(self.providerColor.gradient)
-                    .cornerRadius(3)
+                switch self.chartStyle {
+                case .bars:
+                    BarMark(
+                        x: .value("Date", point.dayKey),
+                        y: .value("Cost", point.costUSD))
+                        .foregroundStyle(self.providerColor.gradient)
+                        .cornerRadius(3)
+                case .line:
+                    AreaMark(
+                        x: .value("Date", point.dayKey),
+                        y: .value("Cost", point.costUSD))
+                        .foregroundStyle(self.providerColor.opacity(0.16))
+                        .interpolationMethod(.catmullRom)
+
+                    LineMark(
+                        x: .value("Date", point.dayKey),
+                        y: .value("Cost", point.costUSD))
+                        .foregroundStyle(self.providerColor)
+                        .lineStyle(.init(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                        .interpolationMethod(.catmullRom)
+                }
+
+                if self.selectedDate == point.dayKey {
+                    RuleMark(x: .value("Selected Date", point.dayKey))
+                        .foregroundStyle(self.providerColor.opacity(0.3))
+                        .lineStyle(.init(lineWidth: 1, dash: [4, 4]))
+
+                    PointMark(
+                        x: .value("Selected Date", point.dayKey),
+                        y: .value("Selected Cost", point.costUSD))
+                        .foregroundStyle(self.providerColor)
+                        .symbolSize(80)
+                }
             }
             .chartXSelection(value: self.$selectedDate)
             .chartXAxis {
@@ -158,9 +189,9 @@ struct ProviderDetailView: View {
 
     private func defaultLabel(at index: Int) -> String {
         switch index {
-        case 0: return "Session"
-        case 1: return "Weekly"
-        default: return "Limit \(index + 1)"
+        case 0: "Session"
+        case 1: "Weekly"
+        default: "Limit \(index + 1)"
         }
     }
 
@@ -171,8 +202,8 @@ struct ProviderDetailView: View {
     static func formatTokens(_ count: Int) -> String {
         if count >= 1_000_000 {
             return String(format: "%.1fM tokens", Double(count) / 1_000_000)
-        } else if count >= 1_000 {
-            return String(format: "%.1fK tokens", Double(count) / 1_000)
+        } else if count >= 1000 {
+            return String(format: "%.1fK tokens", Double(count) / 1000)
         }
         return "\(count) tokens"
     }

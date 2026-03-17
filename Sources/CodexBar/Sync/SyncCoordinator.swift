@@ -98,20 +98,7 @@ final class SyncCoordinator {
             let secondaryWindow = rateWindows.count > 1 ? rateWindows[1] : nil
 
             // Map token/cost snapshot
-            let tokenSnap = self.store.tokenSnapshots[provider]
-            let costSummary: SyncCostSummary? = tokenSnap.map { ts in
-                SyncCostSummary(
-                    sessionCostUSD: ts.sessionCostUSD,
-                    sessionTokens: ts.sessionTokens,
-                    last30DaysCostUSD: ts.last30DaysCostUSD,
-                    last30DaysTokens: ts.last30DaysTokens,
-                    daily: ts.daily.map { entry in
-                        SyncDailyPoint(
-                            dayKey: entry.date,
-                            costUSD: entry.costUSD ?? 0,
-                            totalTokens: entry.totalTokens ?? 0)
-                    })
-            }
+            let costSummary = self.makeCostSummary(for: provider)
 
             // Map provider budget/spend
             let providerCost = snapshot?.providerCost
@@ -158,5 +145,94 @@ final class SyncCoordinator {
 
     func stopObserving() {
         self.isObserving = false
+    }
+
+    private func makeCostSummary(for provider: UsageProvider) -> SyncCostSummary? {
+        let tokenSnapshot = self.store.tokenSnapshots[provider]
+        let serviceBreakdownsByDay = self.dashboardServiceBreakdowns(for: provider)
+
+        guard tokenSnapshot != nil || !serviceBreakdownsByDay.isEmpty else { return nil }
+
+        let tokenEntriesByDay = Dictionary(
+            uniqueKeysWithValues: (tokenSnapshot?.daily ?? []).map { ($0.date, $0) })
+        let allDayKeys = Set(tokenEntriesByDay.keys).union(serviceBreakdownsByDay.keys).sorted()
+        let daily = allDayKeys.map { dayKey in
+            let entry = tokenEntriesByDay[dayKey]
+            let modelBreakdowns = self.modelBreakdowns(from: entry)
+            let serviceBreakdowns = serviceBreakdownsByDay[dayKey] ?? []
+
+            let fallbackCost =
+                entry?.costUSD
+                    ?? self.breakdownTotal(modelBreakdowns)
+                    ?? self.breakdownTotal(serviceBreakdowns)
+                    ?? 0
+
+            return SyncDailyPoint(
+                dayKey: dayKey,
+                costUSD: fallbackCost,
+                totalTokens: entry?.totalTokens ?? 0,
+                modelBreakdowns: modelBreakdowns,
+                serviceBreakdowns: serviceBreakdowns)
+        }
+
+        let totalDailyCost = daily.reduce(0) { $0 + $1.costUSD }
+
+        return SyncCostSummary(
+            sessionCostUSD: tokenSnapshot?.sessionCostUSD,
+            sessionTokens: tokenSnapshot?.sessionTokens,
+            last30DaysCostUSD: tokenSnapshot?.last30DaysCostUSD ?? (daily.isEmpty ? nil : totalDailyCost),
+            last30DaysTokens: tokenSnapshot?.last30DaysTokens,
+            daily: daily)
+    }
+
+    private func modelBreakdowns(from entry: CostUsageDailyReport.Entry?) -> [SyncCostBreakdown] {
+        guard let breakdowns = entry?.modelBreakdowns else { return [] }
+        return breakdowns
+            .compactMap { breakdown in
+                guard let cost = breakdown.costUSD, cost > 0 else { return nil }
+                return SyncCostBreakdown(label: breakdown.modelName, costUSD: cost)
+            }
+            .sorted { lhs, rhs in
+                if lhs.costUSD == rhs.costUSD {
+                    return lhs.label.localizedCaseInsensitiveCompare(rhs.label) == .orderedAscending
+                }
+                return lhs.costUSD > rhs.costUSD
+            }
+    }
+
+    private func dashboardServiceBreakdowns(for provider: UsageProvider) -> [String: [SyncCostBreakdown]] {
+        guard provider == .codex else { return [:] }
+        guard let usageBreakdown = self.store.openAIDashboard?.usageBreakdown else { return [:] }
+
+        return Dictionary(uniqueKeysWithValues: usageBreakdown.map { daily in
+            let services = daily.services
+                .filter { $0.creditsUsed > 0 }
+                .map { service in
+                    SyncCostBreakdown(
+                        label: Self.displayServiceName(service.service),
+                        costUSD: service.creditsUsed)
+                }
+                .sorted { lhs, rhs in
+                    if lhs.costUSD == rhs.costUSD {
+                        return lhs.label.localizedCaseInsensitiveCompare(rhs.label) == .orderedAscending
+                    }
+                    return lhs.costUSD > rhs.costUSD
+                }
+            return (daily.day, services)
+        })
+    }
+
+    private func breakdownTotal(_ breakdowns: [SyncCostBreakdown]) -> Double? {
+        guard !breakdowns.isEmpty else { return nil }
+        return breakdowns.reduce(0) { $0 + $1.costUSD }
+    }
+
+    private static func displayServiceName(_ rawName: String) -> String {
+        switch rawName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
+        case "cli":
+            "Codex Run"
+        default:
+            rawName
+        }
     }
 }

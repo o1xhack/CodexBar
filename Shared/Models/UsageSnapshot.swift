@@ -9,7 +9,7 @@ public struct SyncRateWindow: Codable, Sendable, Equatable {
     public let resetDescription: String?
 
     public var remainingPercent: Double {
-        max(0, 100 - usedPercent)
+        max(0, 100 - self.usedPercent)
     }
 
     public init(
@@ -37,15 +37,47 @@ public struct SyncRateWindow: Codable, Sendable, Equatable {
 }
 
 /// A single day's cost/token data point for iCloud sync.
+public struct SyncCostBreakdown: Codable, Sendable, Equatable {
+    public let label: String
+    public let costUSD: Double
+
+    public init(label: String, costUSD: Double) {
+        self.label = label
+        self.costUSD = costUSD
+    }
+}
+
+/// A single day's cost/token data point for iCloud sync.
 public struct SyncDailyPoint: Codable, Sendable, Equatable {
     public let dayKey: String
     public let costUSD: Double
     public let totalTokens: Int
+    public let modelBreakdowns: [SyncCostBreakdown]
+    public let serviceBreakdowns: [SyncCostBreakdown]
 
-    public init(dayKey: String, costUSD: Double, totalTokens: Int) {
+    public init(
+        dayKey: String,
+        costUSD: Double,
+        totalTokens: Int,
+        modelBreakdowns: [SyncCostBreakdown] = [],
+        serviceBreakdowns: [SyncCostBreakdown] = [])
+    {
         self.dayKey = dayKey
         self.costUSD = costUSD
         self.totalTokens = totalTokens
+        self.modelBreakdowns = modelBreakdowns
+        self.serviceBreakdowns = serviceBreakdowns
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.dayKey = try container.decode(String.self, forKey: .dayKey)
+        self.costUSD = try container.decode(Double.self, forKey: .costUSD)
+        self.totalTokens = try container.decode(Int.self, forKey: .totalTokens)
+        self.modelBreakdowns =
+            try container.decodeIfPresent([SyncCostBreakdown].self, forKey: .modelBreakdowns) ?? []
+        self.serviceBreakdowns =
+            try container.decodeIfPresent([SyncCostBreakdown].self, forKey: .serviceBreakdowns) ?? []
     }
 }
 
@@ -113,8 +145,8 @@ public struct ProviderUsageSnapshot: Codable, Sendable, Equatable {
 
     /// All available rate windows. Prefers `rateWindows` if non-empty, otherwise falls back to primary/secondary.
     public var allRateWindows: [SyncRateWindow] {
-        if !rateWindows.isEmpty { return rateWindows }
-        return [primary, secondary].compactMap { $0 }
+        if !self.rateWindows.isEmpty { return self.rateWindows }
+        return [self.primary, self.secondary].compactMap(\.self)
     }
 
     public init(
@@ -170,13 +202,13 @@ public struct SyncedUsageSnapshot: Codable, Sendable, Equatable {
     public let deviceName: String
     /// Mac app version (e.g. "0.18.0-beta.3")
     public let appVersion: String?
-    /// Mobile version (e.g. "0.1.1")
+    /// Mobile version (e.g. "1.1.0")
     public let mobileVersion: String?
 
     private enum CodingKeys: String, CodingKey {
         case providers, syncTimestamp, deviceName, appVersion
         case mobileVersion
-        // Legacy key for backward compatibility with older synced data.
+        /// Legacy key for backward compatibility with older synced data.
         case syncVersion
     }
 
@@ -207,10 +239,10 @@ public struct SyncedUsageSnapshot: Codable, Sendable, Equatable {
 
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(providers, forKey: .providers)
-        try container.encode(syncTimestamp, forKey: .syncTimestamp)
-        try container.encode(deviceName, forKey: .deviceName)
-        try container.encodeIfPresent(appVersion, forKey: .appVersion)
-        try container.encodeIfPresent(mobileVersion, forKey: .mobileVersion)
+        try container.encode(self.providers, forKey: .providers)
+        try container.encode(self.syncTimestamp, forKey: .syncTimestamp)
+        try container.encode(self.deviceName, forKey: .deviceName)
+        try container.encodeIfPresent(self.appVersion, forKey: .appVersion)
+        try container.encodeIfPresent(self.mobileVersion, forKey: .mobileVersion)
     }
 }

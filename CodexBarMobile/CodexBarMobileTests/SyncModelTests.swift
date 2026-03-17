@@ -1,6 +1,7 @@
 import CodexBarSync
 import Foundation
 import Testing
+@testable import CodexBarMobile
 
 @Suite("Sync Model Codable Tests")
 struct SyncModelTests {
@@ -16,7 +17,7 @@ struct SyncModelTests {
                 resetDescription: "Resets in 2h 30m"),
             secondary: SyncRateWindow(
                 usedPercent: 15.0,
-                windowMinutes: 10_080,
+                windowMinutes: 10080,
                 resetsAt: nil,
                 resetDescription: "Resets Monday"),
             accountEmail: "user@example.com",
@@ -147,8 +148,16 @@ struct SyncModelTests {
     @Test("Cost summary and budget round-trip through JSON")
     func costDataRoundTrip() throws {
         let daily = [
-            SyncDailyPoint(dayKey: "2024-01-15", costUSD: 1.42, totalTokens: 12_340),
-            SyncDailyPoint(dayKey: "2024-01-16", costUSD: 2.10, totalTokens: 18_500),
+            SyncDailyPoint(
+                dayKey: "2024-01-15",
+                costUSD: 1.42,
+                totalTokens: 12340,
+                modelBreakdowns: [
+                    SyncCostBreakdown(label: "gpt-5.4", costUSD: 1.10),
+                    SyncCostBreakdown(label: "gpt-5.3-codex", costUSD: 0.32),
+                ],
+                serviceBreakdowns: [SyncCostBreakdown(label: "Codex Run", costUSD: 1.42)]),
+            SyncDailyPoint(dayKey: "2024-01-16", costUSD: 2.10, totalTokens: 18500),
         ]
 
         let snapshot = ProviderUsageSnapshot(
@@ -163,7 +172,7 @@ struct SyncModelTests {
             lastUpdated: Date(timeIntervalSince1970: 1_700_000_000),
             costSummary: SyncCostSummary(
                 sessionCostUSD: 1.42,
-                sessionTokens: 12_340,
+                sessionTokens: 12340,
                 last30DaysCostUSD: 28.90,
                 last30DaysTokens: 1_245_000,
                 daily: daily),
@@ -183,13 +192,20 @@ struct SyncModelTests {
         let decoded = try decoder.decode(ProviderUsageSnapshot.self, from: data)
 
         #expect(decoded.costSummary?.sessionCostUSD == 1.42)
-        #expect(decoded.costSummary?.sessionTokens == 12_340)
+        #expect(decoded.costSummary?.sessionTokens == 12340)
         #expect(decoded.costSummary?.last30DaysCostUSD == 28.90)
         #expect(decoded.costSummary?.last30DaysTokens == 1_245_000)
         #expect(decoded.costSummary?.daily.count == 2)
         #expect(decoded.costSummary?.daily[0].dayKey == "2024-01-15")
         #expect(decoded.costSummary?.daily[0].costUSD == 1.42)
-        #expect(decoded.costSummary?.daily[0].totalTokens == 12_340)
+        #expect(decoded.costSummary?.daily[0].totalTokens == 12340)
+        #expect(decoded.costSummary?.daily[0].modelBreakdowns == [
+            SyncCostBreakdown(label: "gpt-5.4", costUSD: 1.10),
+            SyncCostBreakdown(label: "gpt-5.3-codex", costUSD: 0.32),
+        ])
+        #expect(decoded.costSummary?.daily[0].serviceBreakdowns == [
+            SyncCostBreakdown(label: "Codex Run", costUSD: 1.42),
+        ])
 
         #expect(decoded.budget?.usedAmount == 42.50)
         #expect(decoded.budget?.limitAmount == 100.0)
@@ -209,7 +225,7 @@ struct SyncModelTests {
             syncTimestamp: Date(timeIntervalSince1970: 1_700_000_000),
             deviceName: "Test Mac",
             appVersion: "0.18.0-beta.3",
-            mobileVersion: "0.1.1")
+            mobileVersion: "1.1.0")
 
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -220,7 +236,7 @@ struct SyncModelTests {
         let decoded = try decoder.decode(SyncedUsageSnapshot.self, from: data)
 
         #expect(decoded.appVersion == "0.18.0-beta.3")
-        #expect(decoded.mobileVersion == "0.1.1")
+        #expect(decoded.mobileVersion == "1.1.0")
     }
 
     @Test("Legacy syncVersion key decodes into mobileVersion")
@@ -263,18 +279,22 @@ struct SyncModelTests {
 
     // MARK: - Payload Size
 
-    @Test("6 providers x 30 days stays under 1MB KVS limit")
+    @Test("10 providers x 30 days stays under 1MB KVS limit")
     func payloadSizeCheck() throws {
         let daily = (0..<30).map { day in
             SyncDailyPoint(
                 dayKey: "2024-01-\(String(format: "%02d", day + 1))",
                 costUSD: Double.random(in: 0.10...5.00),
-                totalTokens: Int.random(in: 1_000...100_000))
+                totalTokens: Int.random(in: 1000...100_000),
+                modelBreakdowns: [
+                    SyncCostBreakdown(label: "Model A", costUSD: 0.7),
+                    SyncCostBreakdown(label: "Model B", costUSD: 0.3),
+                ])
         }
 
         let costSummary = SyncCostSummary(
             sessionCostUSD: 2.50,
-            sessionTokens: 25_000,
+            sessionTokens: 25000,
             last30DaysCostUSD: 45.00,
             last30DaysTokens: 2_000_000,
             daily: daily)
@@ -286,7 +306,7 @@ struct SyncModelTests {
             period: "Monthly",
             resetsAt: Date(timeIntervalSince1970: 1_701_000_000))
 
-        let providers = (0..<6).map { i in
+        let providers = (0..<10).map { i in
             ProviderUsageSnapshot(
                 providerID: "provider-\(i)",
                 providerName: "Provider \(i)",
@@ -297,7 +317,7 @@ struct SyncModelTests {
                     resetDescription: nil),
                 secondary: SyncRateWindow(
                     usedPercent: Double(i * 10),
-                    windowMinutes: 10_080,
+                    windowMinutes: 10080,
                     resetsAt: nil,
                     resetDescription: nil),
                 accountEmail: "user\(i)@example.com",
@@ -320,5 +340,68 @@ struct SyncModelTests {
 
         // iCloud KVS limit is 1MB per key
         #expect(data.count < CloudSyncConstants.maxPayloadBytes)
+    }
+
+    @Test("Cost dashboard insights aggregate ten providers")
+    func costDashboardInsightsHandleManyProviders() {
+        var providers: [ProviderUsageSnapshot] = []
+        var expectedTotal30DayCost = 0.0
+
+        for index in 0..<10 {
+            let dayCost = Double(index + 1) * 0.9
+            let last30DayCost = Double(index + 1) * 3.5
+            let daily = [
+                SyncDailyPoint(
+                    dayKey: "2024-01-\(String(format: "%02d", index + 1))",
+                    costUSD: dayCost,
+                    totalTokens: (index + 1) * 1500,
+                    modelBreakdowns: [
+                        SyncCostBreakdown(label: "Model \(index % 3)", costUSD: Double(index + 1) * 0.5),
+                    ],
+                    serviceBreakdowns: index == 0
+                        ? [SyncCostBreakdown(label: "Codex Run", costUSD: 0.9)]
+                        : []),
+            ]
+            let costSummary = SyncCostSummary(
+                sessionCostUSD: Double(index + 1) * 0.4,
+                sessionTokens: (index + 1) * 1000,
+                last30DaysCostUSD: last30DayCost,
+                last30DaysTokens: (index + 1) * 10000,
+                daily: daily)
+            let budget = SyncBudgetSnapshot(
+                usedAmount: Double(index + 1) * 5,
+                limitAmount: 100,
+                currencyCode: "USD",
+                period: "Monthly",
+                resetsAt: nil)
+
+            providers.append(
+                ProviderUsageSnapshot(
+                    providerID: "provider-\(index)",
+                    providerName: "Provider \(index)",
+                    primary: nil,
+                    secondary: nil,
+                    accountEmail: "user\(index)@example.com",
+                    loginMethod: index.isMultiple(of: 2) ? "API" : "Plan",
+                    statusMessage: nil,
+                    isError: false,
+                    lastUpdated: Date(timeIntervalSince1970: 1_700_000_000 + Double(index)),
+                    costSummary: costSummary,
+                    budget: budget))
+            expectedTotal30DayCost += last30DayCost
+        }
+
+        let snapshot = SyncedUsageSnapshot(
+            providers: providers,
+            syncTimestamp: Date(timeIntervalSince1970: 1_700_000_000),
+            deviceName: "Test Mac")
+        let insights = CostDashboardInsights(snapshot: snapshot)
+
+        #expect(insights.providerRows.count == 10)
+        #expect(insights.budgetRows.count == 10)
+        #expect(insights.dailyPoints.count == 10)
+        #expect(insights.total30DayCost == expectedTotal30DayCost)
+        #expect(insights.serviceRows.first?.label == "Codex Run")
+        #expect(insights.hasDisplayData == true)
     }
 }
