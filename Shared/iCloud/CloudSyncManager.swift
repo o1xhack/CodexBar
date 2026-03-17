@@ -176,7 +176,7 @@ public final class CloudSyncManager: SyncPushing, @unchecked Sendable {
     }
 
     private func hasUbiquityKVStoreEntitlement() -> Bool {
-        #if canImport(Security)
+        #if canImport(Security) && os(macOS)
         guard let task = SecTaskCreateFromSelf(nil) else { return true }
         let value = SecTaskCopyValueForEntitlement(
             task,
