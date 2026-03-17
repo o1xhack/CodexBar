@@ -1,0 +1,1030 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "30 Days" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "30 Days" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "30日間" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "30 天" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "30 天" } }
+      }
+    },
+    "30-day spend contribution across synced providers." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "30-day spend contribution across synced providers." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "同期済みプロバイダ全体での過去30日間の費用比率です。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已同步 provider 的近 30 天费用占比。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已同步 provider 的近 30 天費用占比。" } }
+      }
+    },
+    "30d" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "30d" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "30日" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "30天" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "30天" } }
+      }
+    },
+    "A dedicated Cost tab with provider share, model mix, service mix, and 30-day spend analysis." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A dedicated Cost tab with provider share, model mix, service mix, and 30-day spend analysis." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロバイダ比率、モデル構成、サービス構成、30日間支出分析を備えた専用の Cost タブを追加しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新增独立的 Cost 标签页，提供 provider 占比、模型构成、服务构成和 30 天支出分析。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新增獨立的 Cost 標籤頁，提供 provider 占比、模型構成、服務構成和 30 天支出分析。" } }
+      }
+    },
+    "About & Sync" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About & Sync" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "情報と同期" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关于与同步" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "關於與同步" } }
+      }
+    },
+    "Active Days" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Active Days" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アクティブ日数" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "活跃天数" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "活躍天數" } }
+      }
+    },
+    "Added" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Added" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "追加" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新增" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新增" } }
+      }
+    },
+    "An in-app Release Notes page that shows the latest update first and keeps older versions collapsed below." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "An in-app Release Notes page that shows the latest update first and keeps older versions collapsed below." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最新の更新を先頭に表示し、過去のバージョンを下に折りたたんで保持する Release Notes ページをアプリ内に追加しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新增应用内 Release Notes 页面，顶部默认显示最新更新，下方折叠旧版本说明。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新增應用內 Release Notes 頁面，頂部預設顯示最新更新，下方折疊舊版本說明。" } }
+      }
+    },
+    "Avg" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Avg" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "平均" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "平均" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "平均" } }
+      }
+    },
+    "Bar Chart" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Bar Chart" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "棒グラフ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "柱状图" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "柱狀圖" } }
+      }
+    },
+    "Budget" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Budget" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "予算" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "预算" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "預算" } }
+      }
+    },
+    "Budgets" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Budgets" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "予算" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "预算" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "預算" } }
+      }
+    },
+    "Chart Style" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chart Style" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "グラフ表示" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "图表样式" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "圖表樣式" } }
+      }
+    },
+    "Charts" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Charts" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "グラフ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "图表" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "圖表" } }
+      }
+    },
+    "Codex Service Mix" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Codex Service Mix" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Codex サービス構成" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Codex 服务构成" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Codex 服務構成" } }
+      }
+    },
+    "CodexBar" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar" } }
+      }
+    },
+    "CodexBar (Demo)" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar (Demo)" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar（デモ）" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar（演示）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar（示範）" } }
+      }
+    },
+    "CodexBar on your Mac pushes usage data to iCloud" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar on your Mac pushes usage data to iCloud" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac の CodexBar が使用データを iCloud に送信します" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Mac 上的 CodexBar 会把使用数据推送到 iCloud" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Mac 上的 CodexBar 會把使用資料推送到 iCloud" } }
+      }
+    },
+    "Configure the Cost page" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Configure the Cost page" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Cost ページを設定" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "配置 Cost 页面" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "設定 Cost 頁面" } }
+      }
+    },
+    "Configure the Usage page" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Configure the Usage page" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Usage ページを設定" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "配置 Usage 页面" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "設定 Usage 頁面" } }
+      }
+    },
+    "Cost" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Cost" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "费用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "費用" } }
+      }
+    },
+    "Cost & Usage" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost & Usage" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "費用と使用量" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "费用与用量" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "費用與用量" } }
+      }
+    },
+    "Cost (Demo)" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost (Demo)" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Cost（デモ）" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "费用（演示）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "費用（示範）" } }
+      }
+    },
+    "Cost Setting" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost Setting" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Cost 設定" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Cost 设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Cost 設定" } }
+      }
+    },
+    "Cost analytics, configurable charts, release notes, and unified mobile versioning." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost analytics, configurable charts, release notes, and unified mobile versioning." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Cost 分析、切り替え可能なグラフ、Release Notes、そして統一された Mobile バージョン表記を追加しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "包含 Cost 分析、可切换图表、Release Notes，以及统一的 Mobile 版本命名。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "包含 Cost 分析、可切換圖表、Release Notes，以及統一的 Mobile 版本命名。" } }
+      }
+    },
+    "Cost analytics, localization, configurable charts, release notes, and unified mobile versioning." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost analytics, localization, configurable charts, release notes, and unified mobile versioning." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Cost 分析、多言語対応、切り替え可能なグラフ、Release Notes、そして統一された Mobile バージョン表記を追加しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "包含 Cost 分析、多语言支持、可切换图表、Release Notes，以及统一的 Mobile 版本命名。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "包含 Cost 分析、多語言支援、可切換圖表、Release Notes，以及統一的 Mobile 版本命名。" } }
+      }
+    },
+    "Daily Spend" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Daily Spend" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "日別支出" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每日支出" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "每日支出" } }
+      }
+    },
+    "Data pushed by Mac · Pull to check for updates" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Data pushed by Mac · Pull to check for updates" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "データは Mac から送信されています · 下に引いて更新を確認" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "数据由 Mac 推送 · 下拉检查更新" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "資料由 Mac 推送 · 下拉檢查更新" } }
+      }
+    },
+    "Data syncs automatically when both devices are online" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Data syncs automatically when both devices are online" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "両方のデバイスがオンラインならデータは自動同期されます" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "当两台设备都在线时，数据会自动同步" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "當兩台裝置都在線時，資料會自動同步" } }
+      }
+    },
+    "Date" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Date" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "日付" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "日期" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "日期" } }
+      }
+    },
+    "Developer" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Developer" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "開発者" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开发者" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開發者" } }
+      }
+    },
+    "Done" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Done" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "完了" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "完成" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "完成" } }
+      }
+    },
+    "Download Mac App" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Download Mac App" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac App をダウンロード" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下载 Mac App" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "下載 Mac App" } }
+      }
+    },
+    "Download from the GitHub release page and move to Applications." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Download from the GitHub release page and move to Applications." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "GitHub の Release ページからダウンロードし、Applications に移動してください。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "从 GitHub Release 页面下载后，拖到“应用程序”文件夹。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "從 GitHub Release 頁面下載後，拖到「應用程式」資料夾。" } }
+      }
+    },
+    "Enable iCloud Sync" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable iCloud Sync" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 同期を有効化" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "启用 iCloud 同步" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "啟用 iCloud 同步" } }
+      }
+    },
+    "Enable cost collection in CodexBar on your Mac to see provider spend, breakdowns, and budgets here." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable cost collection in CodexBar on your Mac to see provider spend, breakdowns, and budgets here." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac の CodexBar でコスト収集を有効にすると、ここでプロバイダごとの支出、内訳、予算を確認できます。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Mac 版 CodexBar 中启用费用收集后，这里会显示 provider 支出、细分和预算。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在 Mac 版 CodexBar 中啟用費用收集後，這裡會顯示 provider 支出、細分和預算。" } }
+      }
+    },
+    "Enable providers in CodexBar on your Mac to see usage data here." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable providers in CodexBar on your Mac to see usage data here." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac の CodexBar で provider を有効にすると、ここに使用データが表示されます。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Mac 版 CodexBar 中启用 provider 后，这里才会显示使用数据。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在 Mac 版 CodexBar 中啟用 provider 後，這裡才會顯示使用資料。" } }
+      }
+    },
+    "Exit Demo" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Exit Demo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "デモを終了" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "退出演示" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "退出示範" } }
+      }
+    },
+    "Hide personal information" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hide personal information" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "個人情報を隠す" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "隐藏个人信息" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "隱藏個人資訊" } }
+      }
+    },
+    "Hidden" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hidden" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "非表示" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已隐藏" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已隱藏" } }
+      }
+    },
+    "History" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "History" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "履歴" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "历史版本" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "歷史版本" } }
+      }
+    },
+    "How It Works" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "How It Works" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "仕組み" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "工作原理" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "運作原理" } }
+      }
+    },
+    "Improved" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Improved" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "改善" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "改进" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "改進" } }
+      }
+    },
+    "Initial App Store release line, mapped from the earlier Mobile 0.1.0 build." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Initial App Store release line, mapped from the earlier Mobile 0.1.0 build." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "以前の Mobile 0.1.0 ビルドに対応する、最初の App Store リリース系列です。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最初的 App Store 发布版本线，对应之前的 Mobile 0.1.0 构建。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "最初的 App Store 發佈版本線，對應之前的 Mobile 0.1.0 建置。" } }
+      }
+    },
+    "Install CodexBar on Mac" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Install CodexBar on Mac" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac に CodexBar をインストール" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Mac 上安装 CodexBar" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在 Mac 上安裝 CodexBar" } }
+      }
+    },
+    "Install the Mac app from this repo" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Install the Mac app from this repo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このリポジトリから Mac App をインストール" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "从此仓库安装 Mac App" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "從此倉庫安裝 Mac App" } }
+      }
+    },
+    "Just now" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Just now" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "たった今" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刚刚" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "剛剛" } }
+      }
+    },
+    "K tokens" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "K tokens" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "K tokens" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "K tokens" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "K tokens" } }
+      }
+    },
+    "Last Sync" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Last Sync" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "前回同期" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "上次同步" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "上次同步" } }
+      }
+    },
+    "Latest" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Latest" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最新" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最新" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "最新" } }
+      }
+    },
+    "Latest updates and version history" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Latest updates and version history" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最新の更新とバージョン履歴" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最新更新与版本历史" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "最新更新與版本歷史" } }
+      }
+    },
+    "Launch the app on the Cost tab next time." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Launch the app on the Cost tab next time." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "次回は Cost タブでアプリを開きます。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下次启动时默认打开 Cost 标签页。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "下次啟動時預設開啟 Cost 標籤頁。" } }
+      }
+    },
+    "Limit" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Limit" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "上限" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "限额" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "限額" } }
+      }
+    },
+    "Line Chart" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Line Chart" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "折れ線グラフ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "折线图" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "折線圖" } }
+      }
+    },
+    "Liquid Glass styling, demo mode, About information, and Mac version display." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Liquid Glass styling, demo mode, About information, and Mac version display." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Liquid Glass スタイル、デモモード、About 情報、Mac バージョン表示を追加しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "包含 Liquid Glass 风格、演示模式、About 信息，以及 Mac 版本显示。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "包含 Liquid Glass 風格、示範模式、About 資訊，以及 Mac 版本顯示。" } }
+      }
+    },
+    "M tokens" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "M tokens" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "M tokens" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "M tokens" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "M tokens" } }
+      }
+    },
+    "Mac" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Mac" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Mac" } }
+      }
+    },
+    "Mac App" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac App" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac App" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Mac App" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Mac App" } }
+      }
+    },
+    "Mac sync status now reports missing iCloud entitlements or unavailable iCloud accounts instead of showing a false success state." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac sync status now reports missing iCloud entitlements or unavailable iCloud accounts instead of showing a false success state." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac 側の同期状態は、誤った成功表示ではなく、iCloud entitlement の欠落や iCloud アカウント未利用を明示的に表示するようになりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Mac 端同步状态现在会明确显示缺少 iCloud entitlement 或 iCloud 账户不可用，而不是错误地显示同步成功。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Mac 端同步狀態現在會明確顯示缺少 iCloud entitlement 或 iCloud 帳戶不可用，而不是錯誤地顯示同步成功。" } }
+      }
+    },
+    "Mobile version naming is now aligned directly with the iOS app version number." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mobile version naming is now aligned directly with the iOS app version number." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mobile バージョン表記は iOS App のバージョン番号と直接揃うようになりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Mobile 版本命名现在直接与 iOS App 版本号保持一致。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Mobile 版本命名現在直接與 iOS App 版本號保持一致。" } }
+      }
+    },
+    "Native localization for English, Simplified Chinese, Traditional Chinese, and Japanese that follows both system language and the per-app language setting on iPhone." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Native localization for English, Simplified Chinese, Traditional Chinese, and Japanese that follows both system language and the per-app language setting on iPhone." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "英語、簡体字中国語、繁体字中国語、日本語にネイティブ対応し、システム言語と iPhone のアプリ個別言語設定の両方に追従します。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "原生支持英语、简体中文、繁体中文和日语，并同时跟随系统语言与 iPhone 上的单 App 语言设置。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "原生支援英語、簡體中文、繁體中文和日語，並同時跟隨系統語言與 iPhone 上的單 App 語言設定。" } }
+      }
+    },
+    "Model Mix" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Model Mix" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "模型構成" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "模型构成" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "模型構成" } }
+      }
+    },
+    "Monitor your AI coding tool usage on iPhone.\nRequires the CodexBar Mac app." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Monitor your AI coding tool usage on iPhone.\nRequires the CodexBar Mac app." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iPhone で AI コーディングツールの使用状況を確認できます。\nCodexBar Mac App が必要です。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 iPhone 上查看 AI 编程工具的使用情况。\n需要安装 CodexBar Mac App。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在 iPhone 上查看 AI 編程工具的使用情況。\n需要安裝 CodexBar Mac App。" } }
+      }
+    },
+    "No Cost Data Yet" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No Cost Data Yet" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Cost データはまだありません" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "暂无费用数据" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "暫無費用資料" } }
+      }
+    },
+    "No Providers Enabled" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No Providers Enabled" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "有効な Provider がありません" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未启用任何 Provider" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未啟用任何 Provider" } }
+      }
+    },
+    "No data" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No data" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "データなし" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "暂无数据" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "暫無資料" } }
+      }
+    },
+    "No spend today" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No spend today" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "本日の支出なし" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "今日无支出" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "今日無支出" } }
+      }
+    },
+    "No token data" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No token data" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "token データなし" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "暂无 token 数据" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "暫無 token 資料" } }
+      }
+    },
+    "Not synced" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not synced" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "未同期" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未同步" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未同步" } }
+      }
+    },
+    "Not yet synced" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not yet synced" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "まだ同期されていません" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "尚未同步" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "尚未同步" } }
+      }
+    },
+    "Obscure email addresses in the Usage page." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Obscure email addresses in the Usage page." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Usage ページでメールアドレスを隠します。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Usage 页面中模糊邮箱地址。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在 Usage 頁面中模糊電子郵件地址。" } }
+      }
+    },
+    "Older iOS release notes will appear here as new versions ship." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Older iOS release notes will appear here as new versions ship." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "今後新しい iOS バージョンが出ると、過去の更新内容がここに表示されます。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新的 iOS 版本发布后，旧版本更新说明会显示在这里。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新的 iOS 版本發佈後，舊版本更新說明會顯示在這裡。" } }
+      }
+    },
+    "Open Cost by default" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Cost by default" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "既定で Cost を開く" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "默认打开 Cost" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "預設開啟 Cost" } }
+      }
+    },
+    "Open CodexBar on your Mac → Settings → turn on iCloud Sync." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open CodexBar on your Mac → Settings → turn on iCloud Sync." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac で CodexBar を開き、→ Settings → iCloud Sync をオンにしてください。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Mac 上打开 CodexBar → Settings → 打开 iCloud Sync。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在 Mac 上開啟 CodexBar → Settings → 打開 iCloud Sync。" } }
+      }
+    },
+    "Open Source" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Source" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オープンソース" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开源" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開源" } }
+      }
+    },
+    "Original Mac app — MIT License" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Original Mac app — MIT License" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "元の Mac App - MIT License" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "原始 Mac App - MIT 许可证" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "原始 Mac App - MIT 授權" } }
+      }
+    },
+    "Overview" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Overview" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "概要" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "概览" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "概覽" } }
+      }
+    },
+    "Peak" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Peak" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ピーク" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "峰值" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "峰值" } }
+      }
+    },
+    "per active day" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "per active day" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アクティブ日あたり" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每个活跃日" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "每個活躍日" } }
+      }
+    },
+    "Press and hold on the chart to inspect the exact value for a given day." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Press and hold on the chart to inspect the exact value for a given day." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "グラフを長押しすると、その日の正確な値を確認できます。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "长按图表可查看某一天的精确数值。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "長按圖表可查看某一天的精確數值。" } }
+      }
+    },
+    "Press-and-hold chart inspection now surfaces exact daily values directly on the graph." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Press-and-hold chart inspection now surfaces exact daily values directly on the graph." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "長押しによるグラフ確認で、日別の正確な値を直接表示できるようになりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "长按图表时，现在会直接显示每日的精确数值。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "長按圖表時，現在會直接顯示每日的精確數值。" } }
+      }
+    },
+    "Previous" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Previous" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "以前" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "旧版本" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "舊版本" } }
+      }
+    },
+    "Pull to refresh now asks iCloud Key-Value Store to synchronize before reading the latest snapshot." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Pull to refresh now asks iCloud Key-Value Store to synchronize before reading the latest snapshot." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "下に引いて更新すると、最新スナップショットを読む前に iCloud Key-Value Store の同期を要求するようになりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "现在下拉刷新会先要求 iCloud Key-Value Store 同步，再读取最新快照。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "現在下拉重新整理會先要求 iCloud Key-Value Store 同步，再讀取最新快照。" } }
+      }
+    },
+    "Preview with Demo Data" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Preview with Demo Data" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "デモデータでプレビュー" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "使用演示数据预览" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "使用示範資料預覽" } }
+      }
+    },
+    "Provider Share" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Provider Share" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Provider 比率" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Provider 占比" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Provider 占比" } }
+      }
+    },
+    "Provider cards with usage windows, budget progress, sync status, and detail screens." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Provider cards with usage windows, budget progress, sync status, and detail screens." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "使用ウィンドウ、予算進捗、同期状態、詳細画面を備えた Provider カードを追加しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "包含使用窗口、预算进度、同步状态和详情页的 Provider 卡片。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "包含使用視窗、預算進度、同步狀態和詳情頁的 Provider 卡片。" } }
+      }
+    },
+    "Providers" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Providers" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Providers" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Providers" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Providers" } }
+      }
+    },
+    "Release Notes" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Release Notes" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Release Notes" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "更新说明" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "更新說明" } }
+      }
+    },
+    "Resets" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Resets" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リセット" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重置于" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重設於" } }
+      }
+    },
+    "Selected Cost" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Selected Cost" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "選択中の費用" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选中费用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選中費用" } }
+      }
+    },
+    "Selected Date" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Selected Date" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "選択中の日付" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选中日期" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選中日期" } }
+      }
+    },
+    "Session" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Session" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "セッション" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "当前周期" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "當前週期" } }
+      }
+    },
+    "Setting" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Setting" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "設定" } }
+      }
+    },
+    "Settings are reorganized into About & Sync, Release Notes, Usage Setting, and Cost Setting." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Settings are reorganized into About & Sync, Release Notes, Usage Setting, and Cost Setting." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定は About & Sync、Release Notes、Usage Setting、Cost Setting に再編成されました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "设置现已重组为 About & Sync、Release Notes、Usage Setting 和 Cost Setting。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "設定現已重組為 About & Sync、Release Notes、Usage Setting 和 Cost Setting。" } }
+      }
+    },
+    "Setup guidance, pull-to-refresh support, and the App Store privacy additions needed for distribution." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Setup guidance, pull-to-refresh support, and the App Store privacy additions needed for distribution." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "セットアップガイド、プル更新対応、配布に必要な App Store プライバシー項目を追加しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新增设置引导、下拉刷新支持，以及上架分发所需的 App Store 隐私项。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新增設定引導、下拉刷新支援，以及上架分發所需的 App Store 隱私項。" } }
+      }
+    },
+    "Show Setup Guide" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show Setup Guide" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "セットアップガイドを表示" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示设置指南" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示設定指南" } }
+      }
+    },
+    "Showing demo data" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Showing demo data" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "デモデータを表示中" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在显示演示数据" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在顯示示範資料" } }
+      }
+    },
+    "Source Device" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Source Device" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "同期元デバイス" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "来源设备" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "來源裝置" } }
+      }
+    },
+    "Step" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Step" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "手順" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "步骤" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "步驟" } }
+      }
+    },
+    "Sync" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sync" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "同期" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "同步" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "同步" } }
+      }
+    },
+    "Synced Mobile Version" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Synced Mobile Version" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "同期済み Mobile バージョン" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已同步的 Mobile 版本" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已同步的 Mobile 版本" } }
+      }
+    },
+    "The first iPhone companion app for CodexBar with iCloud Key-Value Store sync from Mac." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The first iPhone companion app for CodexBar with iCloud Key-Value Store sync from Mac." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac から iCloud Key-Value Store で同期する、CodexBar 初の iPhone コンパニオン App です。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar 首个 iPhone 配套 App，可通过 iCloud 键值存储从 Mac 同步数据。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar 首個 iPhone 配套 App，可透過 iCloud 鍵值儲存從 Mac 同步資料。" } }
+      }
+    },
+    "This app reads the latest snapshot via iCloud Key-Value Store" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This app reads the latest snapshot via iCloud Key-Value Store" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "この App は iCloud Key-Value Store から最新スナップショットを読み取ります" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "本 App 会通过 iCloud 键值存储读取最新快照" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "本 App 會透過 iCloud 鍵值儲存讀取最新快照" } }
+      }
+    },
+    "Top Driver" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Top Driver" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最大要因" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最高费用来源" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "最高費用來源" } }
+      }
+    },
+    "Top cost drivers across providers that expose model-level billing." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Top cost drivers across providers that expose model-level billing." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "モデル単位の課金を公開している Provider 全体で、主要なコスト要因となっているモデルです。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "支持模型级计费的 provider 中，主要费用来源模型。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "支援模型級計費的 provider 中，主要費用來源模型。" } }
+      }
+    },
+    "Today" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Today" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "今日" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "今日" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "今日" } }
+      }
+    },
+    "Tracked provider budgets and how close they are to their current limit." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tracked provider budgets and how close they are to their current limit." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "追跡中の Provider 予算と、現在の上限にどれだけ近いかを表示します。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已跟踪的 provider 预算及其接近当前上限的程度。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已追蹤的 provider 預算及其接近當前上限的程度。" } }
+      }
+    },
+    "Unknown" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unknown" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "不明" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未知" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未知" } }
+      }
+    },
+    "Usage" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Usage" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "用量" } }
+      }
+    },
+    "Usage Setting" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage Setting" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Usage 設定" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Usage 设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Usage 設定" } }
+      }
+    },
+    "Usage and Cost charts now support both Bar Chart and Line Chart display styles." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage and Cost charts now support both Bar Chart and Line Chart display styles." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Usage と Cost のグラフは、棒グラフと折れ線グラフの両方に対応しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Usage 和 Cost 图表现在都支持柱状图与折线图两种显示方式。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Usage 和 Cost 圖表現在都支援柱狀圖與折線圖兩種顯示方式。" } }
+      }
+    },
+    "Usage data will appear here automatically once your Mac pushes data to iCloud." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage data will appear here automatically once your Mac pushes data to iCloud." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Mac がデータを iCloud に送信すると、ここに自動で使用データが表示されます。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "当 Mac 将数据推送到 iCloud 后，这里会自动显示使用数据。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "當 Mac 將資料推送到 iCloud 後，這裡會自動顯示使用資料。" } }
+      }
+    },
+    "Version" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Version" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "バージョン" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "版本" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "版本" } }
+      }
+    },
+    "Versions" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Versions" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "バージョン" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "版本" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "版本" } }
+      }
+    },
+    "View Demo" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "View Demo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "デモを見る" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "查看演示" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "查看示範" } }
+      }
+    },
+    "Wait for Sync" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Wait for Sync" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "同期を待つ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "等待同步" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "等待同步" } }
+      }
+    },
+    "Weekly" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Weekly" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "週間" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每周" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "每週" } }
+      }
+    },
+    "Welcome to CodexBar" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Welcome to CodexBar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "CodexBar へようこそ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "欢迎使用 CodexBar" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "歡迎使用 CodexBar" } }
+      }
+    },
+    "d ago" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "d ago" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "日前" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "天前" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "天前" } }
+      }
+    },
+    "h ago" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "h ago" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "時間前" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "小时前" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "小時前" } }
+      }
+    },
+    "iCloud account changed" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud account changed" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud アカウントが変更されました" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 账户已更改" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 帳戶已變更" } }
+      }
+    },
+    "iCloud sync unavailable" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud sync unavailable" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 同期を利用できません" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 同步不可用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 同步不可用" } }
+      }
+    },
+    "iCloud storage quota exceeded" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iCloud storage quota exceeded" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud ストレージ容量を超過しました" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 存储空间不足" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 儲存空間不足" } }
+      }
+    },
+    "iPhone" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iPhone" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iPhone" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "iPhone" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "iPhone" } }
+      }
+    },
+    "iPhone App" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "iPhone App" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iPhone App" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "iPhone App" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "iPhone App" } }
+      }
+    },
+    "min ago" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "min ago" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "分前" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "分钟前" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "分鐘前" } }
+      }
+    },
+    "providers active" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "providers active" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "件の provider がアクティブ" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "个 provider 活跃" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "個 provider 活躍" } }
+      }
+    },
+    "tokens" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "tokens" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "tokens" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "tokens" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "tokens" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

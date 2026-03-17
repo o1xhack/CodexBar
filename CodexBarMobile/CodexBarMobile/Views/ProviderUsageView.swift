@@ -3,6 +3,7 @@ import SwiftUI
 
 struct ProviderUsageView: View {
     let provider: ProviderUsageSnapshot
+    @AppStorage(MobileSettingsKeys.hidePersonalInfo) private var hidePersonalInfo = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -12,19 +13,12 @@ struct ProviderUsageView: View {
                 .padding(.top, 20)
                 .padding(.bottom, 16)
 
-            // Usage metrics
-            VStack(spacing: 12) {
-                if let primary = self.provider.primary {
+            // Usage metrics — dynamic count per provider
+            VStack(spacing: 10) {
+                ForEach(Array(self.provider.allRateWindows.enumerated()), id: \.offset) { index, window in
                     UsageCardView(
-                        label: self.windowLabel(for: primary, fallback: "Session"),
-                        window: primary,
-                        tintColor: self.providerColor)
-                }
-
-                if let secondary = self.provider.secondary {
-                    UsageCardView(
-                        label: self.windowLabel(for: secondary, fallback: "Weekly"),
-                        window: secondary,
+                        label: window.label ?? self.defaultLabel(at: index),
+                        window: window,
                         tintColor: self.providerColor)
                 }
             }
@@ -44,6 +38,19 @@ struct ProviderUsageView: View {
                 .padding(.horizontal, 20)
                 .padding(.top, 12)
             }
+
+            // Cost teaser + tap chevron
+            HStack {
+                if let cost = self.provider.costSummary {
+                    self.costTeaserText(cost)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 12)
 
             Spacer().frame(height: 20)
         }
@@ -74,14 +81,14 @@ struct ProviderUsageView: View {
                     HStack(spacing: 4) {
                         Image(systemName: "person.circle.fill")
                             .font(.caption)
-                        Text(email)
+                        Text(MobilePersonalInfoRedactor.redactEmail(email, isEnabled: self.hidePersonalInfo))
                             .font(.subheadline)
                     }
                     .foregroundStyle(.secondary)
                 }
 
                 if let plan = self.provider.loginMethod {
-                    Text(plan)
+                    Text(MobilePersonalInfoRedactor.redactEmails(in: plan, isEnabled: self.hidePersonalInfo) ?? plan)
                         .font(.caption)
                         .fontWeight(.medium)
                         .padding(.horizontal, 8)
@@ -113,15 +120,59 @@ struct ProviderUsageView: View {
         }
     }
 
-    private func windowLabel(for window: SyncRateWindow, fallback: String) -> String {
-        guard let minutes = window.windowMinutes else { return fallback }
-        if minutes <= 360 {
-            return "Session (\(minutes / 60)h)"
-        } else if minutes <= 10_080 {
-            return "Weekly"
-        } else {
-            return "Period (\(minutes / 60 / 24)d)"
+    @ViewBuilder
+    private func costTeaserText(_ cost: SyncCostSummary) -> some View {
+        let parts: [String] = [
+            cost.sessionCostUSD.map { "\(String(localized: "Today")): \(Self.formatUSD($0))" },
+            cost.last30DaysCostUSD.map { "\(String(localized: "30d")): \(Self.formatUSD($0))" },
+        ].compactMap { $0 }
+
+        if !parts.isEmpty {
+            Text(parts.joined(separator: " · "))
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
+    }
+
+    private func defaultLabel(at index: Int) -> String {
+        switch index {
+        case 0: return String(localized: "Session")
+        case 1: return String(localized: "Weekly")
+        default: return "\(String(localized: "Limit")) \(index + 1)"
+        }
+    }
+
+    private static func formatUSD(_ value: Double) -> String {
+        value.formatted(.currency(code: "USD").precision(.fractionLength(2)))
+    }
+}
+
+private enum MobilePersonalInfoRedactor {
+    private static var emailPlaceholder: String {
+        String(localized: "Hidden")
+    }
+
+    private static let emailRegex: NSRegularExpression? = {
+        let pattern = #"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}"#
+        return try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive])
+    }()
+
+    static func redactEmail(_ email: String?, isEnabled: Bool) -> String {
+        guard let email, !email.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return "" }
+        guard isEnabled else { return email }
+        return Self.emailPlaceholder
+    }
+
+    static func redactEmails(in text: String?, isEnabled: Bool) -> String? {
+        guard let text else { return nil }
+        guard isEnabled else { return text }
+        guard let regex = Self.emailRegex else { return text }
+        let range = NSRange(text.startIndex..<text.endIndex, in: text)
+        return regex.stringByReplacingMatches(
+            in: text,
+            options: [],
+            range: range,
+            withTemplate: Self.emailPlaceholder)
     }
 }
 

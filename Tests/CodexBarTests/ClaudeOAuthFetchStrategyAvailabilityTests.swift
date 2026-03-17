@@ -157,37 +157,39 @@ struct ClaudeOAuthFetchStrategyAvailabilityTests {
         let service = "com.o1xhack.codexbar.cache.tests.\(UUID().uuidString)"
 
         try await KeychainCacheStore.withServiceOverrideForTesting(service) {
-            KeychainCacheStore.setTestStoreForTesting(true)
-            defer { KeychainCacheStore.setTestStoreForTesting(false) }
+            try await KeychainAccessGate.withTaskOverrideForTesting(false) {
+                KeychainCacheStore.setTestStoreForTesting(true)
+                defer { KeychainCacheStore.setTestStoreForTesting(false) }
 
-            try await ClaudeOAuthCredentialsStore.withIsolatedMemoryCacheForTesting {
-                ClaudeOAuthCredentialsStore.invalidateCache()
-                ClaudeOAuthCredentialsStore._resetCredentialsFileTrackingForTesting()
-                ClaudeOAuthKeychainAccessGate.resetForTesting()
-                defer {
+                try await ClaudeOAuthCredentialsStore.withIsolatedMemoryCacheForTesting {
                     ClaudeOAuthCredentialsStore.invalidateCache()
                     ClaudeOAuthCredentialsStore._resetCredentialsFileTrackingForTesting()
                     ClaudeOAuthKeychainAccessGate.resetForTesting()
-                }
+                    defer {
+                        ClaudeOAuthCredentialsStore.invalidateCache()
+                        ClaudeOAuthCredentialsStore._resetCredentialsFileTrackingForTesting()
+                        ClaudeOAuthKeychainAccessGate.resetForTesting()
+                    }
 
-                let tempDir = FileManager.default.temporaryDirectory
-                    .appendingPathComponent(UUID().uuidString, isDirectory: true)
-                try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-                let fileURL = tempDir.appendingPathComponent("credentials.json")
+                    let tempDir = FileManager.default.temporaryDirectory
+                        .appendingPathComponent(UUID().uuidString, isDirectory: true)
+                    try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+                    let fileURL = tempDir.appendingPathComponent("credentials.json")
 
-                let available = await ClaudeOAuthCredentialsStore.withCredentialsURLOverrideForTesting(fileURL) {
-                    await ClaudeOAuthKeychainReadStrategyPreference.withTaskOverrideForTesting(.securityFramework) {
-                        await ClaudeOAuthKeychainPromptPreference.withTaskOverrideForTesting(.onlyOnUserAction) {
-                            await ProviderRefreshContext.$current.withValue(.startup) {
-                                await ProviderInteractionContext.$current.withValue(.background) {
-                                    await strategy.isAvailable(context)
+                    let available = await ClaudeOAuthCredentialsStore.withCredentialsURLOverrideForTesting(fileURL) {
+                        await ClaudeOAuthKeychainReadStrategyPreference.withTaskOverrideForTesting(.securityFramework) {
+                            await ClaudeOAuthKeychainPromptPreference.withTaskOverrideForTesting(.onlyOnUserAction) {
+                                await ProviderRefreshContext.$current.withValue(.startup) {
+                                    await ProviderInteractionContext.$current.withValue(.background) {
+                                        await strategy.isAvailable(context)
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                #expect(available == true)
+                    #expect(available == true)
+                }
             }
         }
     }

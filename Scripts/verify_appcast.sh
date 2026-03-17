@@ -7,6 +7,7 @@ set -euo pipefail
 # Usage: SPARKLE_PRIVATE_KEY_FILE=/path/to/key ./Scripts/verify_appcast.sh [version]
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
+source "$ROOT/Scripts/load-release-secrets.sh"
 VERSION=${1:-$(source "$ROOT/version.env" && echo "$MARKETING_VERSION")}
 APPCAST="${ROOT}/appcast.xml"
 
@@ -73,10 +74,9 @@ print(sig)
 print(length)
 PY
 
-readarray -t META <"$TMP_ZIP.meta"
-URL="${META[0]}"
-SIG="${META[1]}"
-LEN_EXPECTED="${META[2]}"
+URL=$(sed -n '1p' "$TMP_ZIP.meta")
+SIG=$(sed -n '2p' "$TMP_ZIP.meta")
+LEN_EXPECTED=$(sed -n '3p' "$TMP_ZIP.meta")
 
 echo "Downloading enclosure: $URL"
 curl -L -o "$TMP_ZIP" "$URL"

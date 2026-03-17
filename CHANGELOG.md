@@ -10,6 +10,18 @@
 - Add an experimental option to suppress Claude Keychain prompts (#388).
 - Reduce CPU/energy regressions and JSONL scanner overhead in Codex/web usage paths (#402, #392). Thanks @bald-ai and @asonawalla!
 
+### iCloud Sync (Mobile 1.0.0)
+- Rename `SYNC_VERSION` to `MOBILE_VERSION` for collaborative mobile-dev branch tracking.
+- Fix cost data scanner missing new JSONL log files created after the root directory mtime.
+- Push Mac app version and mobile version in iCloud payload for iOS traceability.
+- Sync cost/usage data (session cost, 30-day cost, daily spend) to iOS via iCloud KVS.
+- Sync dynamic rate windows with labels (Session, Weekly, Sonnet, etc.).
+- Diagnose iCloud sync failures when the Mac build is missing iCloud entitlement or has no active iCloud account.
+- Show explicit iCloud sync failure reasons in Mac Settings instead of reporting a false success state.
+- Make iOS pull-to-refresh synchronize iCloud KVS before re-reading the latest snapshot.
+- Display "Mobile 1.0.0" in Mac About panel alongside app version.
+- Update signing identity and Sparkle keys for o1xhack fork.
+
 ### Providers & Usage
 - Codex: add historical pace risk forecasting and backfill, gate pace computation by display mode, and handle zero-usage days in historical data (#482, supersedes #438). Thanks @tristanmanchester!
 - Kilo: add provider support with source-mode fallback, clearer credential/login guidance, auto top-up activity labeling, zero-balance credit handling, and pass parsing/menu rendering (#454). Thanks @coreh!

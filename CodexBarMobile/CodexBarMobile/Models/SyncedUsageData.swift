@@ -20,10 +20,23 @@ final class SyncedUsageData {
 
     /// Starts observing iCloud KVS changes.
     func startObserving() {
-        reader.startObserving { [weak self] newSnapshot in
+        reader.startObserving { [weak self] result in
             guard let self else { return }
-            if let newSnapshot {
+            switch result {
+            case .success(let newSnapshot):
                 self.snapshot = newSnapshot
+                self.lastSyncError = nil
+            case .empty:
+                // No data yet, not necessarily an error
+                break
+            case .quotaExceeded:
+                self.lastSyncError = String(localized: "iCloud storage quota exceeded")
+            case .accountChanged:
+                self.lastSyncError = String(localized: "iCloud account changed")
+                // Try to reload with new account
+                self.snapshot = self.reader.latestSnapshot()
+            case .initialSync:
+                // Initial sync in progress, data may arrive soon
                 self.lastSyncError = nil
             }
         }
@@ -31,7 +44,13 @@ final class SyncedUsageData {
 
     /// Force-reads the latest snapshot from iCloud.
     func refresh() {
-        snapshot = reader.latestSnapshot()
+        let syncAttempted = self.reader.synchronize()
+        self.snapshot = self.reader.latestSnapshot()
+        if self.snapshot != nil {
+            self.lastSyncError = nil
+        } else if !syncAttempted {
+            self.lastSyncError = String(localized: "iCloud sync unavailable")
+        }
     }
 
     /// Returns the age of the last sync in a human-readable format, or nil if no sync exists.
@@ -39,16 +58,16 @@ final class SyncedUsageData {
         guard let timestamp = snapshot?.syncTimestamp else { return nil }
         let interval = Date().timeIntervalSince(timestamp)
         if interval < 60 {
-            return "Just now"
+            return String(localized: "Just now")
         } else if interval < 3600 {
             let minutes = Int(interval / 60)
-            return "\(minutes) min ago"
+            return "\(minutes.formatted()) \(String(localized: "min ago"))"
         } else if interval < 86400 {
             let hours = Int(interval / 3600)
-            return "\(hours)h ago"
+            return "\(hours.formatted())\(String(localized: "h ago"))"
         } else {
             let days = Int(interval / 86400)
-            return "\(days)d ago"
+            return "\(days.formatted())\(String(localized: "d ago"))"
         }
     }
 }

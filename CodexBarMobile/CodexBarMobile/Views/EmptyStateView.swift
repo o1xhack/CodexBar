@@ -1,16 +1,20 @@
 import SwiftUI
 
 struct EmptyStateView: View {
-    let title: String
-    let message: String
+    let title: LocalizedStringResource
+    let message: LocalizedStringResource
     var systemImage: String = "icloud.and.arrow.down"
     var onDemo: (() -> Void)?
 
     var body: some View {
         ContentUnavailableView {
-            Label(self.title, systemImage: self.systemImage)
-                .font(.title2)
-                .fontWeight(.bold)
+            Label {
+                Text(self.title)
+                    .font(.title2)
+                    .fontWeight(.bold)
+            } icon: {
+                Image(systemName: self.systemImage)
+            }
         } description: {
             Text(self.message)
                 .font(.body)

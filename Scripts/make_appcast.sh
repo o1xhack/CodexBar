@@ -2,9 +2,10 @@
 set -euo pipefail
 
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
+source "$ROOT/Scripts/load-release-secrets.sh"
 ZIP=${1:?
 "Usage: $0 CodexBar-<ver>.zip"}
-FEED_URL=${2:-"https://raw.githubusercontent.com/steipete/CodexBar/main/appcast.xml"}
+FEED_URL=${2:-"https://raw.githubusercontent.com/o1xhack/CodexBar/main/appcast.xml"}
 PRIVATE_KEY_FILE=${SPARKLE_PRIVATE_KEY_FILE:-}
 SPARKLE_CHANNEL=${SPARKLE_CHANNEL:-}
 if [[ -z "$PRIVATE_KEY_FILE" ]]; then
@@ -21,8 +22,14 @@ ZIP_NAME=$(basename "$ZIP")
 ZIP_BASE="${ZIP_NAME%.zip}"
 VERSION=${SPARKLE_RELEASE_VERSION:-}
 if [[ -z "$VERSION" ]]; then
-  if [[ "$ZIP_NAME" =~ ^CodexBar-([0-9]+(\.[0-9]+){1,2}([-.][^.]*)?)\.zip$ ]]; then
+  if [[ "$ZIP_NAME" == *"-mobile."* && -f "$ROOT/version.env" ]]; then
+    # Fork release assets append the mobile companion version to the file name.
+    VERSION=$(source "$ROOT/version.env" && printf "%s" "$MARKETING_VERSION")
+  elif [[ "$ZIP_NAME" =~ ^CodexBar-([0-9]+(\.[0-9]+){1,2}([-.][^.]*)?)\.zip$ ]]; then
     VERSION="${BASH_REMATCH[1]}"
+  elif [[ -f "$ROOT/version.env" ]]; then
+    # Support custom release asset names when running inside the repo.
+    VERSION=$(source "$ROOT/version.env" && printf "%s" "$MARKETING_VERSION")
   else
     echo "Could not infer version from $ZIP_NAME; set SPARKLE_RELEASE_VERSION." >&2
     exit 1
@@ -47,7 +54,7 @@ cleanup() {
 }
 trap cleanup EXIT
 
-DOWNLOAD_URL_PREFIX=${SPARKLE_DOWNLOAD_URL_PREFIX:-"https://github.com/steipete/CodexBar/releases/download/v${VERSION}/"}
+DOWNLOAD_URL_PREFIX=${SPARKLE_DOWNLOAD_URL_PREFIX:-"https://github.com/o1xhack/CodexBar/releases/download/v${VERSION}/"}
 
 # Sparkle provides generate_appcast; ensure it's on PATH (via SwiftPM build of Sparkle's bin) or Xcode dmg
 if ! command -v generate_appcast >/dev/null; then

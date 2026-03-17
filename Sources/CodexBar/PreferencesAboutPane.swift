@@ -13,7 +13,12 @@ struct AboutPane: View {
     private var versionString: String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "–"
         let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
-        return build.map { "\(version) (\($0))" } ?? version
+        let mobileVersion = Bundle.main.object(forInfoDictionaryKey: "CodexMobileVersion") as? String
+        var result = build.map { "\(version) (\($0))" } ?? version
+        if let mobileVersion {
+            result += " · Mobile \(mobileVersion)"
+        }
+        return result
     }
 
     private var buildTimestamp: String? {

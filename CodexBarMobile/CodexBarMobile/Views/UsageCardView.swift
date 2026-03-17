@@ -30,7 +30,7 @@ struct UsageCardView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "clock.arrow.circlepath")
                         .font(.caption)
-                    Text("Resets \(resetsAt.formatted(.relative(presentation: .named)))")
+                    Text("\(String(localized: "Resets")) \(resetsAt.formatted(.relative(presentation: .named)))")
                         .font(.caption)
                 }
                 .foregroundStyle(.secondary)

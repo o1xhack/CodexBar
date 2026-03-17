@@ -2,15 +2,24 @@
 set -euo pipefail
 
 APP_NAME="CodexBar"
-APP_IDENTITY="Developer ID Application: Peter Steinberger (Y5PE65HELJ)"
+APP_IDENTITY="Developer ID Application: Yuxiao Wang (3TUERHN53E)"
 APP_BUNDLE="CodexBar.app"
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 source "$ROOT/version.env"
-ZIP_NAME="${APP_NAME}-${MARKETING_VERSION}.zip"
-DSYM_ZIP="${APP_NAME}-${MARKETING_VERSION}.dSYM.zip"
+# Load local-only release secrets from ~/.codexbar-secrets if available.
+source "$ROOT/Scripts/load-release-secrets.sh"
+RELEASE_ASSET_BASENAME="${APP_NAME}-${MARKETING_VERSION}-mobile.${MOBILE_VERSION}"
+ZIP_NAME="${RELEASE_ASSET_BASENAME}.zip"
+DSYM_ZIP="${RELEASE_ASSET_BASENAME}.dSYM.zip"
+RELEASE_STAGE_DIR=$(mktemp -d /tmp/codexbar-release.XXXXXX)
+STAGED_APP_BUNDLE="${RELEASE_STAGE_DIR}/${APP_BUNDLE}"
 
-if [[ -z "${APP_STORE_CONNECT_API_KEY_P8:-}" || -z "${APP_STORE_CONNECT_KEY_ID:-}" || -z "${APP_STORE_CONNECT_ISSUER_ID:-}" ]]; then
-  echo "Missing APP_STORE_CONNECT_* env vars (API key, key id, issuer id)." >&2
+if [[ -z "${APP_STORE_CONNECT_KEY_ID:-}" || -z "${APP_STORE_CONNECT_ISSUER_ID:-}" ]]; then
+  echo "Missing App Store Connect release settings (key id or issuer id)." >&2
+  exit 1
+fi
+if [[ -z "${APP_STORE_CONNECT_API_KEY_FILE:-}" && -z "${APP_STORE_CONNECT_API_KEY_P8:-}" ]]; then
+  echo "Set APP_STORE_CONNECT_API_KEY_FILE or APP_STORE_CONNECT_API_KEY_P8." >&2
   exit 1
 fi
 if [[ -z "${SPARKLE_PRIVATE_KEY_FILE:-}" ]]; then
@@ -27,8 +36,16 @@ if [[ $(printf "%s\n" "$key_lines" | wc -l) -ne 1 ]]; then
   exit 1
 fi
 
-echo "$APP_STORE_CONNECT_API_KEY_P8" | sed 's/\\n/\n/g' > /tmp/codexbar-api-key.p8
-trap 'rm -f /tmp/codexbar-api-key.p8 /tmp/${APP_NAME}Notarize.zip' EXIT
+if [[ -n "${APP_STORE_CONNECT_API_KEY_FILE:-}" ]]; then
+  if [[ ! -f "$APP_STORE_CONNECT_API_KEY_FILE" ]]; then
+    echo "App Store Connect API key file not found: $APP_STORE_CONNECT_API_KEY_FILE" >&2
+    exit 1
+  fi
+  cp "$APP_STORE_CONNECT_API_KEY_FILE" /tmp/codexbar-api-key.p8
+else
+  echo "$APP_STORE_CONNECT_API_KEY_P8" | sed 's/\\n/\n/g' > /tmp/codexbar-api-key.p8
+fi
+trap 'rm -f /tmp/codexbar-api-key.p8 /tmp/${APP_NAME}Notarize.zip; rm -rf "$RELEASE_STAGE_DIR"' EXIT
 
 # Allow building a universal binary if ARCHES is provided; default to universal (arm64 + x86_64).
 ARCHES_VALUE=${ARCHES:-"arm64 x86_64"}
@@ -36,7 +53,8 @@ ARCH_LIST=( ${ARCHES_VALUE} )
 for ARCH in "${ARCH_LIST[@]}"; do
   swift build -c release --arch "$ARCH"
 done
-ARCHES="${ARCHES_VALUE}" ./Scripts/package_app.sh release
+CODEXBAR_STAGED_APP_PATH="$STAGED_APP_BUNDLE" ARCHES="${ARCHES_VALUE}" ./Scripts/package_app.sh release
+APP_BUNDLE="$STAGED_APP_BUNDLE"
 
 ENTITLEMENTS_DIR="$ROOT/.build/entitlements"
 APP_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBar.entitlements"

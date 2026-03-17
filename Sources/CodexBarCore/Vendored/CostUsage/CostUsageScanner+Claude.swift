@@ -350,7 +350,6 @@ extension CostUsageScanner {
             }
             return
         }
-
         // Always enumerate the directory tree. The per-file mtime/size cache in
         // processClaudeFile already skips unchanged files, so the only cost here is
         // the directory walk itself. The previous root-mtime optimization skipped
@@ -385,8 +384,6 @@ extension CostUsageScanner {
                 mtimeMs: mtimeMs,
                 state: state)
         }
-
-        // Root mtime caching removed — see comment above.
     }
 
     static func loadClaudeDaily(

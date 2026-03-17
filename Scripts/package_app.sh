@@ -111,6 +111,8 @@ done
 # Build the app bundle in /tmp to avoid Dropbox adding resource forks during signing
 APP_FINAL="$ROOT/CodexBar.app"
 APP="/tmp/codexbar-build-$$/CodexBar.app"
+STAGED_APP_PATH="${CODEXBAR_STAGED_APP_PATH:-}"
+INSTALL_APP_PATH="${CODEXBAR_INSTALL_PATH:-}"
 rm -rf "$APP_FINAL" "$(dirname "$APP")"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
 mkdir -p "$APP/Contents/Helpers" "$APP/Contents/PlugIns"
@@ -123,7 +125,7 @@ if [[ -f "$ICON_SOURCE" ]]; then
 fi
 
 BUNDLE_ID="com.o1xhack.codexbar"
-FEED_URL="https://raw.githubusercontent.com/steipete/CodexBar/main/appcast.xml"
+FEED_URL="https://raw.githubusercontent.com/o1xhack/CodexBar/main/appcast.xml"
 AUTO_CHECKS=true
 LOWER_CONF=$(printf "%s" "$CONF" | tr '[:upper:]' '[:lower:]')
 if [[ "$LOWER_CONF" == "debug" ]]; then
@@ -138,8 +140,12 @@ fi
 WIDGET_BUNDLE_ID="${BUNDLE_ID}.widget"
 APP_GROUP_ID="group.com.o1xhack.codexbar"
 ICLOUD_KVS_ID="${CODEXBAR_ICLOUD_KVS_ID:-3TUERHN53E.com.codexbar.shared}"
+INCLUDE_SHARED_ENTITLEMENTS=1
 if [[ "$BUNDLE_ID" == *".debug"* ]]; then
   APP_GROUP_ID="group.com.o1xhack.codexbar.debug"
+fi
+if [[ "$SIGNING_MODE" == "adhoc" ]]; then
+  INCLUDE_SHARED_ENTITLEMENTS=0
 fi
 ENTITLEMENTS_DIR="$ROOT/.build/entitlements"
 APP_ENTITLEMENTS="${ENTITLEMENTS_DIR}/CodexBar.entitlements"
@@ -164,12 +170,15 @@ cat > "$APP_ENTITLEMENTS" <<PLIST
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>com.apple.security.application-groups</key>
+    $(if [[ "$INCLUDE_SHARED_ENTITLEMENTS" == "1" ]]; then cat <<EOF
+<key>com.apple.security.application-groups</key>
     <array>
         <string>${APP_GROUP_ID}</string>
     </array>
     <key>com.apple.developer.ubiquity-kvstore-identifier</key>
     <string>${ICLOUD_KVS_ID}</string>
+EOF
+fi)
     $(if [[ "$NEEDS_GET_TASK_ALLOW" == "1" ]]; then echo "    <key>com.apple.security.get-task-allow</key>
     <true/>"; fi)
 </dict>
@@ -182,10 +191,13 @@ cat > "$WIDGET_ENTITLEMENTS" <<PLIST
 <dict>
     <key>com.apple.security.app-sandbox</key>
     <true/>
-    <key>com.apple.security.application-groups</key>
+    $(if [[ "$INCLUDE_SHARED_ENTITLEMENTS" == "1" ]]; then cat <<EOF
+<key>com.apple.security.application-groups</key>
     <array>
         <string>${APP_GROUP_ID}</string>
     </array>
+EOF
+fi)
 </dict>
 </plist>
 PLIST
@@ -209,8 +221,9 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>CFBundleIconFile</key><string>Icon</string>
     <key>NSHumanReadableCopyright</key><string>© 2025 Peter Steinberger. MIT License.</string>
     <key>SUFeedURL</key><string>${FEED_URL}</string>
-    <key>SUPublicEDKey</key><string>AGCY8w5vHirVfGGDGc8Szc5iuOqupZSh9pMj/Qs67XI=</string>
+    <key>SUPublicEDKey</key><string>eBPpE8Yx+2Dbl/viiieSBqdfSC8t20g657Dgas+Xw3o=</string>
     <key>SUEnableAutomaticChecks</key><${AUTO_CHECKS}/>
+    <key>CodexMobileVersion</key><string>${MOBILE_VERSION}</string>
     <key>CodexBuildTimestamp</key><string>${BUILD_TIMESTAMP}</string>
     <key>CodexGitCommit</key><string>${GIT_COMMIT}</string>
 </dict>
@@ -350,6 +363,89 @@ function resign() {
     fi
   fi
 }
+
+copy_app_bundle() {
+  local source="$1"
+  local destination="$2"
+  rm -rf "$destination"
+  mkdir -p "$(dirname "$destination")"
+  ditto --noextattr --noqtn "$source" "$destination"
+  xattr -cr "$destination" 2>/dev/null || true
+}
+
+seal_app_bundle_copy() {
+  local bundle="$1"
+  local sparkle="${bundle}/Contents/Frameworks/Sparkle.framework"
+  local widget="${bundle}/Contents/PlugIns/CodexBarWidget.appex"
+
+  if [[ "$SIGNING_MODE" == "adhoc" ]]; then
+    xattr -cr "$bundle" 2>/dev/null || true
+    if [[ -d "$sparkle" ]]; then
+      resign "$sparkle"
+      resign "$sparkle/Versions/B/Sparkle"
+      resign "$sparkle/Versions/B/Autoupdate"
+      resign "$sparkle/Versions/B/Updater.app"
+      resign "$sparkle/Versions/B/Updater.app/Contents/MacOS/Updater"
+      resign "$sparkle/Versions/B/XPCServices/Downloader.xpc"
+      resign "$sparkle/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader"
+      resign "$sparkle/Versions/B/XPCServices/Installer.xpc"
+      resign "$sparkle/Versions/B/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+      resign "$sparkle/Versions/B"
+      resign "$sparkle"
+    fi
+
+    if [[ -f "${bundle}/Contents/Helpers/CodexBarCLI" ]]; then
+      resign "${bundle}/Contents/Helpers/CodexBarCLI"
+    fi
+    if [[ -f "${bundle}/Contents/Helpers/CodexBarClaudeWatchdog" ]]; then
+      resign "${bundle}/Contents/Helpers/CodexBarClaudeWatchdog"
+    fi
+
+    if [[ -d "$widget" ]]; then
+      resign "${widget}/Contents/MacOS/CodexBarWidget"
+      codesign --force --sign - \
+        --entitlements "$WIDGET_ENTITLEMENTS" \
+        "$widget"
+    fi
+
+    codesign --force --sign - \
+      --entitlements "$APP_ENTITLEMENTS" \
+      "$bundle"
+    return
+  fi
+
+  if [[ -d "$sparkle" ]]; then
+    resign "$sparkle"
+    resign "$sparkle/Versions/B/Sparkle"
+    resign "$sparkle/Versions/B/Autoupdate"
+    resign "$sparkle/Versions/B/Updater.app"
+    resign "$sparkle/Versions/B/Updater.app/Contents/MacOS/Updater"
+    resign "$sparkle/Versions/B/XPCServices/Downloader.xpc"
+    resign "$sparkle/Versions/B/XPCServices/Downloader.xpc/Contents/MacOS/Downloader"
+    resign "$sparkle/Versions/B/XPCServices/Installer.xpc"
+    resign "$sparkle/Versions/B/XPCServices/Installer.xpc/Contents/MacOS/Installer"
+    resign "$sparkle/Versions/B"
+    resign "$sparkle"
+  fi
+
+  if [[ -f "${bundle}/Contents/Helpers/CodexBarCLI" ]]; then
+    resign "${bundle}/Contents/Helpers/CodexBarCLI"
+  fi
+  if [[ -f "${bundle}/Contents/Helpers/CodexBarClaudeWatchdog" ]]; then
+    resign "${bundle}/Contents/Helpers/CodexBarClaudeWatchdog"
+  fi
+
+  if [[ -d "$widget" ]]; then
+    resign "${widget}/Contents/MacOS/CodexBarWidget"
+    codesign "${CODESIGN_ARGS[@]}" \
+      --entitlements "$WIDGET_ENTITLEMENTS" \
+      "$widget"
+  fi
+
+  codesign "${CODESIGN_ARGS[@]}" \
+    --entitlements "$APP_ENTITLEMENTS" \
+    "$bundle"
+}
   # Sign innermost binaries first, then the framework root to seal resources
   resign "$SPARKLE"
   resign "$SPARKLE/Versions/B/Sparkle"
@@ -438,8 +534,20 @@ codesign "${CODESIGN_ARGS[@]}" \
   --entitlements "$APP_ENTITLEMENTS" \
   "$APP"
 
+if [[ -n "$STAGED_APP_PATH" ]]; then
+  copy_app_bundle "$APP" "$STAGED_APP_PATH"
+  seal_app_bundle_copy "$STAGED_APP_PATH"
+  echo "Staged $STAGED_APP_PATH"
+fi
+
+if [[ -n "$INSTALL_APP_PATH" ]]; then
+  copy_app_bundle "$APP" "$INSTALL_APP_PATH"
+  seal_app_bundle_copy "$INSTALL_APP_PATH"
+  echo "Installed $INSTALL_APP_PATH"
+fi
+
 # Move the signed app bundle from /tmp back to the project directory
-COPYFILE_DISABLE=1 cp -R "$APP" "$APP_FINAL"
+copy_app_bundle "$APP" "$APP_FINAL"
 rm -rf "$(dirname "$APP")"
 APP="$APP_FINAL"
 echo "Created $APP"

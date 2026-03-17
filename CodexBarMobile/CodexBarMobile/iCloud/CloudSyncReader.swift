@@ -19,8 +19,13 @@ final class CloudSyncReader: @unchecked Sendable {
 
     /// Starts observing iCloud changes. The handler is called on the main actor
     /// whenever data changes externally (i.e., when the Mac pushes a new snapshot).
-    func startObserving(handler: @escaping @MainActor (SyncedUsageSnapshot?) -> Void) {
+    func startObserving(handler: @escaping @MainActor (SyncResult) -> Void) {
         syncManager.startObserving(handler: handler)
+    }
+
+    @discardableResult
+    func synchronize() -> Bool {
+        syncManager.synchronizeStore()
     }
 
     func stopObserving() {
