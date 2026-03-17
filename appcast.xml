@@ -5,7 +5,7 @@
         <item>
             <title>0.18.0</title>
             <pubDate>Tue, 17 Mar 2026 23:44:49 +0800</pubDate>
-            <link>https://raw.githubusercontent.com/o1xhack/CodexBar/main/appcast.xml</link>
+            <link>https://raw.githubusercontent.com/o1xhack/CodexBar/mobile-dev/appcast.xml</link>
             <sparkle:version>53</sparkle:version>
             <sparkle:shortVersionString>0.18.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
@@ -82,12 +82,12 @@
 </ul>
 <p><a href="https://github.com/o1xhack/CodexBar/blob/main/CHANGELOG.md">View full changelog</a></p>
 ]]></description>
-            <enclosure url="https://github.com/o1xhack/CodexBar/releases/download/v0.18.0-mobile.1.0.0/CodexBar-0.18.0-mobile.1.0.0.zip" length="25084887" type="application/octet-stream" sparkle:edSignature="kHVkYgwJA+T3lZywkweKtdPHpZ7n55RpjLuB+QPlxUONsoiJTR+eVrw+ZymXhkUA0cUj9hifaz00OjELpF6LBA=="/>
+            <enclosure url="https://github.com/o1xhack/CodexBar/releases/download/v0.18.0-mobile.1.0.0/CodexBar-0.18.0-mobile.1.0.0.zip" length="25084873" type="application/octet-stream" sparkle:edSignature="7eIDChbFotje8ClQRlxPNpjwcvuwhaW7b6tnmzv37iip1cWwuf46SqPvNwV7z8bGIOVgfBuvewti++lQfNfyDQ=="/>
         </item>
         <item>
             <title>0.18.0</title>
             <pubDate>Mon, 16 Mar 2026 20:26:35 +0800</pubDate>
-            <link>https://raw.githubusercontent.com/o1xhack/CodexBar/main/appcast.xml</link>
+            <link>https://raw.githubusercontent.com/o1xhack/CodexBar/mobile-dev/appcast.xml</link>
             <sparkle:version>52</sparkle:version>
             <sparkle:shortVersionString>0.18.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>

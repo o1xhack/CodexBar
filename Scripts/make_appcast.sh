@@ -5,7 +5,8 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 source "$ROOT/Scripts/load-release-secrets.sh"
 ZIP=${1:?
 "Usage: $0 CodexBar-<ver>.zip"}
-FEED_URL=${2:-"https://raw.githubusercontent.com/o1xhack/CodexBar/main/appcast.xml"}
+RELEASE_BRANCH=${CODEXBAR_RELEASE_BRANCH:-mobile-dev}
+FEED_URL=${2:-"https://raw.githubusercontent.com/o1xhack/CodexBar/${RELEASE_BRANCH}/appcast.xml"}
 PRIVATE_KEY_FILE=${SPARKLE_PRIVATE_KEY_FILE:-}
 SPARKLE_CHANNEL=${SPARKLE_CHANNEL:-}
 if [[ -z "$PRIVATE_KEY_FILE" ]]; then

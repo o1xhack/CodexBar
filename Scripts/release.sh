@@ -13,7 +13,10 @@ APP_NAME="CodexBar"
 RELEASE_ASSET_BASENAME="${APP_NAME}-${MARKETING_VERSION}-mobile.${MOBILE_VERSION}"
 ARTIFACT_PREFIX="CodexBar-"
 BUNDLE_ID="com.o1xhack.codexbar"
-TAG="v${MARKETING_VERSION}"
+RELEASE_BRANCH="${CODEXBAR_RELEASE_BRANCH:-mobile-dev}"
+FEED_URL="https://raw.githubusercontent.com/o1xhack/CodexBar/${RELEASE_BRANCH}/appcast.xml"
+TAG="v${MARKETING_VERSION}-mobile.${MOBILE_VERSION}"
+RELEASE_TITLE="${APP_NAME} ${MARKETING_VERSION} Mobile ${MOBILE_VERSION}"
 
 err() { echo "ERROR: $*" >&2; exit 1; }
 
@@ -39,24 +42,24 @@ NOTES_FILE=$(mktemp /tmp/codexbar-notes.XXXXXX.md)
 extract_notes_from_changelog "$MARKETING_VERSION" "$NOTES_FILE"
 trap 'rm -f "$KEY_FILE" "$NOTES_FILE"' EXIT
 
-git tag -s -f -m "${APP_NAME} ${MARKETING_VERSION}" "$TAG"
+git tag -s -f -m "${RELEASE_TITLE}" "$TAG"
 git push -f origin "$TAG"
 
 gh release create "$TAG" "${RELEASE_ASSET_BASENAME}.zip" "${RELEASE_ASSET_BASENAME}.dSYM.zip" \
-  --title "${APP_NAME} ${MARKETING_VERSION}" \
+  --title "${RELEASE_TITLE}" \
   --notes-file "$NOTES_FILE"
 
 SPARKLE_PRIVATE_KEY_FILE="$KEY_FILE" \
   SPARKLE_RELEASE_VERSION="$MARKETING_VERSION" \
   "$ROOT/Scripts/make_appcast.sh" \
   "${RELEASE_ASSET_BASENAME}.zip" \
-  "https://raw.githubusercontent.com/o1xhack/CodexBar/main/appcast.xml"
+  "$FEED_URL"
 
 verify_appcast_entry "$APPCAST" "$MARKETING_VERSION" "$KEY_FILE"
 
 git add "$APPCAST"
 git commit -m "docs: update appcast for ${MARKETING_VERSION}"
-git push origin main
+git push origin "$RELEASE_BRANCH"
 
 if [[ "${RUN_SPARKLE_UPDATE_TEST:-0}" == "1" ]]; then
   PREV_TAG=$(git tag --sort=-v:refname | sed -n '2p')

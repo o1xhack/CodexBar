@@ -125,7 +125,8 @@ if [[ -f "$ICON_SOURCE" ]]; then
 fi
 
 BUNDLE_ID="com.o1xhack.codexbar"
-FEED_URL="https://raw.githubusercontent.com/o1xhack/CodexBar/main/appcast.xml"
+RELEASE_BRANCH="${CODEXBAR_RELEASE_BRANCH:-mobile-dev}"
+FEED_URL="https://raw.githubusercontent.com/o1xhack/CodexBar/${RELEASE_BRANCH}/appcast.xml"
 AUTO_CHECKS=true
 LOWER_CONF=$(printf "%s" "$CONF" | tr '[:upper:]' '[:lower:]')
 if [[ "$LOWER_CONF" == "debug" ]]; then
