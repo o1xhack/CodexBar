@@ -13,6 +13,7 @@ Initial App Store release line, corresponding to the earlier Mobile `0.1.0` buil
 - Provider detail view with interactive daily spend bar chart (SwiftUI Charts)
 - Cost summary grid (session cost, 30-day cost, token counts)
 - Budget progress bar with color-coded thresholds (red >90%, orange >70%)
+- "Show remaining usage" toggle in Settings to display quota left instead of quota used
 - iCloud sync error display (quota exceeded, account change notifications)
 - iOS 26 Liquid Glass UI support (glass effect cards, soft scroll edges, tab bar minimize)
 - Demo mode for previewing the app without Mac data
@@ -28,10 +29,12 @@ Initial App Store release line, corresponding to the earlier Mobile `0.1.0` buil
 ### Changed
 - Usage and Cost charts support both Bar Chart and Line Chart styles
 - 30-day charts support press-and-hold inspection for exact daily values
-- Setting tab now groups About & Sync, Release Notes, Usage Setting, and Cost Setting
+- Chart Y-axis uses smart integer tick marks for cleaner readability
+- Setting tab reorganized into Usage, Charts, and Privacy sections
 - Mobile versioning is now aligned directly with the iOS app version number
 - Dynamic version display now surfaces synced iPhone and Mac versions more clearly
 
 ### Fixed
 - Pull to refresh now asks iCloud Key-Value Store to synchronize before reading the latest snapshot
 - Mac sync status now reports missing iCloud entitlements or unavailable iCloud accounts instead of showing a false success state
+- Fix iCloud sync entitlement check on iOS

@@ -1141,16 +1141,18 @@ private enum MobileReleaseNotesCatalog {
                 .init(
                     title: String(localized: "Improved"),
                     items: [
+                        String(localized: "Usage cards can now show remaining quota instead of used quota via a new toggle in Settings."),
                         String(localized: "Usage and Cost charts now support both Bar Chart and Line Chart display styles."),
                         String(localized: "Press-and-hold chart inspection now surfaces exact daily values directly on the graph."),
-                        String(localized: "Settings are reorganized into About & Sync, Release Notes, Usage Setting, and Cost Setting."),
-                        String(localized: "Mobile version naming is now aligned directly with the iOS app version number."),
+                        String(localized: "Chart Y-axis uses smart integer tick marks for cleaner readability."),
+                        String(localized: "Settings are reorganized into Usage, Charts, and Privacy sections."),
                     ]),
                 .init(
                     title: String(localized: "Fixed"),
                     items: [
                         String(localized: "Mac sync status now reports missing iCloud entitlements or unavailable iCloud accounts instead of showing a false success state."),
-                        String(localized: "Pull to refresh now asks iCloud Key-Value Store to synchronize before reading the latest snapshot."),
+                        String(localized: "Pull to refresh now asks iCloud to synchronize before reading the latest snapshot."),
+                        String(localized: "Fixed iCloud sync on iOS when shared cloud entitlements were missing."),
                     ]),
             ]),
     ]
