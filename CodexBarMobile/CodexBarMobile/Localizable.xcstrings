@@ -313,6 +313,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "隱藏個人資訊" } }
       }
     },
+    "Display the quota you have left instead of the quota you have used on usage cards." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Display the quota you have left instead of the quota you have used on usage cards." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Usage カードで使用量の代わりに残量を表示します。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Usage 卡片上显示剩余额度，而不是已使用额度。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在 Usage 卡片上顯示剩餘額度，而不是已使用額度。" } }
+      }
+    },
     "Hidden" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Hidden" } },
@@ -639,6 +647,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "グラフを長押しすると、その日の正確な値を確認できます。" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "长按图表可查看某一天的精确数值。" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "長按圖表可查看某一天的精確數值。" } }
+      }
+    },
+    "Privacy" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Privacy" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プライバシー" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "隐私" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "隱私" } }
       }
     },
     "Press-and-hold chart inspection now surfaces exact daily values directly on the graph." : {
@@ -1001,6 +1017,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "iPhone App" } }
       }
     },
+    "left" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "left" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "残り" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "剩余" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "剩餘" } }
+      }
+    },
     "min ago" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "min ago" } },
@@ -1017,12 +1041,28 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "個 provider 活躍" } }
       }
     },
+    "Show remaining usage" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show remaining usage" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "残り使用量を表示" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示剩余用量" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示剩餘用量" } }
+      }
+    },
     "tokens" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "tokens" } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "tokens" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "tokens" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "tokens" } }
+      }
+    },
+    "used" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "used" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "使用済み" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已用" } }
       }
     }
   },

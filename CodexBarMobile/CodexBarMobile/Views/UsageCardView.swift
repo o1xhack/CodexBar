@@ -5,6 +5,9 @@ struct UsageCardView: View {
     let label: String
     let window: SyncRateWindow
     var tintColor: Color = .blue
+    var percentageAccessibilityIdentifier: String?
+    @AppStorage(MobileSettingsKeys.showRemainingUsage) private var showRemainingUsage =
+        UserDefaults.standard.string(forKey: MobileSettingsKeys.usagePercentDisplayMode) == UsagePercentDisplayMode.remaining.rawValue
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -18,10 +21,14 @@ struct UsageCardView: View {
                     .font(.title2.monospacedDigit())
                     .fontWeight(.bold)
                     .foregroundStyle(self.usageColor)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+                    .modifier(PercentageAccessibilityIdentifierModifier(
+                        identifier: self.percentageAccessibilityIdentifier))
             }
 
             // Progress bar
-            ProgressView(value: min(self.window.usedPercent / 100, 1))
+            ProgressView(value: self.displayMode.progressFraction(for: self.window))
                 .tint(self.usageColor)
                 .scaleEffect(y: 2, anchor: .center)
 
@@ -49,7 +56,11 @@ struct UsageCardView: View {
     }
 
     private var percentageText: String {
-        "\(Int(self.window.usedPercent))%"
+        self.displayMode.percentageText(for: self.window)
+    }
+
+    private var displayMode: UsagePercentDisplayMode {
+        self.showRemainingUsage ? .remaining : .used
     }
 
     private var usageColor: Color {
@@ -59,6 +70,19 @@ struct UsageCardView: View {
             return .orange
         } else {
             return self.tintColor
+        }
+    }
+}
+
+private struct PercentageAccessibilityIdentifierModifier: ViewModifier {
+    let identifier: String?
+
+    @ViewBuilder
+    func body(content: Content) -> some View {
+        if let identifier {
+            content.accessibilityIdentifier(identifier)
+        } else {
+            content
         }
     }
 }

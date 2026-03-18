@@ -19,7 +19,8 @@ struct ProviderUsageView: View {
                     UsageCardView(
                         label: window.label ?? self.defaultLabel(at: index),
                         window: window,
-                        tintColor: self.providerColor)
+                        tintColor: self.providerColor,
+                        percentageAccessibilityIdentifier: "usage-card-percent-\(self.provider.providerID)-\(index)")
                 }
             }
             .padding(.horizontal, 16)

@@ -54,7 +54,8 @@ struct ProviderDetailView: View {
                     UsageCardView(
                         label: window.label ?? self.defaultLabel(at: index),
                         window: window,
-                        tintColor: self.providerColor)
+                        tintColor: self.providerColor,
+                        percentageAccessibilityIdentifier: "provider-detail-percent-\(self.provider.providerID)-\(index)")
                 }
             }
         }
@@ -91,9 +92,16 @@ struct ProviderDetailView: View {
 
     private func dailyChartSection(_ daily: [SyncDailyPoint]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Daily Spend")
-                .font(.headline)
-                .padding(.top, 4)
+            HStack(spacing: 4) {
+                Text("Daily Spend")
+                    .font(.headline)
+                Text("(USD)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.top, 4)
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("provider-daily-spend-title")
 
             Chart(daily, id: \.dayKey) { point in
                 switch self.chartStyle {
@@ -138,11 +146,11 @@ struct ProviderDetailView: View {
                 }
             }
             .chartYAxis {
-                AxisMarks { value in
+                AxisMarks(values: MobileChartAxisFormatter.axisValues(for: daily.map(\.costUSD))) { value in
                     AxisGridLine()
                     AxisValueLabel {
                         if let v = value.as(Double.self) {
-                            Text(Self.formatUSD(v))
+                            Text(MobileChartAxisFormatter.axisLabel(for: v))
                                 .font(.caption2)
                         }
                     }

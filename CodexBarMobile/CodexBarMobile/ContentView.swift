@@ -20,13 +20,6 @@ enum CostChartStyle: String, CaseIterable, Identifiable {
     }
 }
 
-enum MobileSettingsKeys {
-    static let usageCostChartStyle = "usageCostChartStyle"
-    static let dashboardCostChartStyle = "dashboardCostChartStyle"
-    static let hidePersonalInfo = "hidePersonalInfo"
-    static let openCostByDefault = "openCostByDefault"
-}
-
 private enum MobileRootTab: Hashable {
     case usage
     case cost
@@ -184,6 +177,7 @@ private struct ProviderListView: View {
                         ProviderUsageView(provider: provider)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityIdentifier("provider-card-\(provider.providerID)")
                 }
 
                 // Sync status at scroll bottom
@@ -428,9 +422,16 @@ private struct CostDashboardView: View {
 
     private var trendSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Daily Spend")
-                .font(.headline)
-                .padding(.top, 4)
+            HStack(spacing: 4) {
+                Text("Daily Spend")
+                    .font(.headline)
+                Text("(USD)")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.top, 4)
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier("cost-dashboard-daily-spend-title")
 
             Chart(self.insights.dailyPoints) { point in
                 switch self.chartStyle {
@@ -479,11 +480,12 @@ private struct CostDashboardView: View {
                 }
             }
             .chartYAxis {
-                AxisMarks { value in
+                AxisMarks(values: MobileChartAxisFormatter.axisValues(for: self.insights.dailyPoints.map(\.costUSD))) {
+                    value in
                     AxisGridLine()
                     AxisValueLabel {
                         if let v = value.as(Double.self) {
-                            Text(Self.formatUSD(v))
+                            Text(MobileChartAxisFormatter.axisLabel(for: v))
                                 .font(.caption2)
                         }
                     }
@@ -1278,17 +1280,39 @@ private struct ReleaseNotesBadge: View {
 private struct UsageSettingsView: View {
     @AppStorage(MobileSettingsKeys.usageCostChartStyle) private var usageCostChartStyleRawValue = CostChartStyle.bars
         .rawValue
+    @AppStorage(MobileSettingsKeys.showRemainingUsage) private var showRemainingUsage =
+        UserDefaults.standard.string(forKey: MobileSettingsKeys.usagePercentDisplayMode) == UsagePercentDisplayMode.remaining.rawValue
     @AppStorage(MobileSettingsKeys.hidePersonalInfo) private var hidePersonalInfo = false
 
     var body: some View {
         List {
-            Section("Charts") {
+            Section {
+                Toggle("Show remaining usage", isOn: self.$showRemainingUsage)
+                    .toggleStyle(.switch)
+                    .font(.body)
+                    .fontWeight(.medium)
+                    .accessibilityIdentifier("show-remaining-usage-toggle")
+            } header: {
+                Text("Usage")
+            } footer: {
+                Text("Display the quota you have left instead of the quota you have used on usage cards.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
                 Picker("Chart Style", selection: self.usageChartStyle) {
                     ForEach(CostChartStyle.allCases) { style in
                         Text(style.title).tag(style)
                     }
                 }
                 .pickerStyle(.menu)
+            } header: {
+                Text("Charts")
+            } footer: {
+                Text("Press and hold on the chart to inspect the exact value for a given day.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
 
             Section {
@@ -1300,15 +1324,12 @@ private struct UsageSettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-            }
-
-            Section {
-                Text("Press and hold on the chart to inspect the exact value for a given day.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+            } header: {
+                Text("Privacy")
             }
         }
         .navigationTitle("Usage Setting")
+        .listStyle(.insetGrouped)
     }
 
     private var usageChartStyle: Binding<CostChartStyle> {
