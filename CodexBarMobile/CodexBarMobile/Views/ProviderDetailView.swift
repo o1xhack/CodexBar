@@ -139,6 +139,9 @@ struct ProviderDetailView: View {
                 }
             }
             .chartXSelection(value: self.$selectedDate)
+            .chartScrollableAxes(.horizontal)
+            .chartXVisibleDomain(length: min(daily.count, Self.chartVisibleDays))
+            .chartScrollPosition(initialX: Self.chartScrollInitialDayKey(daily: daily))
             .chartXAxis {
                 AxisMarks(values: .stride(by: 7)) { _ in
                     AxisGridLine()
@@ -176,6 +179,15 @@ struct ProviderDetailView: View {
                 .padding(.horizontal, 4)
             }
         }
+    }
+
+    // MARK: - Chart Constants
+
+    private static let chartVisibleDays = 30
+
+    private static func chartScrollInitialDayKey(daily: [SyncDailyPoint]) -> String {
+        let startIndex = max(0, daily.count - chartVisibleDays)
+        return daily[startIndex].dayKey
     }
 
     // MARK: - Helpers

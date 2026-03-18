@@ -10,6 +10,60 @@ CodexBar is a macOS menu bar app that tracks AI coding tool usage (Claude, Codex
 - iOS project lives in `CodexBarMobile/`.
 - Shared sync layer lives in `CodexBarMobile/Shared/` (used by both Mac and iOS).
 
+## Version Control — jj (Jujutsu)
+
+We use **jj** colocated with git. Do NOT use raw git commands for commits.
+
+- Main working branch: `mobile-dev`
+- `upstream` remote → original open-source repo (steipete/CodexBar), read only.
+- `origin` remote → our fork (o1xhack/CodexBar).
+
+### Common commands
+
+```bash
+jj status                          # working copy changes
+jj log --limit 10                  # recent history
+jj describe -m "message"           # set change description
+jj new                             # start a new change
+jj bookmark set mobile-dev -r @    # point bookmark to current change
+jj git push --bookmark mobile-dev  # push to origin
+```
+
+## Commit Workflow
+
+When the user says **"提交"** (commit) or **"提交推送"** (commit and push), follow this sequence:
+
+### 1. Bump Build Number
+
+- Open `CodexBarMobile/project.yml`
+- Find all `CURRENT_PROJECT_VERSION` values and increment by 1 (e.g. `"9"` → `"10"`)
+- Do NOT change `MARKETING_VERSION` unless explicitly asked (that's the user-facing version like `1.0.0`)
+
+### 2. Update CHANGELOG.md
+
+- Open `CodexBarMobile/CHANGELOG.md`
+- Under the current version heading, add entries for what changed in this commit
+- Follow Keep a Changelog format (Added / Changed / Fixed)
+
+### 3. Commit with jj
+
+```bash
+jj describe -m "commit message here"
+```
+
+### 4. Push (only if user said "提交推送")
+
+```bash
+jj bookmark set mobile-dev -r @
+jj git push --bookmark mobile-dev
+```
+
+### Version number format
+
+- `MARKETING_VERSION` = user-facing version, e.g. `1.0.0` (only changes on feature releases)
+- `CURRENT_PROJECT_VERSION` = build number, e.g. `9` (increments on every commit)
+- Displayed as: **1.0.0 (9)**
+
 ## Localization — Mandatory 4-Language Rule
 
 **Every user-facing text change MUST include all 4 languages. No exceptions.**
@@ -72,20 +126,15 @@ When adding features or fixes:
 - CHANGELOG.md entries follow Keep a Changelog format (Added / Changed / Fixed).
 - In-app release notes use `String(localized:)` — so the 4-language rule applies.
 
-## Version Control
-
-- We use **jj** (Jujutsu), colocated with git.
-- Main working branch: `mobile-dev`
-- `upstream` remote points to the original open-source repo (steipete/CodexBar) — read only.
-- `origin` remote points to our fork (o1xhack/CodexBar).
-
 ## Key File Locations
 
 | Path | Purpose |
 |------|---------|
+| `CodexBarMobile/project.yml` | Build number (`CURRENT_PROJECT_VERSION`) and version (`MARKETING_VERSION`) |
 | `CodexBarMobile/CodexBarMobile/ContentView.swift` | Main app views, settings, release notes catalog |
 | `CodexBarMobile/CodexBarMobile/Localizable.xcstrings` | All translations (JSON) |
 | `CodexBarMobile/CodexBarMobile/Views/` | Feature views (provider detail, usage cards, onboarding) |
 | `CodexBarMobile/CodexBarMobile/Models/` | Data models and formatters |
+| `CodexBarMobile/CodexBarMobile/Preview Content/PreviewData.swift` | Demo / preview data |
 | `CodexBarMobile/Shared/` | Shared iCloud sync layer |
 | `CodexBarMobile/CHANGELOG.md` | iOS changelog (technical) |

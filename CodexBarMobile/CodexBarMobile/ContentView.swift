@@ -420,6 +420,13 @@ private struct CostDashboardView: View {
         }
     }
 
+    private static let chartVisibleDays: Int = 30
+
+    private static func chartScrollInitialDate(points: [CostDashboardInsights.DailyPoint]) -> Date {
+        guard let last = points.last else { return Date() }
+        return Calendar.current.date(byAdding: .day, value: -(chartVisibleDays - 1), to: last.date) ?? last.date
+    }
+
     private var trendSection: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 4) {
@@ -473,6 +480,9 @@ private struct CostDashboardView: View {
                 }
             }
             .chartXSelection(value: self.$selectedDay)
+            .chartScrollableAxes(.horizontal)
+            .chartXVisibleDomain(length: Self.chartVisibleDays * 24 * 60 * 60)
+            .chartScrollPosition(initialX: Self.chartScrollInitialDate(points: self.insights.dailyPoints))
             .chartXAxis {
                 AxisMarks(values: .stride(by: .day, count: 7)) { _ in
                     AxisGridLine()
@@ -1125,34 +1135,24 @@ private enum MobileReleaseNotesCatalog {
         ReleaseNotesVersion(
             version: "1.0.0",
             status: String(localized: "Latest"),
-            summary: String(localized: "Initial App Store release line, mapped from the earlier Mobile 0.1.0 build."),
+            summary: String(localized: "The first App Store release. Works with CodexBar on Mac."),
             sections: [
                 .init(
-                    title: String(localized: "Added"),
+                    title: String(localized: "What's New"),
                     items: [
-                        String(localized: "The first iPhone companion app for CodexBar with iCloud Key-Value Store sync from Mac."),
-                        String(localized: "A dedicated Cost tab with provider share, model mix, service mix, and 30-day spend analysis."),
-                        String(localized: "An in-app Release Notes page that shows the latest update first and keeps older versions collapsed below."),
-                        String(localized: "Native localization for English, Simplified Chinese, Traditional Chinese, and Japanese that follows both system language and the per-app language setting on iPhone."),
-                        String(localized: "Setup guidance, pull-to-refresh support, and the App Store privacy additions needed for distribution."),
-                        String(localized: "Provider cards with usage windows, budget progress, sync status, and detail screens."),
-                        String(localized: "Liquid Glass styling, demo mode, About information, and Mac version display."),
+                        String(localized: "View AI coding tool usage on iPhone, synced from Mac via iCloud."),
+                        String(localized: "Provider cards with real-time rate limits, budget progress, and daily cost breakdowns."),
+                        String(localized: "Cost dashboard with provider share, model and service mix, and 30-day spend analysis."),
+                        String(localized: "Interactive charts with Bar and Line styles, press-and-hold inspection, and horizontal scrolling for history."),
+                        String(localized: "Supports English, Simplified Chinese, Traditional Chinese, and Japanese."),
+                        String(localized: "Liquid Glass design, demo mode, onboarding guide, and pull-to-refresh."),
                     ]),
                 .init(
-                    title: String(localized: "Improved"),
+                    title: String(localized: "Improvements & Fixes"),
                     items: [
-                        String(localized: "Usage cards can now show remaining quota instead of used quota via a new toggle in Settings."),
-                        String(localized: "Usage and Cost charts now support both Bar Chart and Line Chart display styles."),
-                        String(localized: "Press-and-hold chart inspection now surfaces exact daily values directly on the graph."),
-                        String(localized: "Chart Y-axis uses smart integer tick marks for cleaner readability."),
-                        String(localized: "Settings are reorganized into Usage, Charts, and Privacy sections."),
-                    ]),
-                .init(
-                    title: String(localized: "Fixed"),
-                    items: [
-                        String(localized: "Mac sync status now reports missing iCloud entitlements or unavailable iCloud accounts instead of showing a false success state."),
-                        String(localized: "Pull to refresh now asks iCloud to synchronize before reading the latest snapshot."),
-                        String(localized: "Fixed iCloud sync on iOS when shared cloud entitlements were missing."),
+                        String(localized: "Toggle between used and remaining quota display in Settings."),
+                        String(localized: "Smarter chart axis scaling with clean integer tick marks."),
+                        String(localized: "Improved iCloud sync reliability and error reporting."),
                     ]),
             ]),
     ]

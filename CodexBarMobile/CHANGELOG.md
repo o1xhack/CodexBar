@@ -2,7 +2,15 @@
 
 All notable changes to the CodexBar iOS companion app will be documented in this file.
 
-## [1.0.0] — 2026-03-17
+## [1.0.0 (10)] — 2026-03-18
+
+### Changed
+- Daily spend chart now scrolls horizontally, showing 30 days at a time with swipe for history
+- Consolidated release notes into "What's New" and "Improvements & Fixes" sections
+- Updated CLAUDE.md with jj workflow and commit automation rules
+- Enriched demo data to 50 days with realistic spend curves
+
+## [1.0.0 (9)] — 2026-03-17
 
 Initial App Store release line, corresponding to the earlier Mobile `0.1.0` build.
 
@@ -29,6 +37,7 @@ Initial App Store release line, corresponding to the earlier Mobile `0.1.0` buil
 ### Changed
 - Usage and Cost charts support both Bar Chart and Line Chart styles
 - 30-day charts support press-and-hold inspection for exact daily values
+- Daily spend chart now scrolls horizontally, showing 30 days at a time with swipe to view history
 - Chart Y-axis uses smart integer tick marks for cleaner readability
 - Setting tab reorganized into Usage, Charts, and Privacy sections
 - Mobile versioning is now aligned directly with the iOS app version number

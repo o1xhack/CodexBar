@@ -105,6 +105,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "圖表樣式" } }
       }
     },
+    "Chart Y-axis uses smart integer tick marks for cleaner readability." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chart Y-axis uses smart integer tick marks for cleaner readability." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "グラフの Y 軸目盛りが整数で見やすく表示されるようになりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "图表 Y 轴使用整数刻度，显示更清晰易读。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "圖表 Y 軸使用整數刻度，顯示更清晰易讀。" } }
+      }
+    },
     "Charts" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Charts" } },
@@ -169,6 +177,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "費用" } }
       }
     },
+    "Cost dashboard with provider share, model and service mix, and 30-day spend analysis." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost dashboard with provider share, model and service mix, and 30-day spend analysis." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロバイダ比率、モデル・サービス構成、30日間の支出分析を備えたコストダッシュボード。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "费用面板，包含 provider 占比、模型与服务构成、30 天支出分析。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "費用面板，包含 provider 占比、模型與服務構成、30 天支出分析。" } }
+      }
+    },
     "Cost & Usage" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost & Usage" } },
@@ -215,6 +231,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "日別支出" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每日支出" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "每日支出" } }
+      }
+    },
+    "Daily spend chart now scrolls horizontally, showing 30 days at a time with swipe to view older history." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Daily spend chart now scrolls horizontally, showing 30 days at a time with swipe to view older history." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "日次支出チャートが横スクロールに対応し、30日分を表示しながらスワイプで過去の履歴を確認できます。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每日支出图表支持横向滚动，默认显示 30 天，左滑查看更早的历史数据。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "每日支出圖表支援橫向捲動，預設顯示 30 天，左滑查看更早的歷史資料。" } }
       }
     },
     "Data pushed by Mac · Pull to check for updates" : {
@@ -305,6 +329,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "退出示範" } }
       }
     },
+    "Fixed iCloud sync on iOS when shared cloud entitlements were missing." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fixed iCloud sync on iOS when shared cloud entitlements were missing." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "共有クラウドエンタイトルメントが不足していた場合の iOS 側 iCloud 同期を修正しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "修复了 iOS 端共享云权限缺失时 iCloud 同步失败的问题。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "修復了 iOS 端共享雲端權限缺失時 iCloud 同步失敗的問題。" } }
+      }
+    },
     "Hide personal information" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Hide personal information" } },
@@ -351,6 +383,30 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "改善" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "改进" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "改進" } }
+      }
+    },
+    "Improved iCloud sync reliability and error reporting." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Improved iCloud sync reliability and error reporting." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 同期の安定性とエラー報告を改善しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "改善了 iCloud 同步的稳定性和错误提示。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "改善了 iCloud 同步的穩定性和錯誤提示。" } }
+      }
+    },
+    "Improvements & Fixes" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Improvements & Fixes" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "改善と修正" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "改进与修复" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "改進與修復" } }
+      }
+    },
+    "Interactive charts with Bar and Line styles, press-and-hold inspection, and horizontal scrolling for history." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Interactive charts with Bar and Line styles, press-and-hold inspection, and horizontal scrolling for history." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "棒グラフと折れ線グラフの切り替え、長押し検査、履歴の横スクロールに対応したインタラクティブなチャート。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "交互式图表，支持柱状图和折线图切换、长按查看数值、横向滚动浏览历史。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "互動式圖表，支援長條圖和折線圖切換、長按查看數值、橫向捲動瀏覽歷史。" } }
       }
     },
     "Initial App Store release line, mapped from the earlier Mobile 0.1.0 build." : {
@@ -439,6 +495,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "折れ線グラフ" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "折线图" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "折線圖" } }
+      }
+    },
+    "Liquid Glass design, demo mode, onboarding guide, and pull-to-refresh." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Liquid Glass design, demo mode, onboarding guide, and pull-to-refresh." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Liquid Glass デザイン、デモモード、セットアップガイド、プルリフレッシュ。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Liquid Glass 设计风格、演示模式、引导设置、下拉刷新。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Liquid Glass 設計風格、展示模式、引導設定、下拉重新整理。" } }
       }
     },
     "Liquid Glass styling, demo mode, About information, and Mac version display." : {
@@ -657,6 +721,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "隱私" } }
       }
     },
+    "Pull to refresh now asks iCloud to synchronize before reading the latest snapshot." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Pull to refresh now asks iCloud to synchronize before reading the latest snapshot." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プルリフレッシュ時に iCloud の同期を先にリクエストしてから最新データを読み込むようになりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下拉刷新时会先请求 iCloud 同步，再读取最新数据。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "下拉重新整理時會先請求 iCloud 同步，再讀取最新資料。" } }
+      }
+    },
     "Press-and-hold chart inspection now surfaces exact daily values directly on the graph." : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Press-and-hold chart inspection now surfaces exact daily values directly on the graph." } },
@@ -695,6 +767,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "Provider 比率" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Provider 占比" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Provider 占比" } }
+      }
+    },
+    "Provider cards with real-time rate limits, budget progress, and daily cost breakdowns." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Provider cards with real-time rate limits, budget progress, and daily cost breakdowns." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リアルタイムのレート制限、予算進捗、日次コスト内訳を備えたプロバイダカード。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Provider 卡片，显示实时配额、预算进度和每日费用明细。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Provider 卡片，顯示即時配額、預算進度和每日費用明細。" } }
       }
     },
     "Provider cards with usage windows, budget progress, sync status, and detail screens." : {
@@ -753,6 +833,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "當前週期" } }
       }
     },
+    "Settings are reorganized into Usage, Charts, and Privacy sections." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Settings are reorganized into Usage, Charts, and Privacy sections." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定を使用量・グラフ・プライバシーの3セクションに再編成しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "设置页重新分组为用量、图表、隐私三个部分。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "設定頁重新分組為用量、圖表、隱私三個部分。" } }
+      }
+    },
     "Setting" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Setting" } },
@@ -793,6 +881,22 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在顯示示範資料" } }
       }
     },
+    "Smarter chart axis scaling with clean integer tick marks." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Smarter chart axis scaling with clean integer tick marks." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "グラフ軸が整数の目盛りでより見やすくなりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "图表轴刻度优化，使用整数刻度更清晰。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "圖表軸刻度優化，使用整數刻度更清晰。" } }
+      }
+    },
+    "Supports English, Simplified Chinese, Traditional Chinese, and Japanese." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Supports English, Simplified Chinese, Traditional Chinese, and Japanese." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "英語・簡体字中国語・繁体字中国語・日本語に対応。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "支持英文、简体中文、繁体中文、日文四种语言。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "支援英文、簡體中文、繁體中文、日文四種語言。" } }
+      }
+    },
     "Source Device" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Source Device" } },
@@ -823,6 +927,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "同期済み Mobile バージョン" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已同步的 Mobile 版本" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已同步的 Mobile 版本" } }
+      }
+    },
+    "The first App Store release. Works with CodexBar on Mac." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The first App Store release. Works with CodexBar on Mac." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "初の App Store リリース。Mac 版 CodexBar と連携。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "首个 App Store 正式版本，搭配 Mac 上的 CodexBar 使用。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "首個 App Store 正式版本，搭配 Mac 上的 CodexBar 使用。" } }
       }
     },
     "The first iPhone companion app for CodexBar with iCloud Key-Value Store sync from Mac." : {
@@ -865,6 +977,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "今日" } }
       }
     },
+    "Toggle between used and remaining quota display in Settings." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Toggle between used and remaining quota display in Settings." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定で使用済みクォータと残りクォータの表示を切り替え可能。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在设置中切换显示已用配额或剩余配额。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在設定中切換顯示已用配額或剩餘配額。" } }
+      }
+    },
     "Tracked provider budgets and how close they are to their current limit." : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Tracked provider budgets and how close they are to their current limit." } },
@@ -887,6 +1007,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "Usage" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "用量" } }
+      }
+    },
+    "Usage cards can now show remaining quota instead of used quota via a new toggle in Settings." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage cards can now show remaining quota instead of used quota via a new toggle in Settings." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定の新しいトグルで、使用量カードに使用済みクォータの代わりに残りクォータを表示できるようになりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量卡片现在可以通过设置中的开关切换显示已用配额或剩余配额。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "用量卡片現在可以透過設定中的開關切換顯示已用配額或剩餘配額。" } }
       }
     },
     "Usage Setting" : {
@@ -921,6 +1049,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "版本" } }
       }
     },
+    "View AI coding tool usage on iPhone, synced from Mac via iCloud." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "View AI coding tool usage on iPhone, synced from Mac via iCloud." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "iCloud 経由で Mac から同期された AI コーディングツールの使用状況を iPhone で確認。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 iPhone 上查看 AI 编程工具用量，通过 iCloud 从 Mac 同步。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在 iPhone 上查看 AI 程式設計工具用量，透過 iCloud 從 Mac 同步。" } }
+      }
+    },
     "Versions" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Versions" } },
@@ -951,6 +1087,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "週間" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每周" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "每週" } }
+      }
+    },
+    "What's New" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "What's New" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "新機能" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新功能" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新功能" } }
       }
     },
     "Welcome to CodexBar" : {

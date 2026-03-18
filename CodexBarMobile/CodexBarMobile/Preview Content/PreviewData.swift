@@ -2,7 +2,7 @@ import CodexBarSync
 import Foundation
 
 enum PreviewData {
-    // MARK: - Sample daily cost data (30 days)
+    // MARK: - Sample daily cost data (50 days)
 
     private static func makeDaily(
         baseCost: Double,
@@ -12,12 +12,19 @@ enum PreviewData {
     {
         let calendar = Calendar.current
         let today = Date()
-        return (0..<30).reversed().map { daysAgo in
+        return (0..<50).reversed().map { daysAgo in
             let date = calendar.date(byAdding: .day, value: -daysAgo, to: today)!
             let dayKey = Self.dayKeyFormatter.string(from: date)
-            let dayFactor = 1 + (Double((daysAgo % 6) - 2) * 0.08)
-            let cost = max(0.05, baseCost * dayFactor)
-            let tokens = max(1000, Int(Double(tokenBase) * dayFactor))
+
+            // Simulate realistic spend curve: gradual ramp-up with weekly dips on weekends
+            let weekday = calendar.component(.weekday, from: date)
+            let isWeekend = weekday == 1 || weekday == 7
+            let recencyBoost = pow(Double(50 - daysAgo) / 50.0, 1.5) // ramps up toward today
+            let weekdayFactor = isWeekend ? 0.3 : 1.0
+            let noise = 1.0 + sin(Double(daysAgo) * 1.7) * 0.25
+            let cost = max(0.02, baseCost * recencyBoost * weekdayFactor * noise)
+            let tokens = max(500, Int(Double(tokenBase) * recencyBoost * weekdayFactor * noise))
+
             return SyncDailyPoint(
                 dayKey: dayKey,
                 costUSD: cost,
@@ -42,22 +49,32 @@ enum PreviewData {
     static let claudeProvider = ProviderUsageSnapshot(
         providerID: "claude",
         providerName: "Claude",
-        primary: nil,
-        secondary: nil,
+        primary: SyncRateWindow(
+            label: "Session",
+            usedPercent: 13,
+            windowMinutes: 300,
+            resetsAt: Date().addingTimeInterval(3600 * 2.5),
+            resetDescription: nil),
+        secondary: SyncRateWindow(
+            label: "Weekly",
+            usedPercent: 16,
+            windowMinutes: 10080,
+            resetsAt: Date().addingTimeInterval(3600 * 24 * 4),
+            resetDescription: nil),
         accountEmail: "user@example.com",
         loginMethod: "Max",
         statusMessage: nil,
         isError: false,
         lastUpdated: Date().addingTimeInterval(-120),
         costSummary: SyncCostSummary(
-            sessionCostUSD: 1.42,
-            sessionTokens: 12340,
-            last30DaysCostUSD: 28.90,
-            last30DaysTokens: 1_245_000,
+            sessionCostUSD: 57.14,
+            sessionTokens: 565_900,
+            last30DaysCostUSD: 401.30,
+            last30DaysTokens: 12_450_000,
             daily: makeDaily(
-                baseCost: 0.96,
-                tokenBase: 41500,
-                modelMix: [("Claude Sonnet 4", 0.72), ("Claude Opus 4", 0.28)])),
+                baseCost: 8.5,
+                tokenBase: 350_000,
+                modelMix: [("claude-opus-4-6", 0.77), ("claude-sonnet-4", 0.23)])),
         budget: SyncBudgetSnapshot(
             usedAmount: 42.50,
             limitAmount: 100.0,
@@ -67,19 +84,19 @@ enum PreviewData {
         rateWindows: [
             SyncRateWindow(
                 label: "Session",
-                usedPercent: 3,
+                usedPercent: 13,
                 windowMinutes: 300,
                 resetsAt: Date().addingTimeInterval(3600 * 2.5),
                 resetDescription: nil),
             SyncRateWindow(
                 label: "Weekly",
-                usedPercent: 4,
+                usedPercent: 16,
                 windowMinutes: 10080,
                 resetsAt: Date().addingTimeInterval(3600 * 24 * 4),
                 resetDescription: nil),
             SyncRateWindow(
                 label: "Sonnet",
-                usedPercent: 0,
+                usedPercent: 1,
                 windowMinutes: 300,
                 resetsAt: Date().addingTimeInterval(3600 * 4.5),
                 resetDescription: nil),
@@ -104,13 +121,13 @@ enum PreviewData {
         isError: false,
         lastUpdated: Date().addingTimeInterval(-300),
         costSummary: SyncCostSummary(
-            sessionCostUSD: 3.18,
-            sessionTokens: 28500,
-            last30DaysCostUSD: 74.60,
+            sessionCostUSD: 20.49,
+            sessionTokens: 207_900,
+            last30DaysCostUSD: 109.33,
             last30DaysTokens: 2_980_000,
             daily: makeDaily(
-                baseCost: 2.48,
-                tokenBase: 98000,
+                baseCost: 5.2,
+                tokenBase: 180_000,
                 serviceMix: [("Codex Run", 0.74), ("GitHub Code Review", 0.18), ("Responses API", 0.08)],
                 modelMix: [("gpt-5.4", 0.52), ("gpt-5.3-codex", 0.33), ("gpt-5.1-codex-mini", 0.15)])),
         budget: SyncBudgetSnapshot(
