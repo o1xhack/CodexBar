@@ -1,6 +1,14 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "7 Days" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "7 Days" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "7日間" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "7 天" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "7 天" } }
+      }
+    },
     "30 Days" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "30 Days" } },
@@ -47,6 +55,30 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "アクティブ日数" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "活跃天数" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "活躍天數" } }
+      }
+    },
+    "AI Coding Spend" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "AI Coding Spend" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "AIコーディング費用" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "AI 编程花费" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "AI 程式開發花費" } }
+      }
+    },
+    "Avg/Day" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Avg/Day" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "日平均" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "日均" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "日均" } }
+      }
+    },
+    "Cancel" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cancel" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "キャンセル" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "取消" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "取消" } }
       }
     },
     "Added" : {
@@ -665,6 +697,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新的 iOS 版本發佈後，舊版本更新說明會顯示在這裡。" } }
       }
     },
+    "Others" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Others" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "その他" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "其他" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "其他" } }
+      }
+    },
     "Open Cost by default" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Cost by default" } },
@@ -703,6 +743,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "概要" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "概览" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "概覽" } }
+      }
+    },
+    "Period" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Period" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "期間" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "时间段" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "時間段" } }
       }
     },
     "Peak" : {
@@ -823,6 +871,22 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "リセット" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重置于" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重設於" } }
+      }
+    },
+    "Share" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Share" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "共有" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "分享" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "分享" } }
+      }
+    },
+    "Share Cost Report" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Share Cost Report" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "費用レポートを共有" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "分享费用报告" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "分享費用報告" } }
       }
     },
     "Selected Cost" : {
@@ -991,6 +1055,30 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "今日" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "今日" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "今日" } }
+      }
+    },
+    "Tokens" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tokens" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "トークン" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "令牌数" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "令牌數" } }
+      }
+    },
+    "Top Models" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Top Models" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "上位モデル" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "热门模型" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "熱門模型" } }
+      }
+    },
+    "Track your AI coding costs" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Track your AI coding costs" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "AIコーディングの費用を追跡" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "追踪你的 AI 编程费用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "追蹤你的 AI 程式開發費用" } }
       }
     },
     "Toggle between used and remaining quota display in Settings." : {

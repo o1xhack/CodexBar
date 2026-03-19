@@ -2,6 +2,22 @@
 
 All notable changes to the CodexBar iOS companion app will be documented in this file.
 
+## [1.0.0 (14)] — 2026-03-20
+
+### Added
+- One-tap share button on Cost tab to generate shareable cost report images
+- Share sheet with period picker (Today / 7 Days / 30 Days) and live card preview
+- Three share card styles: today (provider breakdown), 7-day and 30-day (stacked bar chart)
+- Stacked bar chart colored by provider (top 3 + "Others" for 4+ providers)
+- QR code footer linking to CodexBar project
+- Feature research framework under Research/ with status tracking (draft → done → dropped)
+- Research doc 001: Daily Utilization Chart (blocked-upstream, PR #565)
+- Research doc 002: Cost Share Card (done)
+
+### Changed
+- CLAUDE.md simplified to project overview; AGENTS.md now holds complete 7-step workflow
+- Share card charts follow dataviz conventions (largest segment at bottom for stable baseline)
+
 ## [1.0.0 (13)] — 2026-03-19
 
 ### Changed

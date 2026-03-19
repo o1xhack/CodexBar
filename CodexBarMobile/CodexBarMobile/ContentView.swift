@@ -262,12 +262,19 @@ private struct SyncStatusBar: View {
 private struct CostTab: View {
     let usageData: SyncedUsageData
     @Binding var isDemoMode: Bool
+    @State private var showShareSheet = false
 
     private var displaySnapshot: SyncedUsageSnapshot? {
         if self.isDemoMode {
             return PreviewData.sampleSnapshot
         }
         return self.usageData.snapshot
+    }
+
+    private var currentInsights: CostDashboardInsights? {
+        guard let snapshot = self.displaySnapshot else { return nil }
+        let insights = CostDashboardInsights(snapshot: snapshot)
+        return insights.hasDisplayData ? insights : nil
     }
 
     var body: some View {
@@ -302,6 +309,20 @@ private struct CostTab: View {
                                 .fontWeight(.medium)
                         }
                     }
+                }
+                if self.currentInsights != nil {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            self.showShareSheet = true
+                        } label: {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                    }
+                }
+            }
+            .sheet(isPresented: $showShareSheet) {
+                if let insights = self.currentInsights {
+                    CostShareSheet(insights: insights)
                 }
             }
         }
@@ -1157,7 +1178,7 @@ private struct ReleaseNotesVersion: Identifiable {
 private enum MobileReleaseNotesCatalog {
     static let versions: [ReleaseNotesVersion] = [
         ReleaseNotesVersion(
-            version: "1.0.0 (13)",
+            version: "1.0.0 (14)",
             status: String(localized: "Latest"),
             summary: String(localized: "The first App Store release. Works with CodexBar on Mac."),
             sections: [

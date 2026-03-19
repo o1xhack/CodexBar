@@ -1,0 +1,352 @@
+import SwiftUI
+import CoreImage.CIFilterBuiltins
+
+// MARK: - Share Period
+
+enum SharePeriod: String, CaseIterable, Identifiable {
+    case today
+    case week
+    case month
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .today: String(localized: "Today")
+        case .week: String(localized: "7 Days")
+        case .month: String(localized: "30 Days")
+        }
+    }
+}
+
+// MARK: - Data model for share card
+
+struct ShareCardData {
+    let totalCost: Double          // total for the selected period
+    let todayCost: Double
+    let totalTokens: Int
+    let activeDays: Int
+    let avgDailyCost: Double
+    let providers: [ProviderRow]
+    let topModels: [BreakdownRow]
+    let dailyBars: [DailyBar]      // bars for chart (7 or 30 entries)
+
+    struct ProviderRow {
+        let name: String
+        let cost: Double
+        let share: Double // 0–1
+        let color: Color
+    }
+
+    struct BreakdownRow {
+        let label: String
+        let cost: Double
+        let share: Double
+    }
+
+    struct DailyBar {
+        let label: String // "Mon", "03/15", etc.
+        let cost: Double
+    }
+
+    /// Top 3 providers + "Others" if more than 3 exist
+    var displayProviders: [ProviderRow] {
+        guard providers.count > 3 else { return providers }
+        let top3 = Array(providers.prefix(3))
+        let othersShare = providers.dropFirst(3).reduce(0.0) { $0 + $1.share }
+        let othersCost = providers.dropFirst(3).reduce(0.0) { $0 + $1.cost }
+        let others = ProviderRow(
+            name: String(localized: "Others"),
+            cost: othersCost,
+            share: othersShare,
+            color: .gray
+        )
+        return top3 + [others]
+    }
+}
+
+// MARK: - QR Code Generator
+
+enum QRCodeGenerator {
+    static func generate(from string: String, size: CGFloat = 120) -> UIImage {
+        let context = CIContext()
+        let filter = CIFilter.qrCodeGenerator()
+        let data = Data(string.utf8)
+        filter.setValue(data, forKey: "inputMessage")
+        filter.setValue("M", forKey: "inputCorrectionLevel")
+
+        guard let ciImage = filter.outputImage else {
+            return UIImage(systemName: "qrcode")!
+        }
+
+        let scale = size / ciImage.extent.width
+        let scaled = ciImage.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+
+        guard let cgImage = context.createCGImage(scaled, from: scaled.extent) else {
+            return UIImage(systemName: "qrcode")!
+        }
+
+        return UIImage(cgImage: cgImage)
+    }
+}
+
+// MARK: - Share Service
+
+@MainActor
+enum CostShareService {
+    static func renderImage(period: SharePeriod, data: ShareCardData) -> UIImage? {
+        let view = CostShareCardView(period: period, data: data)
+        let renderer = ImageRenderer(content: view)
+        renderer.scale = 3.0
+        return renderer.uiImage
+    }
+
+    static func share(period: SharePeriod, data: ShareCardData) {
+        guard let image = renderImage(period: period, data: data) else { return }
+
+        let activityVC = UIActivityViewController(
+            activityItems: [image],
+            applicationActivities: nil
+        )
+
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let rootVC = windowScene.windows.first?.rootViewController {
+            if let popover = activityVC.popoverPresentationController {
+                popover.sourceView = rootVC.view
+                popover.sourceRect = CGRect(
+                    x: rootVC.view.bounds.midX, y: rootVC.view.bounds.midY,
+                    width: 0, height: 0
+                )
+            }
+            rootVC.present(activityVC, animated: true)
+        }
+    }
+}
+
+// MARK: - Build from CostDashboardInsights
+
+extension ShareCardData {
+    /// Create ShareCardData for a given period from live insights
+    init(insights: CostDashboardInsights, period: SharePeriod) {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        // Provider rows (sorted by cost descending already)
+        let providerRows: [ProviderRow] = insights.providerRows.map { row in
+            let cost: Double
+            switch period {
+            case .today:
+                cost = row.todayCost
+            case .week, .month:
+                cost = row.thirtyDayCost // we'll recalculate for 7d below
+            }
+            return ProviderRow(
+                name: row.provider.providerName,
+                cost: cost,
+                share: 0, // computed below
+                color: Self.providerColor(for: row.provider.providerName)
+            )
+        }
+
+        // Filter daily points by period
+        let filteredDays: [CostDashboardInsights.DailyPoint]
+        switch period {
+        case .today:
+            filteredDays = []
+        case .week:
+            let weekAgo = calendar.date(byAdding: .day, value: -7, to: today)!
+            filteredDays = insights.dailyPoints.filter { $0.date >= weekAgo }
+        case .month:
+            filteredDays = insights.dailyPoints
+        }
+
+        // Compute totals
+        let periodCost: Double
+        let periodTokens: Int
+        switch period {
+        case .today:
+            periodCost = insights.totalTodayCost
+            periodTokens = insights.providerRows.reduce(0) { total, row in
+                // Today's tokens from provider's cost summary
+                total + (row.provider.costSummary?.sessionTokens ?? 0)
+            }
+        case .week:
+            periodCost = filteredDays.reduce(0) { $0 + $1.costUSD }
+            periodTokens = filteredDays.reduce(0) { $0 + $1.totalTokens }
+        case .month:
+            periodCost = insights.total30DayCost
+            periodTokens = insights.total30DayTokens
+        }
+
+        // Recalculate provider shares based on period cost
+        let adjustedProviders: [ProviderRow]
+        if period == .week {
+            // For 7-day, scale provider costs proportionally
+            let ratio = periodCost > 0 && insights.total30DayCost > 0
+                ? periodCost / insights.total30DayCost : 1.0
+            adjustedProviders = providerRows.map { p in
+                let cost = p.cost * ratio
+                return ProviderRow(
+                    name: p.name,
+                    cost: cost,
+                    share: periodCost > 0 ? cost / periodCost : 0,
+                    color: p.color
+                )
+            }
+        } else {
+            adjustedProviders = providerRows.map { p in
+                ProviderRow(
+                    name: p.name,
+                    cost: p.cost,
+                    share: periodCost > 0 ? p.cost / periodCost : 0,
+                    color: p.color
+                )
+            }
+        }
+
+        let activeDays: Int
+        switch period {
+        case .today: activeDays = 1
+        case .week: activeDays = filteredDays.count(where: { $0.costUSD > 0 })
+        case .month: activeDays = insights.activeDayCount
+        }
+
+        self.totalCost = periodCost
+        self.todayCost = insights.totalTodayCost
+        self.totalTokens = periodTokens
+        self.activeDays = activeDays
+        self.avgDailyCost = activeDays > 0 ? periodCost / Double(activeDays) : 0
+        self.providers = adjustedProviders.filter { $0.cost > 0 }
+
+        // Top models (top 3)
+        self.topModels = insights.modelRows.prefix(3).map { row in
+            let totalModel = insights.modelRows.reduce(0.0) { $0 + $1.amountUSD }
+            return BreakdownRow(
+                label: row.label,
+                cost: row.amountUSD,
+                share: totalModel > 0 ? row.amountUSD / totalModel : 0
+            )
+        }
+
+        // Daily bars
+        let weekdayFormatter = DateFormatter()
+        weekdayFormatter.dateFormat = "EEE"
+
+        switch period {
+        case .today:
+            self.dailyBars = []
+        case .week:
+            self.dailyBars = filteredDays.map { point in
+                DailyBar(label: weekdayFormatter.string(from: point.date), cost: point.costUSD)
+            }
+        case .month:
+            self.dailyBars = filteredDays.enumerated().map { index, point in
+                let dayNum = index + 1
+                let showLabel = dayNum == 1 || dayNum % 7 == 0 || dayNum == filteredDays.count
+                return DailyBar(label: showLabel ? "\(dayNum)" : "", cost: point.costUSD)
+            }
+        }
+    }
+}
+
+// MARK: - Provider color mapping
+
+extension ShareCardData {
+    static func providerColor(for name: String) -> Color {
+        let lower = name.lowercased()
+        if lower.contains("claude") || lower.contains("anthropic") {
+            return Color(red: 0.82, green: 0.55, blue: 0.28)
+        } else if lower.contains("codex") || lower.contains("cursor") {
+            return .purple
+        } else if lower.contains("openai") || lower.contains("chatgpt") {
+            return .green
+        } else if lower.contains("openrouter") {
+            return Color(red: 0.42, green: 0.35, blue: 0.83)
+        } else if lower.contains("gemini") {
+            return .blue
+        }
+        return .blue
+    }
+}
+
+// MARK: - Preview data
+
+extension ShareCardData {
+    static let preview = ShareCardData(
+        totalCost: 541.83,
+        todayCost: 78.56,
+        totalTokens: 18_450_000,
+        activeDays: 24,
+        avgDailyCost: 22.58,
+        providers: [
+            .init(name: "Claude", cost: 401.30, share: 0.74, color: Color(red: 0.82, green: 0.55, blue: 0.28)),
+            .init(name: "Codex", cost: 109.33, share: 0.20, color: .purple),
+            .init(name: "ChatGPT", cost: 19.40, share: 0.04, color: .green),
+            .init(name: "OpenRouter", cost: 11.80, share: 0.02, color: Color(red: 0.42, green: 0.35, blue: 0.83)),
+        ],
+        topModels: [
+            .init(label: "claude-opus-4-6", cost: 308.20, share: 0.57),
+            .init(label: "claude-sonnet-4", cost: 93.10, share: 0.17),
+            .init(label: "gpt-5.4", cost: 56.84, share: 0.10),
+        ],
+        dailyBars: {
+            // 30 days of sample data, only label every 7th day
+            let base = 18.0
+            return (0..<30).map { i in
+                let weekday = (i + 3) % 7
+                let isWeekend = weekday == 5 || weekday == 6
+                let growth = pow(Double(i + 1) / 30.0, 1.3)
+                let noise = sin(Double(i) * 0.8) * 4
+                let cost = max(0.5, (isWeekend ? base * 0.3 : base) * growth + noise)
+                let showLabel = i == 0 || (i + 1) % 7 == 0 || i == 29
+                return DailyBar(label: showLabel ? "\(i + 1)" : "", cost: cost)
+            }
+        }()
+    )
+
+    static let previewToday = ShareCardData(
+        totalCost: 78.56,
+        todayCost: 78.56,
+        totalTokens: 565_000,
+        activeDays: 1,
+        avgDailyCost: 78.56,
+        providers: [
+            .init(name: "Claude", cost: 57.14, share: 0.73, color: Color(red: 0.82, green: 0.55, blue: 0.28)),
+            .init(name: "Codex", cost: 20.49, share: 0.26, color: .purple),
+            .init(name: "ChatGPT", cost: 0.92, share: 0.01, color: .green),
+        ],
+        topModels: [
+            .init(label: "claude-opus-4-6", cost: 44.10, share: 0.56),
+            .init(label: "claude-sonnet-4", cost: 13.04, share: 0.17),
+            .init(label: "gpt-5.4", cost: 12.30, share: 0.16),
+        ],
+        dailyBars: []
+    )
+
+    static let preview7d = ShareCardData(
+        totalCost: 184.26,
+        todayCost: 78.56,
+        totalTokens: 4_820_000,
+        activeDays: 6,
+        avgDailyCost: 30.71,
+        providers: [
+            .init(name: "Claude", cost: 138.20, share: 0.75, color: Color(red: 0.82, green: 0.55, blue: 0.28)),
+            .init(name: "Codex", cost: 35.86, share: 0.19, color: .purple),
+            .init(name: "ChatGPT", cost: 10.20, share: 0.06, color: .green),
+        ],
+        topModels: [
+            .init(label: "claude-opus-4-6", cost: 106.40, share: 0.58),
+            .init(label: "claude-sonnet-4", cost: 31.80, share: 0.17),
+            .init(label: "gpt-5.4", cost: 21.56, share: 0.12),
+        ],
+        dailyBars: [
+            .init(label: "Thu", cost: 15.20),
+            .init(label: "Fri", cost: 22.40),
+            .init(label: "Sat", cost: 4.80),
+            .init(label: "Sun", cost: 3.20),
+            .init(label: "Mon", cost: 28.60),
+            .init(label: "Tue", cost: 31.50),
+            .init(label: "Wed", cost: 78.56),
+        ]
+    )
+}
