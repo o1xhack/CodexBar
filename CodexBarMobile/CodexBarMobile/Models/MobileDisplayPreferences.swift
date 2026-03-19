@@ -40,8 +40,12 @@ enum UsagePercentDisplayMode: String, CaseIterable, Identifiable {
         min(max(self.displayedPercent(for: window) / 100, 0), 1)
     }
 
-    func percentageText(for window: SyncRateWindow) -> String {
+    func percentageValueText(for window: SyncRateWindow) -> String {
         let roundedValue = Int(self.displayedPercent(for: window).rounded())
-        return "\(roundedValue)% \(self.percentSuffix)"
+        return "\(roundedValue)%"
+    }
+
+    func percentageText(for window: SyncRateWindow) -> String {
+        "\(self.percentageValueText(for: window)) \(self.percentSuffix)"
     }
 }

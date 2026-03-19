@@ -2,6 +2,16 @@
 
 All notable changes to the CodexBar iOS companion app will be documented in this file.
 
+## [1.0.0 (11)] — 2026-03-19
+
+### Changed
+- Usage percentage labels now keep a larger, fixed layout instead of scaling down under pressure
+- Cost overview cards and trailing metrics in Cost lists now use adaptive fixed-width layouts for crisper numbers
+
+### Fixed
+- Blurry `% used` and `% left` labels on provider usage cards
+- Soft or blurry trailing amount/share text in Provider Share and Model Mix rows
+
 ## [1.0.0 (10)] — 2026-03-18
 
 ### Changed

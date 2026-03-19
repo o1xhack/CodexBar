@@ -36,6 +36,22 @@ final class CodexBarMobileUITests: XCTestCase {
     }
 
     @MainActor
+    func testCostTabCapturesRenderingScreenshot() {
+        let app = self.makeApp()
+        app.launch()
+
+        app.tabBars.buttons["Cost"].tap()
+
+        XCTAssertTrue(app.staticTexts["Provider Share"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Model Mix"].waitForExistence(timeout: 5))
+
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = "Cost Tab Rendering"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+    }
+
+    @MainActor
     private func makeApp() -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [

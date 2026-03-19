@@ -17,12 +17,7 @@ struct UsageCardView: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Spacer()
-                Text(self.percentageText)
-                    .font(.title2.monospacedDigit())
-                    .fontWeight(.bold)
-                    .foregroundStyle(self.usageColor)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.75)
+                self.percentageLabel
                     .modifier(PercentageAccessibilityIdentifierModifier(
                         identifier: self.percentageAccessibilityIdentifier))
             }
@@ -51,12 +46,32 @@ struct UsageCardView: View {
                 .foregroundStyle(.secondary)
             }
         }
-        .padding(16)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+        .padding(.horizontal, 4)
+        .padding(.vertical, 8)
     }
 
-    private var percentageText: String {
-        self.displayMode.percentageText(for: self.window)
+    @ViewBuilder
+    private var percentageLabel: some View {
+        ViewThatFits(in: .horizontal) {
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text(self.displayMode.percentageValueText(for: self.window))
+                    .font(.title2.monospacedDigit())
+                    .fontWeight(.bold)
+
+                Text(self.displayMode.percentSuffix)
+                    .font(.title3)
+                    .fontWeight(.bold)
+            }
+            .foregroundColor(self.usageColor)
+            .fixedSize(horizontal: true, vertical: false)
+
+            Text(self.displayMode.percentageText(for: self.window))
+                .font(.title3.monospacedDigit())
+                .fontWeight(.bold)
+                .foregroundColor(self.usageColor)
+                .fixedSize(horizontal: true, vertical: false)
+        }
+        .layoutPriority(1)
     }
 
     private var displayMode: UsagePercentDisplayMode {

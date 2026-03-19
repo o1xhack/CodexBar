@@ -57,6 +57,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新增" } }
       }
     },
+    "Added screenshot coverage for the Cost tab to catch rendering regressions earlier." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Added screenshot coverage for the Cost tab to catch rendering regressions earlier." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "描画の後退を早めに検出できるよう、Cost タブにスクリーンショット検証を追加しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "为 Cost 标签页新增了截图校验，以便更早发现渲染回归。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "為 Cost 分頁新增了截圖驗證，以便更早發現渲染回歸。" } }
+      }
+    },
     "An in-app Release Notes page that shows the latest update first and keeps older versions collapsed below." : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "An in-app Release Notes page that shows the latest update first and keeps older versions collapsed below." } },
@@ -223,6 +231,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "Cost 分析、多言語対応、切り替え可能なグラフ、Release Notes、そして統一された Mobile バージョン表記を追加しました。" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "包含 Cost 分析、多语言支持、可切换图表、Release Notes，以及统一的 Mobile 版本命名。" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "包含 Cost 分析、多語言支援、可切換圖表、Release Notes，以及統一的 Mobile 版本命名。" } }
+      }
+    },
+    "Cost summaries and breakdown amounts remain sharp in tighter layouts." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cost summaries and breakdown amounts remain sharp in tighter layouts." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "狭いレイアウトでも、Cost の要約額と内訳金額がくっきり表示されます。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在更紧凑的布局里，Cost 概览和明细金额也能保持清晰。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在更緊湊的版面中，Cost 概覽與明細金額也能保持清晰。" } }
       }
     },
     "Daily Spend" : {
@@ -1033,6 +1049,14 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Usage 和 Cost 圖表現在都支援柱狀圖與折線圖兩種顯示方式。" } }
       }
     },
+    "Usage percentages now stay crisp without blur on provider cards." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage percentages now stay crisp without blur on provider cards." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Provider カードの Usage パーセンテージが、ぼやけずくっきり表示されるようになりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Provider 卡片上的 Usage 百分比现在不会再发虚，显示更清晰。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Provider 卡片上的 Usage 百分比現在不會再發虛，顯示更清晰。" } }
+      }
+    },
     "Usage data will appear here automatically once your Mac pushes data to iCloud." : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage data will appear here automatically once your Mac pushes data to iCloud." } },
@@ -1191,6 +1215,14 @@
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "残り使用量を表示" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示剩余用量" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示剩餘用量" } }
+      }
+    },
+    "Sharper usage and cost metrics throughout the app." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sharper usage and cost metrics throughout the app." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "App 全体で Usage と Cost の数値表示をよりくっきり改善しました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "整个 App 的 Usage 和 Cost 数字显示都更清晰了。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "整個 App 的 Usage 和 Cost 數字顯示都更清晰了。" } }
       }
     },
     "tokens" : {

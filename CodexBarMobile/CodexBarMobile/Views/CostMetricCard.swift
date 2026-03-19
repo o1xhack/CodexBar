@@ -12,10 +12,20 @@ struct CostMetricCard: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
-            Text(self.value)
-                .font(.title2.monospacedDigit())
-                .fontWeight(.bold)
-                .foregroundStyle(self.tintColor)
+            ViewThatFits(in: .horizontal) {
+                Text(self.value)
+                    .font(.title2.monospacedDigit())
+                    .fontWeight(.bold)
+                    .foregroundStyle(self.tintColor)
+                    .fixedSize(horizontal: true, vertical: false)
+
+                Text(self.value)
+                    .font(.headline.monospacedDigit())
+                    .fontWeight(.bold)
+                    .foregroundStyle(self.tintColor)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+            .layoutPriority(1)
 
             if let subtitle {
                 Text(subtitle)

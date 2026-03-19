@@ -180,14 +180,8 @@ private enum MobilePersonalInfoRedactor {
 /// iOS 26: Liquid Glass card. Older: regular material rounded rect.
 private struct ProviderCardBackgroundModifier: ViewModifier {
     func body(content: Content) -> some View {
-        if #available(iOS 26, *) {
-            content
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        } else {
-            content
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        }
+        content
+            .background(.thickMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 }
 

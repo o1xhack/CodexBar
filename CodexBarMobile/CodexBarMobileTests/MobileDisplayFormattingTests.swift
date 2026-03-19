@@ -10,6 +10,7 @@ struct MobileDisplayFormattingTests {
 
         #expect(UsagePercentDisplayMode.used.displayedPercent(for: window) == 78)
         #expect(UsagePercentDisplayMode.used.progressFraction(for: window) == 0.78)
+        #expect(UsagePercentDisplayMode.used.percentageValueText(for: window) == "78%")
         #expect(UsagePercentDisplayMode.used.percentageText(for: window) == "78% \(String(localized: "used"))")
     }
 
@@ -19,6 +20,7 @@ struct MobileDisplayFormattingTests {
 
         #expect(UsagePercentDisplayMode.remaining.displayedPercent(for: window) == 22)
         #expect(UsagePercentDisplayMode.remaining.progressFraction(for: window) == 0.22)
+        #expect(UsagePercentDisplayMode.remaining.percentageValueText(for: window) == "22%")
         #expect(UsagePercentDisplayMode.remaining.percentageText(for: window) == "22% \(String(localized: "left"))")
     }
 

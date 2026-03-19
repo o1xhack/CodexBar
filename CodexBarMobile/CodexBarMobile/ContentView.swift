@@ -569,17 +569,11 @@ private struct CostDashboardView: View {
                                         .foregroundStyle(.secondary)
                                 }
                             }
+                            .frame(maxWidth: .infinity, alignment: .leading)
 
-                            Spacer()
-
-                            VStack(alignment: .trailing, spacing: 2) {
-                                Text(Self.formatUSD(row.amountUSD))
-                                    .font(.subheadline.monospacedDigit())
-                                    .fontWeight(.semibold)
-                                Text(Self.formatShare(row.amountUSD, total: total))
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
+                            CostBreakdownMetricColumn(
+                                amountText: Self.formatUSD(row.amountUSD),
+                                shareText: Self.formatShare(row.amountUSD, total: total))
                         }
 
                         ProgressView(value: Self.safeRatio(row.amountUSD, total: total))
@@ -686,6 +680,36 @@ private struct CostDashboardView: View {
 
     private static func formatCompactNumber(_ value: Double) -> String {
         value.formatted(.number.precision(.fractionLength(1)))
+    }
+}
+
+private struct CostBreakdownMetricColumn: View {
+    let amountText: String
+    let shareText: String
+
+    var body: some View {
+        ViewThatFits(in: .horizontal) {
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(self.amountText)
+                    .font(.title3.monospacedDigit())
+                    .fontWeight(.bold)
+                Text(self.shareText)
+                    .font(.subheadline.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
+            .fixedSize(horizontal: true, vertical: false)
+
+            VStack(alignment: .trailing, spacing: 2) {
+                Text(self.amountText)
+                    .font(.headline.monospacedDigit())
+                    .fontWeight(.bold)
+                Text(self.shareText)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            .fixedSize(horizontal: true, vertical: false)
+        }
+        .layoutPriority(1)
     }
 }
 
@@ -1133,26 +1157,20 @@ private struct ReleaseNotesVersion: Identifiable {
 private enum MobileReleaseNotesCatalog {
     static let versions: [ReleaseNotesVersion] = [
         ReleaseNotesVersion(
-            version: "1.0.0",
+            version: "11",
             status: String(localized: "Latest"),
-            summary: String(localized: "The first App Store release. Works with CodexBar on Mac."),
+            summary: String(localized: "Sharper usage and cost metrics throughout the app."),
             sections: [
                 .init(
                     title: String(localized: "What's New"),
                     items: [
-                        String(localized: "View AI coding tool usage on iPhone, synced from Mac via iCloud."),
-                        String(localized: "Provider cards with real-time rate limits, budget progress, and daily cost breakdowns."),
-                        String(localized: "Cost dashboard with provider share, model and service mix, and 30-day spend analysis."),
-                        String(localized: "Interactive charts with Bar and Line styles, press-and-hold inspection, and horizontal scrolling for history."),
-                        String(localized: "Supports English, Simplified Chinese, Traditional Chinese, and Japanese."),
-                        String(localized: "Liquid Glass design, demo mode, onboarding guide, and pull-to-refresh."),
+                        String(localized: "Usage percentages now stay crisp without blur on provider cards."),
+                        String(localized: "Cost summaries and breakdown amounts remain sharp in tighter layouts."),
                     ]),
                 .init(
                     title: String(localized: "Improvements & Fixes"),
                     items: [
-                        String(localized: "Toggle between used and remaining quota display in Settings."),
-                        String(localized: "Smarter chart axis scaling with clean integer tick marks."),
-                        String(localized: "Improved iCloud sync reliability and error reporting."),
+                        String(localized: "Added screenshot coverage for the Cost tab to catch rendering regressions earlier."),
                     ]),
             ]),
     ]
