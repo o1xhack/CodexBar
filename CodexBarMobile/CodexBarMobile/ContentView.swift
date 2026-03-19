@@ -1157,20 +1157,29 @@ private struct ReleaseNotesVersion: Identifiable {
 private enum MobileReleaseNotesCatalog {
     static let versions: [ReleaseNotesVersion] = [
         ReleaseNotesVersion(
-            version: "11",
+            version: "12",
             status: String(localized: "Latest"),
-            summary: String(localized: "Sharper usage and cost metrics throughout the app."),
+            summary: String(localized: "The first App Store release. Works with CodexBar on Mac."),
             sections: [
                 .init(
                     title: String(localized: "What's New"),
                     items: [
                         String(localized: "Usage percentages now stay crisp without blur on provider cards."),
                         String(localized: "Cost summaries and breakdown amounts remain sharp in tighter layouts."),
+                        String(localized: "View AI coding tool usage on iPhone, synced from Mac via iCloud."),
+                        String(localized: "Provider cards with real-time rate limits, budget progress, and daily cost breakdowns."),
+                        String(localized: "Cost dashboard with provider share, model and service mix, and 30-day spend analysis."),
+                        String(localized: "Interactive charts with Bar and Line styles, press-and-hold inspection, and horizontal scrolling for history."),
+                        String(localized: "Supports English, Simplified Chinese, Traditional Chinese, and Japanese."),
+                        String(localized: "Liquid Glass design, demo mode, onboarding guide, and pull-to-refresh."),
                     ]),
                 .init(
                     title: String(localized: "Improvements & Fixes"),
                     items: [
                         String(localized: "Added screenshot coverage for the Cost tab to catch rendering regressions earlier."),
+                        String(localized: "Toggle between used and remaining quota display in Settings."),
+                        String(localized: "Smarter chart axis scaling with clean integer tick marks."),
+                        String(localized: "Improved iCloud sync reliability and error reporting."),
                     ]),
             ]),
     ]

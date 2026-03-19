@@ -2,6 +2,11 @@
 
 All notable changes to the CodexBar iOS companion app will be documented in this file.
 
+## [1.0.0 (12)] — 2026-03-19
+
+### Fixed
+- In-app release notes now preserve the original 1.0.0 launch notes while prepending the latest build updates
+
 ## [1.0.0 (11)] — 2026-03-19
 
 ### Changed

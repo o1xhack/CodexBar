@@ -35,7 +35,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.o1xhack.codexbar.sync
         GENERATE_INFOPLIST_FILE: true
         MARKETING_VERSION: "1.0.0"
-        CURRENT_PROJECT_VERSION: "11"
+        CURRENT_PROJECT_VERSION: "12"
 
   CodexBarMobile:
     type: application
@@ -50,7 +50,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.o1xhack.codexbar.mobile
         MARKETING_VERSION: "1.0.0"
-        CURRENT_PROJECT_VERSION: "11"
+        CURRENT_PROJECT_VERSION: "12"
         DEVELOPMENT_TEAM: 3TUERHN53E
         INFOPLIST_FILE: CodexBarMobile/Info.plist
         CODE_SIGN_ENTITLEMENTS: CodexBarMobile/CodexBarMobile.entitlements
