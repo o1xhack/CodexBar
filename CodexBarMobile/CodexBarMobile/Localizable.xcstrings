@@ -57,12 +57,12 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新增" } }
       }
     },
-    "Added screenshot coverage for the Cost tab to catch rendering regressions earlier." : {
+    "Percentage and cost labels are now sharper and easier to read." : {
       "localizations" : {
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Added screenshot coverage for the Cost tab to catch rendering regressions earlier." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "描画の後退を早めに検出できるよう、Cost タブにスクリーンショット検証を追加しました。" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "为 Cost 标签页新增了截图校验，以便更早发现渲染回归。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "為 Cost 分頁新增了截圖驗證，以便更早發現渲染回歸。" } }
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Percentage and cost labels are now sharper and easier to read." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "割合表示と金額表示が、よりくっきり見やすくなりました。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "百分比和金额显示现在更清晰、更容易阅读。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "百分比和金額顯示現在更清晰、更容易閱讀。" } }
       }
     },
     "An in-app Release Notes page that shows the latest update first and keeps older versions collapsed below." : {

@@ -1157,7 +1157,7 @@ private struct ReleaseNotesVersion: Identifiable {
 private enum MobileReleaseNotesCatalog {
     static let versions: [ReleaseNotesVersion] = [
         ReleaseNotesVersion(
-            version: "12",
+            version: "1.0.0 (13)",
             status: String(localized: "Latest"),
             summary: String(localized: "The first App Store release. Works with CodexBar on Mac."),
             sections: [
@@ -1176,7 +1176,7 @@ private enum MobileReleaseNotesCatalog {
                 .init(
                     title: String(localized: "Improvements & Fixes"),
                     items: [
-                        String(localized: "Added screenshot coverage for the Cost tab to catch rendering regressions earlier."),
+                        String(localized: "Percentage and cost labels are now sharper and easier to read."),
                         String(localized: "Toggle between used and remaining quota display in Settings."),
                         String(localized: "Smarter chart axis scaling with clean integer tick marks."),
                         String(localized: "Improved iCloud sync reliability and error reporting."),
