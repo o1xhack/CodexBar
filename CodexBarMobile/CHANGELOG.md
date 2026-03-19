@@ -2,7 +2,7 @@
 
 All notable changes to the CodexBar iOS companion app will be documented in this file.
 
-## [1.0.0 (14)] — 2026-03-20
+## [1.0.0 (15)] — 2026-03-20
 
 ### Added
 - One-tap share button on Cost tab to generate shareable cost report images

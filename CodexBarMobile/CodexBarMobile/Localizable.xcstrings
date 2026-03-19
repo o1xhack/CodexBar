@@ -881,6 +881,22 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "分享" } }
       }
     },
+    "Stacked bar charts colored by provider show your spend breakdown at a glance." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stacked bar charts colored by provider show your spend breakdown at a glance." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Provider ごとに色分けされた積み上げ棒グラフで、支出の内訳がひと目でわかります。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按 Provider 着色的堆叠柱状图，一目了然地展示费用构成。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "按 Provider 著色的堆疊柱狀圖，一目了然地展示費用構成。" } }
+      }
+    },
+    "Share your AI spending as a beautiful image card — choose Today, 7 Days, or 30 Days." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Share your AI spending as a beautiful image card — choose Today, 7 Days, or 30 Days." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "AIの支出を美しい画像カードとして共有 — 今日・7日間・30日間から選択。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "将 AI 花费生成精美图片分享 — 可选择今日、7 天或 30 天。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "將 AI 花費生成精美圖片分享 — 可選擇今日、7 天或 30 天。" } }
+      }
+    },
     "Share Cost Report" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Share Cost Report" } },
