@@ -65,6 +65,54 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "AI 程式開發花費" } }
       }
     },
+    "Classic" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Classic" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "クラシック" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "经典" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "經典" } }
+      }
+    },
+    "Did you vibe today?" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Did you vibe today?" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "今日、Vibeった？" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "今天你 Vibe 了吗？" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "今天你 Vibe 了嗎？" } }
+      }
+    },
+    "Did you vibe this week?" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Did you vibe this week?" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "今週、Vibeった？" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这周你 Vibe 了吗？" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "這週你 Vibe 了嗎？" } }
+      }
+    },
+    "Did you vibe this month?" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Did you vibe this month?" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "今月、Vibeった？" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这月你 Vibe 了吗？" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "這月你 Vibe 了嗎？" } }
+      }
+    },
+    "Style" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Style" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "スタイル" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "样式" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "樣式" } }
+      }
+    },
+    "Vibe" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Vibe" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Vibe" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Vibe" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Vibe" } }
+      }
+    },
     "Avg/Day" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Avg/Day" } },
@@ -505,6 +553,22 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "上次同步" } }
       }
     },
+    "High" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "High" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "高" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "高" } }
+      }
+    },
+    "Low" : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Low" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "低" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "低" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "低" } }
+      }
+    },
     "Latest" : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Latest" } },
@@ -889,12 +953,28 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "按 Provider 著色的堆疊柱狀圖，一目了然地展示費用構成。" } }
       }
     },
+    "Share cards now match your theme — dark mode gets a dark card, light mode gets a light card." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Share cards now match your theme — dark mode gets a dark card, light mode gets a light card." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "共有カードがテーマに連動 — ダークモードでは暗い背景、ライトモードでは白い背景になります。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "分享卡片现在跟随主题 — 深色模式用深色背景，浅色模式用白色背景。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "分享卡片現在跟隨主題 — 深色模式用深色背景，淺色模式用白色背景。" } }
+      }
+    },
     "Share your AI spending as a beautiful image card — choose Today, 7 Days, or 30 Days." : {
       "localizations" : {
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Share your AI spending as a beautiful image card — choose Today, 7 Days, or 30 Days." } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "AIの支出を美しい画像カードとして共有 — 今日・7日間・30日間から選択。" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "将 AI 花费生成精美图片分享 — 可选择今日、7 天或 30 天。" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "將 AI 花費生成精美圖片分享 — 可選擇今日、7 天或 30 天。" } }
+      }
+    },
+    "Share your AI spending as a beautiful image card — choose Classic or Vibe style, supports Today, 7 Days, and 30 Days, and adapts to dark mode." : {
+      "localizations" : {
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Share your AI spending as a beautiful image card — choose Classic or Vibe style, supports Today, 7 Days, and 30 Days, and adapts to dark mode." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "AI支出を画像カードで共有 — Classic と Vibe の2スタイル、今日・7日間・30日間対応、ダークモードにも自動適応。" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "将 AI 花费生成精美卡片分享 — 可选经典或 Vibe 风格，支持今日、7 天、30 天，自动适配深色模式。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "將 AI 花費生成精美卡片分享 — 可選經典或 Vibe 風格，支援今日、7 天、30 天，自動適配深色模式。" } }
       }
     },
     "Share Cost Report" : {

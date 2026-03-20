@@ -2,6 +2,23 @@
 
 All notable changes to the CodexBar iOS companion app will be documented in this file.
 
+## [1.0.0 (21)] — 2026-03-20
+
+### Added
+- Vibe (cyberpunk) share card style with arc gauges, neon glow, and "Did you vibe today?" headlines
+- Style picker in share sheet: Classic / Vibe
+- Dark and light theme support for both Classic and Vibe styles
+- Save to Photos option in share sheet (NSPhotoLibraryAddUsageDescription)
+- QR code and link updated to codexbarios.o1xhack.com
+
+### Changed
+- Share card headlines forced to single line across all 4 languages (minimumScaleFactor)
+- In-app release notes now merge updates within the same marketing version
+- AGENTS.md Step 5 updated with release notes merge rule
+
+### Fixed
+- Share sheet not showing "Save Image" option due to ShareLink Transferable limitation
+
 ## [1.0.0 (15)] — 2026-03-20
 
 ### Added

@@ -35,6 +35,8 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Save shared cost report images to your photo library.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 </dict>

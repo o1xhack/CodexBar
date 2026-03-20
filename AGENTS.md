@@ -78,6 +78,11 @@ After code is complete:
 
 1. Update `CodexBarMobile/CHANGELOG.md` — Keep a Changelog format (Added / Changed / Fixed)
 2. Update in-app release notes in `MobileReleaseNotesCatalog` (in `ContentView.swift`) — plain language, 4-language localized
+   - **Same MARKETING_VERSION = same release notes block.** As long as only the build number changes (e.g. 1.0.0 (15) → 1.0.0 (16)), all changes belong to the same release notes entry. Before adding a new line:
+     1. Check if an existing line already covers this feature area.
+     2. If yes → merge the new detail into that line (rewrite it to include the update).
+     3. If no existing line covers it → add a new line.
+   - Only create a separate `ReleaseNotesVersion` entry when `MARKETING_VERSION` itself changes (e.g. 1.0.0 → 1.1.0).
 3. Update research doc status to `done`
 
 ### Release notes — two audiences

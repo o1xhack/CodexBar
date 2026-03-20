@@ -1178,15 +1178,14 @@ private struct ReleaseNotesVersion: Identifiable {
 private enum MobileReleaseNotesCatalog {
     static let versions: [ReleaseNotesVersion] = [
         ReleaseNotesVersion(
-            version: "1.0.0 (15)",
+            version: "1.0.0 (21)",
             status: String(localized: "Latest"),
             summary: String(localized: "The first App Store release. Works with CodexBar on Mac."),
             sections: [
                 .init(
                     title: String(localized: "What's New"),
                     items: [
-                        String(localized: "Share your AI spending as a beautiful image card — choose Today, 7 Days, or 30 Days."),
-                        String(localized: "Stacked bar charts colored by provider show your spend breakdown at a glance."),
+                        String(localized: "Share your AI spending as a beautiful image card — choose Classic or Vibe style, supports Today, 7 Days, and 30 Days, and adapts to dark mode."),
                         String(localized: "Usage percentages now stay crisp without blur on provider cards."),
                         String(localized: "Cost summaries and breakdown amounts remain sharp in tighter layouts."),
                         String(localized: "View AI coding tool usage on iPhone, synced from Mac via iCloud."),

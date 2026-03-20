@@ -1,20 +1,63 @@
 import SwiftUI
 
-private let qrURL = "https://github.com/steipete/CodexBar"
+private let qrURL = "https://codexbarios.o1xhack.com"
 private let cardWidth: CGFloat = 390
 private let cardHeight: CGFloat = 520
+
+// MARK: - Theme colors (light / dark)
+
+struct ShareCardTheme {
+    let background: Color
+    let foreground: Color
+    let secondary: Color
+    let tertiary: Color
+    let cardBackground: Color
+    let divider: Color
+    let isDark: Bool
+
+    static let light = ShareCardTheme(
+        background: .white,
+        foreground: .black,
+        secondary: Color(red: 0.56, green: 0.56, blue: 0.58),
+        tertiary: Color(red: 0.78, green: 0.78, blue: 0.80),
+        cardBackground: Color(red: 0.95, green: 0.95, blue: 0.97),
+        divider: Color(red: 0.78, green: 0.78, blue: 0.78),
+        isDark: false
+    )
+
+    static let dark = ShareCardTheme(
+        background: Color(red: 0.08, green: 0.08, blue: 0.10),
+        foreground: .white,
+        secondary: Color(red: 0.56, green: 0.56, blue: 0.58),
+        tertiary: Color(red: 0.44, green: 0.44, blue: 0.46),
+        cardBackground: Color.white.opacity(0.08),
+        divider: Color.white.opacity(0.12),
+        isDark: true
+    )
+
+    static func from(_ colorScheme: ColorScheme) -> ShareCardTheme {
+        colorScheme == .dark ? .dark : .light
+    }
+}
 
 // MARK: - Main Entry Point
 
 struct CostShareCardView: View {
     let period: SharePeriod
     let data: ShareCardData
+    var theme: ShareCardTheme = .light
+    var style: ShareCardStyleOption = .classic
 
     var body: some View {
-        switch period {
-        case .today: TodayCard(data: data)
-        case .week: ChartCard(data: data, periodLabel: String(localized: "7 Days"))
-        case .month: ChartCard(data: data, periodLabel: String(localized: "30 Days"))
+        switch style {
+        case .classic:
+            switch period {
+            case .today: TodayCard(data: data, theme: theme)
+            case .week: ChartCard(data: data, periodLabel: String(localized: "7 Days"), theme: theme)
+            case .month: ChartCard(data: data, periodLabel: String(localized: "30 Days"), theme: theme)
+            }
+        case .cyber:
+            CyberShareCardView(period: period, data: data, theme: theme.isDark ? .dark : .light)
         }
     }
 }
@@ -39,22 +82,26 @@ private func formatPercent(_ value: Double) -> String {
 }
 
 private struct QRFooter: View {
+    let theme: ShareCardTheme
+
     var body: some View {
         HStack(spacing: 14) {
             Image(uiImage: QRCodeGenerator.generate(from: qrURL, size: 64))
                 .interpolation(.none)
                 .resizable()
                 .frame(width: 64, height: 64)
+                .if(theme.isDark) { $0.colorInvert() }
                 .clipShape(RoundedRectangle(cornerRadius: 6))
             VStack(alignment: .leading, spacing: 3) {
                 Text("CodexBar")
                     .font(.subheadline.bold())
+                    .foregroundStyle(theme.foreground)
                 Text(String(localized: "Track your AI coding costs"))
                     .font(.caption)
-                    .foregroundStyle(.secondary)
-                Text("github.com/steipete/CodexBar")
+                    .foregroundStyle(theme.secondary)
+                Text("codexbarios.o1xhack.com")
                     .font(.caption2)
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(theme.tertiary)
             }
             Spacer()
         }
@@ -64,14 +111,27 @@ private struct QRFooter: View {
 private struct MetricPill: View {
     let title: String
     let value: String
+    let theme: ShareCardTheme
 
     var body: some View {
         VStack(spacing: 2) {
             Text(title)
                 .font(.caption2)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(theme.secondary)
             Text(value)
                 .font(.subheadline.bold().monospacedDigit())
+                .foregroundStyle(theme.foreground)
+        }
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func `if`<Transform: View>(_ condition: Bool, transform: (Self) -> Transform) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
         }
     }
 }
@@ -103,6 +163,7 @@ private struct StackedBar: View {
 
 private struct TodayCard: View {
     let data: ShareCardData
+    let theme: ShareCardTheme
 
     var body: some View {
         VStack(spacing: 0) {
@@ -111,11 +172,12 @@ private struct TodayCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(String(localized: "AI Coding Spend"))
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondary)
                         .textCase(.uppercase)
                         .tracking(1.2)
                     Text(String(localized: "Today"))
                         .font(.title3.bold())
+                        .foregroundStyle(theme.foreground)
                 }
                 Spacer()
                 Image(systemName: "chart.bar.fill")
@@ -127,13 +189,14 @@ private struct TodayCard: View {
             // Hero number
             Text(formatUSD(data.todayCost))
                 .font(.system(size: 42, weight: .bold, design: .rounded).monospacedDigit())
+                .foregroundStyle(theme.foreground)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 2)
 
             if data.totalTokens > 0 {
                 Text("\(formatTokens(data.totalTokens)) tokens")
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(theme.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             Spacer().frame(height: 18)
@@ -147,12 +210,14 @@ private struct TodayCard: View {
                             .frame(width: 8, height: 8)
                         Text(provider.name)
                             .font(.subheadline)
+                            .foregroundStyle(theme.foreground)
                         Spacer()
                         Text(formatUSD(provider.cost))
                             .font(.subheadline.monospacedDigit())
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(theme.secondary)
                         Text(formatPercent(provider.share))
                             .font(.caption.bold().monospacedDigit())
+                            .foregroundStyle(theme.foreground)
                             .frame(width: 36, alignment: .trailing)
                     }
                 }
@@ -177,32 +242,33 @@ private struct TodayCard: View {
                 VStack(alignment: .leading, spacing: 5) {
                     Text(String(localized: "Top Models"))
                         .font(.caption.bold())
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondary)
                     ForEach(Array(data.topModels.prefix(3).enumerated()), id: \.offset) { _, model in
                         HStack {
                             Text(model.label)
                                 .font(.caption)
+                                .foregroundStyle(theme.foreground)
                                 .lineLimit(1)
                             Spacer()
                             Text(formatPercent(model.share))
                                 .font(.caption.bold().monospacedDigit())
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(theme.secondary)
                         }
                     }
                 }
                 .padding(10)
-                .background(Color(.systemGray6))
+                .background(theme.cardBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 10))
             }
 
             Spacer()
 
-            Divider().padding(.vertical, 10)
-            QRFooter()
+            theme.divider.frame(height: 0.5).padding(.vertical, 10)
+            QRFooter(theme: theme)
         }
         .padding(24)
         .frame(width: cardWidth, height: cardHeight)
-        .background(.white)
+        .background(theme.background)
     }
 }
 
@@ -213,6 +279,7 @@ private struct TodayCard: View {
 private struct ChartCard: View {
     let data: ShareCardData
     let periodLabel: String
+    let theme: ShareCardTheme
 
     private var maxCost: Double {
         data.dailyBars.map(\.cost).max() ?? 1
@@ -228,11 +295,12 @@ private struct ChartCard: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(String(localized: "AI Coding Spend"))
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(theme.secondary)
                         .textCase(.uppercase)
                         .tracking(1.2)
                     Text(periodLabel)
                         .font(.title3.bold())
+                        .foregroundStyle(theme.foreground)
                 }
                 Spacer()
                 Image(systemName: "chart.bar.fill")
@@ -244,6 +312,7 @@ private struct ChartCard: View {
             // Hero number
             Text(formatUSD(data.totalCost))
                 .font(.system(size: 42, weight: .bold, design: .rounded).monospacedDigit())
+                .foregroundStyle(theme.foreground)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.bottom, 12)
 
@@ -276,7 +345,7 @@ private struct ChartCard: View {
                         Text("30")
                     }
                     .font(.system(size: 8))
-                    .foregroundStyle(.tertiary)
+                    .foregroundStyle(theme.tertiary)
                     .padding(.horizontal, 6)
                     .padding(.top, 4)
                     .padding(.bottom, 6)
@@ -285,7 +354,7 @@ private struct ChartCard: View {
                         ForEach(Array(data.dailyBars.enumerated()), id: \.offset) { _, day in
                             Text(day.label)
                                 .font(.system(size: 9))
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(theme.secondary)
                                 .frame(maxWidth: .infinity)
                         }
                     }
@@ -294,7 +363,7 @@ private struct ChartCard: View {
                     .padding(.bottom, 8)
                 }
             }
-            .background(Color(.systemGray6))
+            .background(theme.cardBackground)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.bottom, 12)
 
@@ -302,21 +371,24 @@ private struct ChartCard: View {
             HStack(spacing: 0) {
                 MetricPill(
                     title: String(localized: "Tokens"),
-                    value: formatTokens(data.totalTokens)
+                    value: formatTokens(data.totalTokens),
+                    theme: theme
                 )
                 .frame(maxWidth: .infinity)
-                Divider().frame(height: 28)
+                theme.divider.frame(width: 0.5, height: 28)
                 if is30Day {
                     MetricPill(
                         title: String(localized: "Active Days"),
-                        value: "\(data.activeDays)"
+                        value: "\(data.activeDays)",
+                        theme: theme
                     )
                     .frame(maxWidth: .infinity)
-                    Divider().frame(height: 28)
+                    theme.divider.frame(width: 0.5, height: 28)
                 }
                 MetricPill(
                     title: String(localized: "Avg/Day"),
-                    value: formatUSD(data.avgDailyCost)
+                    value: formatUSD(data.avgDailyCost),
+                    theme: theme
                 )
                 .frame(maxWidth: .infinity)
             }
@@ -329,10 +401,11 @@ private struct ChartCard: View {
                         Circle().fill(p.color).frame(width: 6, height: 6)
                         Text(p.name)
                             .font(.system(size: 10))
+                            .foregroundStyle(theme.foreground)
                             .lineLimit(1)
                         Text(formatPercent(p.share))
                             .font(.system(size: 10))
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(theme.secondary)
                     }
                 }
                 Spacer()
@@ -340,47 +413,36 @@ private struct ChartCard: View {
 
             Spacer()
 
-            Divider().padding(.vertical, 8)
-            QRFooter()
+            theme.divider.frame(height: 0.5).padding(.vertical, 8)
+            QRFooter(theme: theme)
         }
         .padding(24)
         .frame(width: cardWidth, height: cardHeight)
-        .background(.white)
+        .background(theme.background)
     }
 }
 
 // MARK: - Previews
 
-#Preview("Today") {
-    CostShareCardView(period: .today, data: .previewToday)
+#Preview("Today - Light") {
+    CostShareCardView(period: .today, data: .previewToday, theme: .light)
 }
 
-#Preview("7 Days") {
-    CostShareCardView(period: .week, data: .preview7d)
+#Preview("Today - Dark") {
+    CostShareCardView(period: .today, data: .previewToday, theme: .dark)
+        .padding().background(Color.gray)
 }
 
-#Preview("30 Days") {
-    CostShareCardView(period: .month, data: .preview)
+#Preview("7 Days - Light") {
+    CostShareCardView(period: .week, data: .preview7d, theme: .light)
 }
 
-#Preview("All Periods") {
-    ScrollView(.horizontal) {
-        HStack(spacing: 16) {
-            ForEach(SharePeriod.allCases) { period in
-                let data: ShareCardData = switch period {
-                case .today: .previewToday
-                case .week: .preview7d
-                case .month: .preview
-                }
-                VStack(spacing: 8) {
-                    CostShareCardView(period: period, data: data)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        .shadow(color: .black.opacity(0.15), radius: 12, y: 6)
-                    Text(period.displayName)
-                        .font(.caption.bold())
-                }
-            }
-        }
-        .padding()
-    }
+#Preview("7 Days - Dark") {
+    CostShareCardView(period: .week, data: .preview7d, theme: .dark)
+        .padding().background(Color.gray)
+}
+
+#Preview("30 Days - Dark") {
+    CostShareCardView(period: .month, data: .preview, theme: .dark)
+        .padding().background(Color.gray)
 }

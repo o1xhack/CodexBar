@@ -3,6 +3,22 @@ import CoreImage.CIFilterBuiltins
 
 // MARK: - Share Period
 
+// MARK: - Share Style
+
+enum ShareCardStyleOption: String, CaseIterable, Identifiable {
+    case classic
+    case cyber
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .classic: String(localized: "Classic")
+        case .cyber: String(localized: "Vibe")
+        }
+    }
+}
+
 enum SharePeriod: String, CaseIterable, Identifiable {
     case today
     case week
@@ -15,6 +31,14 @@ enum SharePeriod: String, CaseIterable, Identifiable {
         case .today: String(localized: "Today")
         case .week: String(localized: "7 Days")
         case .month: String(localized: "30 Days")
+        }
+    }
+
+    var vibeHeadline: String {
+        switch self {
+        case .today: String(localized: "Did you vibe today?")
+        case .week: String(localized: "Did you vibe this week?")
+        case .month: String(localized: "Did you vibe this month?")
         }
     }
 }
@@ -94,31 +118,25 @@ enum QRCodeGenerator {
 
 @MainActor
 enum CostShareService {
-    static func renderImage(period: SharePeriod, data: ShareCardData) -> UIImage? {
-        let view = CostShareCardView(period: period, data: data)
+    static func renderImage(period: SharePeriod, data: ShareCardData, theme: ShareCardTheme = .light, style: ShareCardStyleOption = .classic) -> UIImage? {
+        let view = CostShareCardView(period: period, data: data, theme: theme, style: style)
         let renderer = ImageRenderer(content: view)
         renderer.scale = 3.0
         return renderer.uiImage
     }
 
-    static func share(period: SharePeriod, data: ShareCardData) {
-        guard let image = renderImage(period: period, data: data) else { return }
+    /// Render card to a temp PNG file for use with ShareLink(item: URL)
+    static func renderToFile(period: SharePeriod, data: ShareCardData, theme: ShareCardTheme = .light) -> URL? {
+        guard let image = renderImage(period: period, data: data, theme: theme),
+              let pngData = image.pngData() else { return nil }
 
-        let activityVC = UIActivityViewController(
-            activityItems: [image],
-            applicationActivities: nil
-        )
-
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootVC = windowScene.windows.first?.rootViewController {
-            if let popover = activityVC.popoverPresentationController {
-                popover.sourceView = rootVC.view
-                popover.sourceRect = CGRect(
-                    x: rootVC.view.bounds.midX, y: rootVC.view.bounds.midY,
-                    width: 0, height: 0
-                )
-            }
-            rootVC.present(activityVC, animated: true)
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent("CodexBar-Share-\(period.rawValue).png")
+        do {
+            try pngData.write(to: url)
+            return url
+        } catch {
+            return nil
         }
     }
 }
