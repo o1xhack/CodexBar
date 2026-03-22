@@ -2,6 +2,14 @@
 
 All notable changes to the CodexBar iOS companion app will be documented in this file.
 
+## [1.0.0 (22)] — 2026-03-21
+
+### Added
+- App Store screenshot source assets under `AppStoreScreenshots/v0` and `AppStoreScreenshots/v1-screenshot`
+- Finalized Chinese App Store screenshots under `AppStoreScreenshots/v1-styled`
+- Matching English App Store screenshots under `AppStoreScreenshots/v1-styled-en`
+- Reusable screenshot generation script for localized marketing images
+
 ## [1.0.0 (21)] — 2026-03-20
 
 ### Added
