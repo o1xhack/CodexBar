@@ -1,6 +1,6 @@
 # 测试与发布证据
 
-Status: `in-progress`
+Status: `in-progress`（本地实现、测试与review完成；签名/draft等待发布凭证授权）
 证据目录：`/tmp/codexbar-v058-evidence`。本页不将模拟器、冻结旧解码器或mock当作真机测试。
 
 ## 环境与测试
@@ -10,8 +10,9 @@ Status: `in-progress`
 - iOS最终：`ios-tests-final.log`，719 tests /46 suites PASS，包括WidgetSnapshotBuilderTests、多设备/账户/日成本/未知值/缓存与本轮V058SyncSemanticsTests。
 - iOS xcresult：`/tmp/codexbar-v058-ios/Logs/Test/` 对应本轮最终运行（精确路径见ios-tests-final.log）。
 - iOS Release build：`ios-release-build.log`，Release iphonesimulator BUILD SUCCEEDED（不是iOS设备archive）。
-- Mac focused初轮840 tests发现catalog重复查找、gpt-6 fallback既有fork预期差异、架构锚点漂移；分别修复，首次全量1102 selections/92组在第52组发现Kiro无cap详情回归并停止；修复后20项定向测试PASS。最终`mac-full-tests-final.log`重新从首组运行，结果待更新。
-- Swiftlint：`swiftlint-final.log`，2226 files /0 violations。完整`lint-final.log` PASS；parser版本检查使用HEAD，最终commit后单独再跑，不用研究HEAD的no-change结果替代。
+- Mac最终Debug build：`mac-debug-build-final.log` BUILD complete；arm64 Release PASS（338.75秒）、x86_64 Release PASS（323.36秒）；lipo核对两架构，thin executable SHA-256/size见`evidence/mac-release-builds.json`。尚未形成签名分发bundle。
+- Mac focused初轮840 tests发现catalog重复查找、gpt-6 fallback既有fork预期差异、架构锚点漂移；分别修复，首次全量1102 selections/92组在第52组发现Kiro无cap详情回归并停止；修复后20项定向测试PASS。`mac-full-tests-final.log`重跑前52组全部通过（含Kiro），第53组发现土耳其语遗留弃用key；删除该未使用key后本地化34项通过。使用同一repo discovery/run_group继续53–92组，`mac-remaining-tests.log`第53–87组通过，第88组发现Moonshot旧测试要求隐藏零余额，与本轮明确的确认零语义冲突；更新该端到端测试并验证6项通过，再用`mac-final-five-tests.log`完成88–92组。只变更一个无调用者的资源key，不重跑无关前52组；总覆盖按三段并集核验：92/92组、1102/1102 selections、11027项Swift Testing测试通过。机器核验见`evidence/mac-test-coverage.json`；不是单次零重试运行。
+- Swiftlint：`swiftlint-final.log`，2226 files /0 violations。最终完整`lint-complete-final.log` PASS：2226文件零Swiftlint问题、SwiftFormat、portable/JS/22语言/319键检查通过，基于实际commit的parser版本bump检查通过。
 - 签名脚本mock：16 configuration×signing×profile×LLDB组合PASS；仅脚本策略验证，不表示真实签名、公证或profile有效。
 - README/CI guards PASS；上游README v0.56.0..v0.58.0 diff为空。
 
@@ -25,14 +26,14 @@ xcodebuild -project CodexBarMobile/CodexBarMobile.xcodeproj -scheme CodexBarMobi
 
 旧Mac：published0.56.0.1 /Mobile1.23.0；新Mac：候选0.58.0.1。
 旧iPhone：1.23.0(197)；新iPhone：1.24.0(198)。
-本环境只有一个开发Mac和一个未登录iCloud的Simulator，不能实测2Mac×2iPhone的Production传输。
+本环境只有一个可执行开发Mac和一个未登录iCloud的Simulator。`devicectl list devices`发现2个已配对iPhone，但连接状态分别为unavailable/disconnected；没有可执行的第二Mac，因此不能实测2Mac×2iPhone的Production传输。设备ID/名称不复制进研究文档。
 所有组合采用替代验证，不报告physical pass。
 
 证据E1：`V058SyncSemanticsTests.two distinct writers and independent old-new reader caches preserve supported amounts`，
 参数mask0...15。Mac A/B有不同deviceID；两个reader各自新建SnapshotCache、相反摄取顺序，
 使用真实JSON编解码/ProviderUsageEnvelope/merge。旧reader使用冻结的旧amount结构和旧quota-time选择器，
 不是启动旧App。E2：新旧daily/budget optional解码、zero/observedAt/overflow/session-fallback精确回归。
-E3：同次完整719tests包含既有删除/ghost/cache/fleet/account/widget用例；不是对16每一格实测silent push。
+E3：同次完整719项iOS tests包含既有删除/ghost/cache/fleet/account/widget用例；不是对16每一格实测silent push。
 
 | Case | Mac A | Mac B | iPhone A | iPhone B | Result | Evidence | Notes |
 |---:|---|---|---|---|---|---|---|
@@ -58,7 +59,7 @@ E3：同次完整719tests包含既有删除/ghost/cache/fleet/account/widget用�
 - R1：未验证真实CloudKit多writer并发写、网络乱序、subscription/silent push、前后台收敛和物理缓存升级。模拟器未登录iCloud，运行日志有account-unavailable；这不是Production读写通过。
 - R2：旧writer没有新日请求/独立budget时间，新reader只能回退旧quota时间；旧reader不认识新observedAt。额外fixture明确证明旧reader可能选到25旧余额，而新reader正确选择0；不保证新旧版本显示完全相同。旧字段保持可解码且未删数据。
 - R3：日请求只覆盖当前同步窗口；长期CWL不回填此前未保存的计数。不同bucket timezone沿用既有不可比较规则，不能制造准确汇总。
-- 本矩阵为有证据的substituted gate，不是16组合真机认证。授权发布时仍应告知上述风险；无schema deploy能消除旧客户端固有限制。
+- 本轮兼容gate按允许的替代路径完成（16/16 substituted），不是16组合真机认证。授权发布时仍应告知上述风险；无schema deploy能消除旧客户端固有限制。
 
 ## UI与本地化
 
@@ -98,4 +99,5 @@ E3：同次完整719tests包含既有删除/ghost/cache/fleet/account/widget用�
 没有可调用Opus4.7，使用当前可用review agent作为替代，不冒称Opus审查。
 发现并修复的字段时间戳、未知计数、catalog work-count、架构锚点和fork About问题见02/06/07。
 release reviewer要求签名前先提交源码，以确保CodexGitCommit不是研究提交；此项为待打包前强制步骤。
+Kiro条件已独立复核；土耳其语弃用键删除与Moonshot测试语义更新均已自查、定向测试及剩余全量覆盖。
 无PR，故本轮未声称GitHub exact-head review完成；后续push/merge仍必须按repo gate。

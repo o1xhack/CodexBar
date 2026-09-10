@@ -1,0 +1,26 @@
+{
+  "groups_passed": 92,
+  "selections_covered": 1102,
+  "swift_testing_tests_passed": 11027,
+  "segments": [
+    {
+      "log": "mac-full-tests-final.log",
+      "start": 1,
+      "end": 52
+    },
+    {
+      "log": "mac-remaining-tests.log",
+      "start": 53,
+      "end": 87
+    },
+    {
+      "log": "mac-final-five-tests.log",
+      "start": 88,
+      "end": 92
+    }
+  ],
+  "source_implementation_commit": "fb5217b1693871e53d4d8496932019406b493807",
+  "resource_followup_commit": "78caf86e8",
+  "test_followup_commit": "ba1c054332d785f8fb9d26c9bc8918534f6a4fc6",
+  "notes": "92组全覆盖；失败历史保留，按受影响范围复测并继续。不是单次零重试运行。"
+}

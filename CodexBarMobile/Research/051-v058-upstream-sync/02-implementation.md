@@ -1,6 +1,6 @@
 # 实现与合并记录
 
-Status: `in-progress`（实现已完成，最终测试/review/签名 draft 待收口）
+Status: `in-progress`（实现、最终测试与review完成，签名 draft 等待发布凭证授权）
 
 ## Git 与范围
 
@@ -51,7 +51,8 @@ Mac菜单布局/可见行/CLI认证/本地扫描不是iPhone操作，边界与�
 3. bridge review发现credits-only刷新未触发sync、余额独立时间丢失：已修并加观察者与混合writer测试。
 4. iOS review发现cap时间同样丢失、session fallback把未知tokens显示0：已修并补精确回归。
 5. 全量第52组发现Kiro API enabled但无cap时，合并条件错误隐藏已知usage/cost；恢复enabled独立于cap，保留cap门控窗口/余额，20项定向测试通过，最终全量重跑。
-6. 旧reader不能理解新freshness：作为旧客户端固有限制明确记录，不宣称旧版本拥有新语义。
+6. 全量本地化严格key-set测试发现土耳其语遗留quota_warning_session_capitalized，英文/源码均已移除；删除弃用键，34项定向测试与22语言目录检查通过。
+7. 旧reader不能理解新freshness：作为旧客户端固有限制明确记录，不宣称旧版本拥有新语义。
 
 ## 发布边界
 

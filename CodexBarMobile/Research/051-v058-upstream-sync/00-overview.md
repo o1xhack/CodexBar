@@ -36,4 +36,4 @@ GitHub Releases 确认目标 `v0.58.0` published 2026-09-10T04:06:38Z，peeled S
 provider quota corrections、Sparkle 2.9.6 security、daily ledger、provider row visibility。
 Mac-only UI/CLI/OS 修复完整合入；iOS 依据数据语义适配，不复制 menu-bar 配置。
 
-实现、iOS719项测试与Release模拟器构建、完整lint及静态review已完成；Mac全量测试与发布凭证授权后的签名/draft尚待完成，不宣称Goal闭环。
+实现、iOS719项测试与Release模拟器构建、完整lint及静态review已完成；Mac11027项分段全量覆盖已通过；两架构Release构建已通过；签名/draft尚待发布凭证授权，不宣称Goal闭环。
