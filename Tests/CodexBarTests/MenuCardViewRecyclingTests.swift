@@ -151,12 +151,12 @@ extension StatusMenuTests {
             ]),
         ]
 
-        let narrowWidth = controller.measuredMenuCardWidth(for: [narrow])
-        let stableWidth = controller.measuredMenuCardWidth(for: [narrow, wide])
+        let narrowWidth = controller.measuredMenuCardWidth(for: [(.codex, narrow)])
+        let stableWidth = controller.measuredMenuCardWidth(for: [(.codex, narrow), (.claude, wide)])
 
         #expect(narrowWidth == StatusItemController.menuCardBaseWidth)
         #expect(stableWidth > narrowWidth)
-        #expect(controller.measuredMenuCardWidth(for: [wide, narrow]) == stableWidth)
+        #expect(controller.measuredMenuCardWidth(for: [(.claude, wide), (.codex, narrow)]) == stableWidth)
     }
 
     @Test
@@ -863,6 +863,8 @@ extension StatusMenuTests {
         // so selection never re-invalidates the SwiftUI graph.
         controller.menu(menu, willHighlight: item)
         #expect(gpuView.isHighlightedForTesting)
+        #expect(!gpuView.allowsVibrancy)
+        #expect(gpuView.subviews.last?.allowsVibrancy == false)
         #expect(!gpuView.swiftUIHighlightStateIsHighlightedForTesting)
 
         controller.menu(menu, willHighlight: nil)
@@ -917,5 +919,9 @@ extension StatusMenuTests {
         #expect(displaced[0].view === cachedContainer)
         #expect(cachedContainer.usesGPUSelectionForTesting)
         #expect(cachedContainer.hasGPUSelectionLayerForTesting)
+        for container in [attachedContainer, cachedContainer] {
+            #expect(!container.allowsVibrancy)
+            #expect(container.subviews.last?.allowsVibrancy == false)
+        }
     }
 }

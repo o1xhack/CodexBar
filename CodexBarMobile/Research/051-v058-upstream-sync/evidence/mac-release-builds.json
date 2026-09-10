@@ -1,0 +1,16 @@
+[
+  {
+    "architecture": "arm64",
+    "path": "/Users/yuxiao/Documents/working/apple/CodexBar/.build/arm64-apple-macosx/release/CodexBar",
+    "sha256": "6cbebb37512db6bcf31c1da48bf926dcd0eaad458ca2cf64bb9b29bca1f5f334",
+    "bytes": 69662952,
+    "kind": "Release compiler output, not signed distribution bundle"
+  },
+  {
+    "architecture": "x86_64",
+    "path": "/Users/yuxiao/Documents/working/apple/CodexBar/.build/x86_64-apple-macosx/release/CodexBar",
+    "sha256": "9303c6d81331b8af7a11b650e0f6b96fed896e292c676f01028d26890d7d381d",
+    "bytes": 71827136,
+    "kind": "Release compiler output, not signed distribution bundle"
+  }
+]

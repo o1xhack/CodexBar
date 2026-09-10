@@ -71,10 +71,10 @@ struct AboutPane: View {
                 AboutLinkRow(
                     icon: "chevron.left.slash.chevron.right",
                     title: L("link_github"),
-                    url: "https://github.com/steipete/CodexBar")
-                AboutLinkRow(icon: "globe", title: L("link_website"), url: "https://steipete.me")
-                AboutLinkRow(icon: "bird", title: L("link_twitter"), url: "https://twitter.com/steipete")
-                AboutLinkRow(icon: "envelope", title: L("link_email"), url: "mailto:peter@steipete.me")
+                    url: "https://github.com/o1xhack/CodexBar-Mobile")
+                AboutLinkRow(icon: "globe", title: L("link_website"), url: "https://codexbarios.o1xhack.com")
+                AboutLinkRow(icon: "bird", title: L("link_twitter"), url: "https://x.com/o1xhack")
+                AboutLinkRow(icon: "envelope", title: L("link_email"), url: "mailto:o1xhack@gmail.com")
             } header: {
                 Text(L("section_links"))
             } footer: {
@@ -134,52 +134,6 @@ struct AboutPane: View {
                     .foregroundStyle(.secondary)
             }
 
-            VStack(alignment: .center, spacing: 10) {
-                AboutLinkRow(
-                    icon: "chevron.left.slash.chevron.right",
-                    title: L("link_github"),
-                    url: "https://github.com/o1xhack/CodexBar-Mobile")
-                AboutLinkRow(icon: "globe", title: L("link_website"), url: "https://codexbarios.o1xhack.com")
-                AboutLinkRow(icon: "bird", title: L("link_twitter"), url: "https://x.com/o1xhack")
-                AboutLinkRow(icon: "envelope", title: L("link_email"), url: "mailto:o1xhack@gmail.com")
-            }
-            .padding(.top, 8)
-            .frame(maxWidth: .infinity)
-            .multilineTextAlignment(.center)
-
-            Divider()
-
-            if self.updater.isAvailable {
-                VStack(spacing: 10) {
-                    Toggle(L("check_updates_auto"), isOn: self.$autoUpdateEnabled)
-                        .toggleStyle(.checkbox)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                    VStack(spacing: 6) {
-                        HStack(spacing: 12) {
-                            Text(L("update_channel"))
-                            Spacer()
-                            Picker("", selection: self.updateChannelBinding) {
-                                ForEach(UpdateChannel.allCases) { channel in
-                                    Text(channel.displayName).tag(channel)
-                                }
-                            }
-                            .pickerStyle(.menu)
-                            .labelsHidden()
-                        }
-                        .frame(maxWidth: 280)
-                        Text(self.updateChannel.description)
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: 280)
-                    }
-                    Button(L("check_for_updates")) { self.updater.checkForUpdates(nil) }
-                }
-            } else {
-                Text(self.updater.unavailableReason ?? L("updates_unavailable"))
-                    .foregroundStyle(.secondary)
-            }
-
             Text("Based on CodexBar by Peter Steinberger. © 2026 Yuxiao Wang. MIT License.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
@@ -191,17 +145,6 @@ struct AboutPane: View {
         .padding(.top, 4)
         .padding(.horizontal, 24)
         .padding(.bottom, 24)
-        .onAppear {
-            guard !self.didLoadUpdaterState else { return }
-            // Align Sparkle's flag with the persisted preference on first load.
-            self.updater.automaticallyChecksForUpdates = self.autoUpdateEnabled
-            self.updater.automaticallyDownloadsUpdates = self.autoUpdateEnabled
-            self.didLoadUpdaterState = true
-        }
-        .onChange(of: self.autoUpdateEnabled) { _, newValue in
-            self.updater.automaticallyChecksForUpdates = newValue
-            self.updater.automaticallyDownloadsUpdates = newValue
-        }
         .padding(.vertical, 6)
     }
 

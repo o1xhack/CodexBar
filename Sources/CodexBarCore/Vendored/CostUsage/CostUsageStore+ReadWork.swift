@@ -8,6 +8,7 @@ import CSQLite3
 
 struct CostUsageStoreReadWorkMetrics: Codable, Equatable, Sendable {
     var fullSnapshotReads = 0
+    var scannerSnapshotReads = 0
     var fileRows = 0
     var tokenSnapshotRows = 0
     var usageRows = 0
@@ -21,6 +22,7 @@ struct CostUsageStoreReadWorkMetrics: Codable, Equatable, Sendable {
     var accumulatorRows = 0
     var readViewConversions = 0
     var readViewConversionsInTransaction = 0
+    var aggregateGroupingRowVisits = 0
 }
 
 /// Opt-in diagnostic counters for one owned database; never installed in production.
@@ -43,6 +45,10 @@ final class CostUsageStoreReadWorkRecorder: @unchecked Sendable {
 
     func recordFullSnapshot() {
         self.lock.withLock { self.metrics.fullSnapshotReads += 1 }
+    }
+
+    func recordScannerSnapshot() {
+        self.lock.withLock { self.metrics.scannerSnapshotReads += 1 }
     }
 
     func recordFile() {
@@ -95,6 +101,10 @@ final class CostUsageStoreReadWorkRecorder: @unchecked Sendable {
 
     func recordIntegrityCheck() {
         self.lock.withLock { self.metrics.integrityChecks += 1 }
+    }
+
+    func recordAggregateGroupingRowVisit() {
+        self.lock.withLock { self.metrics.aggregateGroupingRowVisits += 1 }
     }
 }
 

@@ -272,6 +272,8 @@ struct SyncCoordinatorTests {
             SyncCostBreakdown(label: "Codex Run", costUSD: 1.90),
             SyncCostBreakdown(label: "GitHub Code Review", costUSD: 0.50),
         ])
+        #expect(daily.requestCount == 4)
+        #expect(daily.tokenCountIsKnown == true)
         #expect(costSummary.meteredCostUSD == 1.80)
         #expect(costSummary.costProvenance == .mixed)
         #expect(costSummary.coverage == SyncCostCoverage(

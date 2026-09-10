@@ -2,6 +2,21 @@
 
 All notable changes to the CodexBar iOS companion app will be documented in this file.
 
+## [1.24.0 (198)] — 2026-09-10
+
+### Added
+- Daily requests, tokens and costs for the current Mac sync window; optional counters preserve unavailable values and old-client decoding.
+- Codex purchased credits alongside monthly limits, with independent balance observation timestamps and confirmed zero values.
+
+### Fixed
+- Moonshot CNY/grouped/zero/negative balances now survive parsing and sync.
+- Monthly budgets preserve their own observation timestamp across Macs.
+- Mixed-Mac balance selection uses amount observation time rather than unrelated quota refreshes.
+- Ollama monthly included credits retain the correct label; Credits use localized units rather than ISO currency formatting.
+
+### Changed
+- Compatible with the single Mac 0.58.0.1 train covering upstream v0.56.1–v0.58.0. Existing daily cost ledger, partial-cost coverage, dynamic provider details, and old-client payload decoding remain supported.
+
 ## [1.23.0 (197)] — 2026-09-01 — CodexBar 0.56.0 upstream sync roll-up
 
 ### Added

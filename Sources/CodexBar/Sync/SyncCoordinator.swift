@@ -218,6 +218,7 @@ final class SyncCoordinator {
             _ = self.store.snapshots
             _ = self.store.errors
             _ = self.store.tokenSnapshots
+            _ = self.store.credits
             _ = self.settings.iCloudSyncEnabled
             // Multi-account: re-push when the active Codex managed account
             // changes (user switches accounts in menu) so the new active
@@ -332,9 +333,14 @@ final class SyncCoordinator {
 
             // Provider-specific by design: OpenRouter Management Activity is provider-level spend, not API-key spend.
             let detachesProviderCost = provider == .openrouter
+            // Store credits are scoped to the active Codex account by the upstream refresh owner.
+            // Inactive account expansion keeps its own already-attached provider cost.
+            let syncSnapshot = provider == .codex
+                ? snapshot.map { CodexExtraUsageCost.attaching(to: $0, credits: self.store.credits) }
+                : snapshot
             let providerSnapshot = self.buildProviderUsageSnapshot(
                 for: provider,
-                snapshot: snapshot,
+                snapshot: syncSnapshot,
                 error: error,
                 metadata: meta,
                 sharedCostSummary: detachesProviderCost ? nil : sharedCostSummary,
@@ -808,7 +814,8 @@ final class SyncCoordinator {
                 limitAmount: cost.limit,
                 currencyCode: cost.currencyCode,
                 period: cost.period,
-                resetsAt: cost.resetsAt)
+                resetsAt: cost.resetsAt,
+                observedAt: cost.updatedAt)
         }
         let providerAmount: SyncProviderAmount? = providerCost.flatMap { cost in
             let kind: String
@@ -903,7 +910,9 @@ final class SyncCoordinator {
                 isEstimated: coverage.estimated > 0 || modelBreakdowns.contains(where: { $0.isEstimated == true })
                     ? true
                     : nil,
-                costIsKnown: entry.costUSD != nil && coverage.unpriced == 0 && coverage.unmetered == 0)
+                costIsKnown: entry.costUSD != nil && coverage.unpriced == 0 && coverage.unmetered == 0,
+                requestCount: entry.requestCount,
+                tokenCountIsKnown: entry.totalTokens != nil)
         }
         let windowSummary = Self.syncWindowSummary(tokenSnapshot)
         let tokenMix = windowSummary.tokenMix.hasAnyClass
@@ -970,6 +979,8 @@ final class SyncCoordinator {
                     fallback: metadata?.sessionLabel ?? "Credits")
             } else if provider == .grok {
                 GrokProviderDescriptor.displayLabel(window: p) ?? metadata?.sessionLabel
+            } else if provider == .ollama {
+                OllamaProviderDescriptor.primaryLabel(window: p) ?? metadata?.sessionLabel
             } else {
                 metadata?.sessionLabel
             }
@@ -1023,7 +1034,8 @@ final class SyncCoordinator {
                 limitAmount: pc.limit,
                 currencyCode: pc.currencyCode,
                 period: pc.period,
-                resetsAt: pc.resetsAt)
+                resetsAt: pc.resetsAt,
+                observedAt: pc.updatedAt)
         }
 
         // Perplexity rich structured credit breakdown (only for Perplexity).
@@ -1259,6 +1271,14 @@ final class SyncCoordinator {
             guard providerCost.limit <= 0 else { return nil }
             kind = "spend"
             amount = providerCost.used
+        case .codex:
+            guard providerCost.currencyCode == CodexExtraUsageCost.currencyCode,
+                  providerCost.balance != nil || providerCost.balanceUpdatedAt != nil
+            else { return nil }
+            kind = "balance"
+            // The upstream nil balance with a successful observation means no purchased extra credits.
+            // Publish zero so older readers also clear a previously positive amount.
+            amount = providerCost.balance ?? 0
         case .claude:
             guard let balance = providerCost.balance else { return nil }
             kind = "balance"
@@ -1275,7 +1295,10 @@ final class SyncCoordinator {
             amount: amount,
             currencyCode: providerCost.currencyCode,
             period: providerCost.period,
-            isEstimated: confidence == .estimated || confidence == .percentOnly)
+            isEstimated: confidence == .estimated || confidence == .percentOnly,
+            observedAt: kind == "balance"
+                ? providerCost.balanceUpdatedAt ?? providerCost.updatedAt
+                : providerCost.updatedAt)
     }
 
     static func mapSub2APIUsage(
@@ -1418,7 +1441,7 @@ final class SyncCoordinator {
         let amount = parsed?.amount
             ?? snapshot?.providerCost?.used
             ?? primaryWindow?.usedPercent
-        guard let amount, amount > 0 else { return nil }
+        guard let amount, amount.isFinite else { return nil }
         return SyncMoonshotBalance(
             balanceAmount: amount,
             balanceCurrency: parsed?.currency ?? snapshot?.providerCost?.currencyCode,
@@ -1437,26 +1460,22 @@ final class SyncCoordinator {
     /// symbol and parse the number. Returns nil for unrecognized
     /// formats (future-proof against upstream relabeling).
     static func parseMoonshotBalance(from loginMethod: String) -> (amount: Double, currency: String)? {
-        // Match the first "Balance: <symbol><digits>.<digits>" token.
-        // Range-bounded so we ignore the deficit suffix.
         guard let prefixRange = loginMethod.range(of: "Balance: ") else { return nil }
-        let after = loginMethod[prefixRange.upperBound...]
-        // Take up to the first separator (space, middle-dot, comma).
-        let stopChars: Set<Character> = [" ", "·", ",", "\t"]
-        let amountString = String(after.prefix(while: { !stopChars.contains($0) }))
-        // Strip the leading currency symbol if present (USD only today).
-        var currency = "USD"
-        var digits = amountString
-        if let first = digits.first, !first.isNumber, first != "-", first != "+" {
-            switch first {
-            case "$": currency = "USD"
-            case "¥": currency = "CNY"
-            case "€": currency = "EUR"
-            default: break
-            }
-            digits.removeFirst()
+        var text = String(loginMethod[prefixRange.upperBound...].components(separatedBy: " · ")[0])
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        var sign = ""
+        if text.hasPrefix("-") || text.hasPrefix("+") {
+            sign = String(text.removeFirst())
         }
-        guard let amount = Double(digits) else { return nil }
+        let prefixes = [("CN¥", "CNY"), ("CNY", "CNY"), ("¥", "CNY"), ("USD", "USD"), ("$", "USD"), ("€", "EUR")]
+        guard let (prefix, currency) = prefixes.first(where: { text.hasPrefix($0.0) }) else { return nil }
+        text = String(text.dropFirst(prefix.count)).trimmingCharacters(in: .whitespacesAndNewlines)
+        // Upstream uses en_US currency formatting. Validate grouping before stripping separators.
+        guard text.range(
+            of: #"^[+-]?(?:[0-9]+|[0-9]{1,3}(?:,[0-9]{3})+)(?:\.[0-9]+)?$"#,
+            options: .regularExpression) != nil,
+            let amount = Double(sign + text.replacingOccurrences(of: ",", with: "")), amount.isFinite
+        else { return nil }
         return (amount, currency)
     }
 
@@ -2154,7 +2173,9 @@ final class SyncCoordinator {
                 modelBreakdowns: modelBreakdowns,
                 serviceBreakdowns: serviceBreakdowns,
                 isEstimated: dayIsEstimated ? true : nil,
-                costIsKnown: costIsKnown)
+                costIsKnown: costIsKnown,
+                requestCount: entry?.requestCount,
+                tokenCountIsKnown: entry?.totalTokens != nil)
         }
 
         let knownDailyCosts = daily.compactMap { point in
@@ -2334,7 +2355,9 @@ final class SyncCoordinator {
                 modelBreakdowns: modelBreakdowns,
                 serviceBreakdowns: [],
                 isEstimated: modelBreakdowns.contains(where: { $0.isEstimated == true }) ? true : nil,
-                costIsKnown: entry.costUSD != nil && coverage.unpriced == 0 && coverage.unmetered == 0)
+                costIsKnown: entry.costUSD != nil && coverage.unpriced == 0 && coverage.unmetered == 0,
+                requestCount: entry.requestCount,
+                tokenCountIsKnown: entry.totalTokens != nil)
         }
         let windowSummary = Self.syncWindowSummary(projected)
         let tokenMix = windowSummary.tokenMix.hasAnyClass

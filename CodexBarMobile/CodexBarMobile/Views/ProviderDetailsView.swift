@@ -12,7 +12,7 @@ enum ProviderDetailLocalization {
     /// Only labels emitted by bundled providers are localized. Custom plugin
     /// authors own their wording, so an arbitrary label must round-trip exactly.
     private static let firstPartyProviderIDs: Set<String> = [
-        "amp", "claude", "clawrouter", "copilot", "cursor", "deepgram",
+        "amp", "claude", "clawrouter", "codex", "copilot", "cursor", "deepgram",
         "deepseek", "fireworks", "groq", "ibmbob", "kiro", "mimo",
         "minimax", "openai", "openrouter", "poe", "sakana", "sub2api",
         "wayfinder", "xai", "zai", "zoommate",
@@ -31,7 +31,7 @@ enum ProviderDetailLocalization {
         "Credits", "Credits left", "Credits total", "Credits used",
         "Daily credits", "Daily points", "Daily spend", "Daily tokens", "Detailed usage",
         "Extra usage", "Gateway", "Granted", "Individual credits", "Key spend",
-        "Kiro responses", "Last 30 days", "Last 30 days (partial)", "Manage", "Models",
+        "Kiro responses", "Last 30 days", "Last 30 days (partial)", "Manage", "Models", "Monthly credit limit",
         "Output", "Overage", "Overage cost", "Overage credits left", "Overage usage", "Overages", "Pace",
         "Period", "Plan", "Points", "Prepaid balance", "Prompts", "Quota details", "Quota services",
         "Rate limit", "Remaining", "Request quota", "Requests", "Reset window",

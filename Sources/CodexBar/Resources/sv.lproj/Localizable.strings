@@ -45,6 +45,7 @@
 "hooks_any_provider" = "Valfri leverantör";
 "hooks_threshold" = "Kör vid användning ≥";
 "hooks_threshold_placeholder" = "90";
+"hooks_executable" = "Körbar fil";
 "hooks_executable_placeholder" = "/usr/local/bin/my-command";
 "hooks_arguments_placeholder" = "Argument";
 "hooks_argument_placeholder" = "Argument";
@@ -240,6 +241,7 @@
 "No credits history data." = "Ingen kredithistorik.";
 "No data available" = "Inga data tillgängliga";
 "No data yet" = "Inga data än";
+"Workspaces" = "Arbetsytor";
 "No enabled providers available for Overview." = "Inga aktiverade leverantörer är tillgängliga för översikten.";
 "No providers selected" = "Inga leverantörer valda";
 "No token accounts yet." = "Inga tokenkonton än.";
@@ -514,7 +516,6 @@
 "provider_accent_color_reset" = "Använd standard";
 "quota_warnings_title" = "Kvotvarningar";
 "quota_warning_session" = "session";
-"quota_warning_session_capitalized" = "Session";
 "quota_warning_weekly" = "veckokvot";
 "quota_warning_weekly_capitalized" = "Veckokvot";
 "quota_warning_notification_title" = "%1$@ %2$@-kvot låg";
@@ -666,6 +667,9 @@
 "surprise_me_subtitle" = "Kontrollera om du vill att agenterna ska få leka lite där uppe.";
 "hide_personal_info_title" = "Dölj personuppgifter";
 "hide_personal_info_subtitle" = "Maskera e-postadresser i menyraden och menygränssnittet.";
+"hide_cost_history_identity_subtitle" = "Döljer även projekt- och källnamn samt sökvägar i kostnadshistoriken utan att ändra lagrade data.";
+"Project %d" = "Projekt %d";
+"Source %d" = "Källa %d";
 "show_provider_storage_usage_title" = "Visa leverantörers lagringsanvändning";
 "show_provider_storage_usage_subtitle" = "Visa lokal diskanvändning i menyer. Söker igenom kända leverantörsägda sökvägar i bakgrunden.";
 "section_keychain_access" = "Åtkomst till Nyckelring";
@@ -1512,6 +1516,7 @@
 "More" = "Mer";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "Installera…";
 "Install plugin" = "Installera plugin";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "Kopierar en JavaScript- eller TypeScript-fil till pluginmappen.";
@@ -1553,6 +1558,7 @@
 "Total usage" = "Total användning";
 "claude_oauth_keychain_access_revoked" = "Åtkomsten till Claudes nyckelring återkallades när Claude Code roterade token. Klicka på Uppdatera för att ge åtkomst igen, eller byt Claudes användningskälla till CLI/Web.";
 "claude_showing_last_known_usage" = "Visar senast kända användning, registrerad %@.";
+"claude_limited_usage_detail" = "Begränsade användningsdetaljer";
 /* Spend dashboard cost analysis */
 "90d" = "90d";
 "Input" = "Input";
@@ -1608,4 +1614,9 @@
 "menu_bar_layout_conditional_default_session_spent" = "Sessionen nästan förbrukad";
 "menu_bar_layout_conditional_default_either_high" = "Session eller vecka ligger högt";
 "menu_bar_layout_conditional_default_scoped_weekly" = "Modellvecka över 60 % använt";
+"Visible usage items" = "Synliga användningsposter";
+"Restore Defaults" = "Återställ standardvärden";
+"Choose which usage rows appear in this provider's menu, Settings preview, and Overview." = "Välj vilka användningsrader som visas i den här leverantörens meny, förhandsvisningen i Inställningar och Översikt.";
+"%@ (unavailable)" = "%@ (inte tillgänglig)";
 "Spending cap, not balance" = "Utgiftstak, inte saldo";
+"%@ weekly" = "%@ per vecka";

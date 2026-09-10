@@ -224,6 +224,7 @@
 "No cost history data." = "ไม่มีข้อมูลประวัติค่าใช้จ่าย";
 "No data available" = "ไม่มีข้อมูล";
 "No data yet" = "ยังไม่มีข้อมูล";
+"Workspaces" = "พื้นที่ทำงาน";
 "No enabled providers available for Overview." = "ไม่มีผู้ให้บริการที่เปิดใช้งานสําหรับภาพรวม";
 "No providers selected" = "ไม่มีผู้ให้บริการที่เลือก";
 "No token accounts yet." = "ยังไม่มีบัญชีโทเค็น";
@@ -499,7 +500,6 @@
 "provider_accent_color_reset" = "ใช้ค่าเริ่มต้น";
 "quota_warnings_title" = "คําเตือนโควต้า";
 "quota_warning_session" = "เซสชั่น";
-"quota_warning_session_capitalized" = "เซสชั่น";
 "quota_warning_weekly" = "รายสัปดาห์";
 "quota_warning_weekly_capitalized" = "รายสัปดาห์";
 "quota_warning_notification_title" = "โควตา%2$@ของ %1$@ ใกล้หมด";
@@ -565,6 +565,7 @@
 "hooks_any_provider" = "ผู้ให้บริการใดก็ได้";
 "hooks_threshold" = "เรียกใช้เมื่อการใช้งาน ≥";
 "hooks_threshold_placeholder" = "90";
+"hooks_executable" = "ไฟล์ปฏิบัติการ";
 "hooks_executable_placeholder" = "/usr/local/bin/my-command";
 "hooks_arguments_placeholder" = "อาร์กิวเมนต์";
 "hooks_argument_placeholder" = "อาร์กิวเมนต์";
@@ -673,6 +674,9 @@
 "surprise_me_subtitle" = "ตรวจสอบว่าคุณชอบให้ตัวแทนของคุณสนุกสนานที่นั่นหรือไม่";
 "hide_personal_info_title" = "ซ่อนข้อมูลส่วนบุคคล";
 "hide_personal_info_subtitle" = "ปิดบังที่อยู่อีเมลในแถบเมนูและ UI เมนู";
+"hide_cost_history_identity_subtitle" = "ซ่อนชื่อและเส้นทางของโปรเจกต์และแหล่งข้อมูลในประวัติค่าใช้จ่ายด้วย โดยไม่เปลี่ยนข้อมูลที่บันทึกไว้";
+"Project %d" = "โปรเจกต์ %d";
+"Source %d" = "แหล่งข้อมูล %d";
 "show_provider_storage_usage_title" = "แสดงการใช้พื้นที่เก็บข้อมูลของผู้ให้บริการ";
 "show_provider_storage_usage_subtitle" = "แสดงการใช้ดิสก์ในเครื่องในเมนู สแกนเส้นทางที่รู้จักโดยผู้ให้บริการในเบื้องหลัง";
 "section_keychain_access" = "การเข้าถึง Keychain";
@@ -1517,6 +1521,7 @@
 "More" = "มาก";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "ติดตั้ง…";
 "Install plugin" = "ติดตั้งปลั๊กอิน";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "คัดลอกไฟล์ JavaScript หรือ TypeScript ไปยังโฟลเดอร์ปลั๊กอิน";
@@ -1558,6 +1563,7 @@
 "Total usage" = "การใช้งานทั้งหมด";
 "claude_oauth_keychain_access_revoked" = "สิทธิ์เข้าถึงพวงกุญแจ Claude ถูกเพิกถอนจากการหมุนเวียนโทเค็นของ Claude Code คลิกรีเฟรชเพื่อให้สิทธิ์อีกครั้ง หรือเปลี่ยนแหล่งที่มาการใช้งาน Claude เป็น CLI/Web";
 "claude_showing_last_known_usage" = "กำลังแสดงการใช้งานล่าสุดที่ทราบ ซึ่งบันทึกเมื่อ %@";
+"claude_limited_usage_detail" = "รายละเอียดการใช้งานมีจำกัด";
 /* Spend dashboard cost analysis */
 "90d" = "90d";
 "Input" = "Input";
@@ -1613,4 +1619,9 @@
 "menu_bar_layout_conditional_default_session_spent" = "เซสชันเกือบหมด";
 "menu_bar_layout_conditional_default_either_high" = "เซสชันหรือรายสัปดาห์อยู่ในระดับสูง";
 "menu_bar_layout_conditional_default_scoped_weekly" = "รายสัปดาห์ตามโมเดลเกิน 60%";
+"Visible usage items" = "รายการการใช้งานที่มองเห็น";
+"Restore Defaults" = "คืนค่าเริ่มต้น";
+"Choose which usage rows appear in this provider's menu, Settings preview, and Overview." = "เลือกแถวการใช้งานที่จะแสดงในเมนูของผู้ให้บริการนี้ ตัวอย่างการตั้งค่า และภาพรวม";
+"%@ (unavailable)" = "%@ (ไม่พร้อมใช้งาน)";
 "Spending cap, not balance" = "เพดานการใช้จ่าย ไม่ใช่ยอดคงเหลือ";
+"%@ weekly" = "%@ รายสัปดาห์";

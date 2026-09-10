@@ -4083,8 +4083,24 @@ private struct ReleaseNotesVersion: Identifiable {
 private enum MobileReleaseNotesCatalog {
     static let versions: [ReleaseNotesVersion] = [
         ReleaseNotesVersion(
-            version: "1.23.0",
+            version: "1.24.0",
             status: String(localized: "Latest"),
+            summary: String(localized: "iPhone 1.24 adds purchased Codex credits and clearer monthly quotas, with more reliable data from newer Macs."),
+            sections: [
+                .init(title: String(localized: "What's New"), items: [
+                    String(localized: "Daily activity — view daily requests, tokens and costs in the current Mac sync window; unavailable counts stay clearly marked."),
+                    String(localized: "Moonshot balances — RMB formatting, thousands separators and zero or negative balances now sync correctly."),
+                    String(localized: "Purchased credits — see your Codex extra-credit balance separately from the monthly limit, including confirmed zero balances."),
+                    String(localized: "Clearer quotas — Ollama monthly credits use the correct label, and credit amounts display as credits rather than money."),
+                    String(localized: "Reliable balances across Macs — balance timestamps stay separate from quota refreshes so an older Mac observation cannot restore an outdated balance."),
+                ]),
+                .init(title: String(localized: "Required Mac version"), items: [
+                    String(localized: "Update CodexBar on Mac to 0.58.0.1 or later for all new data. Older Mac versions remain supported."),
+                ]),
+            ]),
+        ReleaseNotesVersion(
+            version: "1.23.0",
+            status: "",
             summary: String(
                 localized: "iPhone 1.23 adds richer Kiro and Cursor details, Fireworks spend, and safer unknown-cost handling from newer Macs."),
             sections: [

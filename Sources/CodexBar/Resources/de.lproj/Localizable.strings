@@ -45,6 +45,7 @@
 "hooks_any_provider" = "Beliebiger Anbieter";
 "hooks_threshold" = "Auslösen bei Nutzung ≥";
 "hooks_threshold_placeholder" = "90";
+"hooks_executable" = "Ausführbare Datei";
 "hooks_executable_placeholder" = "/usr/local/bin/my-command";
 "hooks_arguments_placeholder" = "Argumente";
 "hooks_argument_placeholder" = "Argument";
@@ -237,6 +238,7 @@
 "No cost history data." = "Keine Daten zur Kostenhistorie.";
 "No data available" = "Keine Daten verfügbar";
 "No data yet" = "Noch keine Daten";
+"Workspaces" = "Arbeitsbereiche";
 "No enabled providers available for Overview." = "Für die Übersicht sind keine aktivierten Anbieter verfügbar.";
 "No providers selected" = "Keine Anbieter ausgewählt";
 "No token accounts yet." = "Noch keine Token-Konten.";
@@ -512,7 +514,6 @@
 "provider_accent_color_reset" = "Standard verwenden";
 "quota_warnings_title" = "Kontingentwarnungen";
 "quota_warning_session" = "Sitzung";
-"quota_warning_session_capitalized" = "Sitzung";
 "quota_warning_weekly" = "wöchentlich";
 "quota_warning_weekly_capitalized" = "Wöchentlich";
 "quota_warning_notification_title" = "%1$@ %2$@ Kontingent niedrig";
@@ -665,6 +666,9 @@
 "surprise_me_subtitle" = "Prüfen Sie, ob Sie möchten, dass Ihre Agenten dort oben Spaß haben.";
 "hide_personal_info_title" = "Persönliche Informationen ausblenden";
 "hide_personal_info_subtitle" = "Verdecken Sie E-Mail-Adressen in der Menüleiste und der Menü-Benutzeroberfläche.";
+"hide_cost_history_identity_subtitle" = "Blendet auch Projekt- und Quellnamen sowie Pfade im Kostenverlauf aus, ohne gespeicherte Daten zu ändern.";
+"Project %d" = "Projekt %d";
+"Source %d" = "Quelle %d";
 "show_provider_storage_usage_title" = "Speichernutzung des Anbieters anzeigen";
 "show_provider_storage_usage_subtitle" = "Zeigen Sie die lokale Festplattennutzung in Menüs an. Scannt bekannte anbietereigene Pfade im Hintergrund.";
 "section_keychain_access" = "Schlüsselbundzugriff";
@@ -1514,6 +1518,7 @@
 "More" = "Mehr";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "Installieren…";
 "Install plugin" = "Plugin installieren";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "Kopiert eine JavaScript- oder TypeScript-Datei in das Plugin-Verzeichnis.";
@@ -1555,6 +1560,7 @@
 "Total usage" = "Gesamtnutzung";
 "claude_oauth_keychain_access_revoked" = "Der Zugriff auf den Claude-Schlüsselbund wurde durch die Token-Rotation von Claude Code widerrufen. Klicken Sie auf „Aktualisieren“, um den Zugriff erneut zu gewähren, oder stellen Sie die Claude-Nutzungsquelle auf CLI/Web um.";
 "claude_showing_last_known_usage" = "Letzte bekannte Nutzung wird angezeigt (erfasst: %@).";
+"claude_limited_usage_detail" = "Eingeschränkte Nutzungsdetails";
 /* Spend dashboard cost analysis */
 "90d" = "90d";
 "Input" = "Input";
@@ -1609,4 +1615,9 @@
 "menu_bar_layout_conditional_default_session_spent" = "Sitzung fast aufgebraucht";
 "menu_bar_layout_conditional_default_either_high" = "Sitzung oder Woche läuft hoch";
 "menu_bar_layout_conditional_default_scoped_weekly" = "Modellfenster über 60 % genutzt";
+"Visible usage items" = "Sichtbare Nutzungselemente";
+"Restore Defaults" = "Standardeinstellungen wiederherstellen";
+"Choose which usage rows appear in this provider's menu, Settings preview, and Overview." = "Wähle aus, welche Nutzungszeilen im Menü dieses Anbieters, in der Einstellungsvorschau und in der Übersicht angezeigt werden.";
+"%@ (unavailable)" = "%@ (nicht verfügbar)";
 "Spending cap, not balance" = "Ausgabenlimit, kein Guthaben";
+"%@ weekly" = "%@ wöchentlich";

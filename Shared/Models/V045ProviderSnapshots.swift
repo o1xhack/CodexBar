@@ -12,19 +12,23 @@ public struct SyncProviderAmount: Codable, Sendable, Equatable {
     public let currencyCode: String
     public let period: String?
     public let isEstimated: Bool
+    /// Amount observation time, independent of quota refreshes. A confirmed zero remains a value.
+    public let observedAt: Date?
 
     public init(
         kind: String,
         amount: Double,
         currencyCode: String,
         period: String?,
-        isEstimated: Bool)
+        isEstimated: Bool,
+        observedAt: Date? = nil)
     {
         self.kind = kind
         self.amount = amount
         self.currencyCode = currencyCode
         self.period = period
         self.isEstimated = isEstimated
+        self.observedAt = observedAt
     }
 }
 

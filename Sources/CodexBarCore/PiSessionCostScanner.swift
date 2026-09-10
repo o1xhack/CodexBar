@@ -66,12 +66,6 @@ enum PiSessionCostScanner {
         let catalog: ModelsDevCatalog
         let cacheRoot: URL?
         let pricingKey: String
-        let compatiblePricingKeys: Set<String>
-
-        func matches(_ key: String?) -> Bool {
-            guard let key else { return false }
-            return key == self.pricingKey || self.compatiblePricingKeys.contains(key)
-        }
     }
 
     private struct ScanContext {
@@ -85,7 +79,6 @@ enum PiSessionCostScanner {
     /// Bump for Pi-only cost formula changes not represented by the parser or pricing fingerprints.
     private static let costFormulaVersion = 2
     private static let maxLineBytes = 16 * 1024 * 1024
-    private static let maxSafeRoundedInt = Double(Int.max) - 1
     private static let sessionStartFilenameRegex = try? NSRegularExpression(
         pattern: "^(\\d{4}-\\d{2}-\\d{2})T(\\d{2})-(\\d{2})-(\\d{2})-(\\d{3})Z_")
     private static let isoFormatterBox = PiSessionISO8601FormatterBox()
@@ -132,7 +125,7 @@ enum PiSessionCostScanner {
         let refreshMs = Int64(max(0, options.refreshMinIntervalSeconds) * 1000)
         let pricingContext = self.pricingContext(now: now, cacheRoot: options.cacheRoot)
         let windowExpanded = self.requestedWindowExpandsCache(range: range, cache: cache)
-        let pricingChanged = !pricingContext.matches(cache.pricingKey)
+        let pricingChanged = cache.pricingKey != pricingContext.pricingKey
         let shouldRefresh = options.forceRescan
             || windowExpanded
             || pricingChanged
@@ -231,24 +224,26 @@ enum PiSessionCostScanner {
         until: Date,
         now: Date = Date(),
         cacheRoot: URL? = nil,
-        calendar: Calendar = .current) -> CachedDailyReportResult?
+        calendar: Calendar = .current,
+        allowEstablishedEmpty: Bool = false) -> CachedDailyReportResult?
     {
         guard provider == .codex || provider == .claude else { return nil }
 
         let range = CostUsageScanner.CostUsageDayRange(since: since, until: until, calendar: calendar)
         let cache = PiSessionCostCacheIO.load(cacheRoot: cacheRoot)
         guard cache.timeZoneIdentifier == range.calendar.timeZone.identifier else { return nil }
-        guard !cache.daysByProvider.isEmpty else { return nil }
+        guard !allowEstablishedEmpty || cache.lastScanUnixMs > 0 else { return nil }
+        guard allowEstablishedEmpty || !cache.daysByProvider.isEmpty else { return nil }
         guard !self.requestedWindowExpandsCache(range: range, cache: cache) else { return nil }
 
         let pricingContext = self.pricingContext(now: now, cacheRoot: cacheRoot)
-        guard pricingContext.matches(cache.pricingKey) else { return nil }
+        guard cache.pricingKey == pricingContext.pricingKey else { return nil }
         let report = self.buildReport(
             provider: provider,
             cache: cache,
             range: range,
             pricingContext: pricingContext)
-        guard !report.data.isEmpty else { return nil }
+        guard allowEstablishedEmpty || !report.data.isEmpty else { return nil }
         let lastScanAt = cache.lastScanUnixMs > 0
             ? Date(timeIntervalSince1970: TimeInterval(cache.lastScanUnixMs) / 1000)
             : nil
@@ -258,25 +253,16 @@ enum PiSessionCostScanner {
     private static func pricingContext(now: Date, cacheRoot: URL?) -> ModelsDevPricingContext {
         let modelsDevArtifact = ModelsDevCache.load(now: now, cacheRoot: cacheRoot).artifact
         let customPricingFingerprint = CostUsageCustomPricing.load().fingerprint
-        func key(parserHash: String) -> String {
-            CostUsagePricingKey.codex(
-                modelsDevArtifact: modelsDevArtifact,
-                formulaVersion: Self.costFormulaVersion,
-                parserHash: parserHash,
-                modelsDevProviderIDs: CostUsagePricing.codexModelsDevProviderIDs.union(
-                    Set(CostUsagePricing.claudeFirstPartyModelsDevProviderIDs)),
-                customPricingFingerprint: customPricingFingerprint)
-        }
-        // Reviewed scheduler/report-field and Codex read-view/storage-only transitions leave Pi pricing unchanged.
-        // A later parser change must invalidate normally unless separately reviewed for compatibility.
-        let compatiblePricingKeys: Set<String> = CodexParserHash.value == "c6ecfbe76f4248db"
-            ? Set(["c6c46a376ba16304", "55f640e6bb0ccba4", "21f10143afe00c55"].map { key(parserHash: $0) })
-            : []
         return ModelsDevPricingContext(
             catalog: modelsDevArtifact?.catalog ?? ModelsDevCatalog(providers: [:]),
             cacheRoot: cacheRoot,
-            pricingKey: key(parserHash: CodexParserHash.value),
-            compatiblePricingKeys: compatiblePricingKeys)
+            pricingKey: CostUsagePricingKey.codex(
+                modelsDevArtifact: modelsDevArtifact,
+                formulaVersion: Self.costFormulaVersion,
+                parserHash: CodexParserHash.value,
+                modelsDevProviderIDs: CostUsagePricing.codexModelsDevProviderIDs.union(
+                    Set(CostUsagePricing.claudeFirstPartyModelsDevProviderIDs)),
+                customPricingFingerprint: customPricingFingerprint))
     }
 
     private static func requestedWindowExpandsCache(
@@ -881,20 +867,9 @@ enum PiSessionCostScanner {
     }
 
     private static func readNonNegativeInt(_ value: Any?) -> Int {
-        if let number = value as? NSNumber {
-            let numeric = number.doubleValue
-            guard numeric.isFinite, numeric >= 0, numeric <= self.maxSafeRoundedInt else { return 0 }
-            return Int(numeric.rounded())
-        }
-        if let string = value as? String,
-           let numeric = Double(string),
-           numeric.isFinite,
-           numeric >= 0,
-           numeric <= self.maxSafeRoundedInt
-        {
-            return Int(numeric.rounded())
-        }
-        return 0
+        let numeric = (value as? NSNumber)?.doubleValue ?? (value as? String).flatMap { Double($0) }
+        guard let numeric, numeric >= 0 else { return 0 }
+        return Int(exactly: numeric.rounded()) ?? 0
     }
 }
 

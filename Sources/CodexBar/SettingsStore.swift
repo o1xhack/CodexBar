@@ -224,24 +224,27 @@ enum CodexAccountMenuProjectionRevalidationResult: Equatable {
 }
 
 @MainActor
+struct SettingsStoreKeychainAccessPolicy {
+    let setDisabled: (Bool) -> Void
+    let isExplicitlyDisabled: () -> Bool
+
+    static var live: Self {
+        Self(
+            setDisabled: { KeychainAccessGate.isDisabled = $0 },
+            isExplicitlyDisabled: { KeychainAccessGate.isExplicitlyDisabled })
+    }
+}
+
+@MainActor
 @Observable
 final class SettingsStore {
-    static let sharedDefaults = AppGroupSupport.sharedDefaults()
+    static let sharedDefaults = SettingsStore.resolveSharedDefaults()
     static let mergedOverviewProviderLimit = 6
     static let productionCodexAccountReconciliationSnapshotCacheInterval: TimeInterval = 2
-    static let isRunningTests: Bool = {
-        let env = ProcessInfo.processInfo.environment
-        if env["XCTestConfigurationFilePath"] != nil {
-            return true
-        }
-        if env["TESTING_LIBRARY_VERSION"] != nil {
-            return true
-        }
-        if env["SWIFT_TESTING"] != nil {
-            return true
-        }
-        return NSClassFromString("XCTestCase") != nil
-    }()
+    static let isRunningTests = SettingsStore.resolveIsRunningTests(
+        processName: ProcessInfo.processInfo.processName,
+        environment: ProcessInfo.processInfo.environment,
+        hasLoadedXCTestCase: NSClassFromString("XCTestCase") != nil)
 
     #if DEBUG
     static var codexAccountReconciliationSnapshotCacheIntervalOverrideForTesting: TimeInterval?
@@ -250,6 +253,7 @@ final class SettingsStore {
     @ObservationIgnored let userDefaults: UserDefaults
     @ObservationIgnored let configStore: CodexBarConfigStore
     @ObservationIgnored let antigravityOAuthCredentialsStore: AntigravityOAuthCredentialsStore
+    @ObservationIgnored let keychainAccessPolicy: SettingsStoreKeychainAccessPolicy
     @ObservationIgnored var config: CodexBarConfig
     @ObservationIgnored var configPersistTask: Task<Void, Never>?
     @ObservationIgnored var configFileWatcher: ConfigFileWatcher?
@@ -277,17 +281,26 @@ final class SettingsStore {
     @ObservationIgnored var providerConfigRevisions: [ProviderInstanceID: UInt64] = [:]
     @ObservationIgnored var providerConfigFingerprints: [ProviderInstanceID: Data] = [:]
 
-    static func shouldBridgeSharedDefaults(for userDefaults: UserDefaults) -> Bool {
-        if !self.isRunningTests {
-            return true
-        }
-        if userDefaults === UserDefaults.standard {
-            return true
-        }
-        if let shared = sharedDefaults, userDefaults === shared {
-            return true
-        }
-        return false
+    static func resolveIsRunningTests(
+        processName: String,
+        environment: [String: String],
+        hasLoadedXCTestCase: Bool) -> Bool
+    {
+        TestProcessSafety.isRunningUnderTests(
+            processName: processName,
+            environment: environment,
+            hasLoadedXCTestCase: hasLoadedXCTestCase)
+    }
+
+    static func resolveSharedDefaults(
+        _ resolve: () -> UserDefaults? = { AppGroupSupport.sharedDefaults() }) -> UserDefaults?
+    {
+        guard !self.isRunningTests else { return nil }
+        return resolve()
+    }
+
+    static func shouldBridgeSharedDefaults(for _: UserDefaults) -> Bool {
+        !self.isRunningTests
     }
 
     init(
@@ -322,24 +335,23 @@ final class SettingsStore {
         copilotTokenStore: any CopilotTokenStoring = KeychainCopilotTokenStore(),
         tokenAccountStore: any ProviderTokenAccountStoring = FileTokenAccountStore(),
         antigravityOAuthCredentialsStore: AntigravityOAuthCredentialsStore = AntigravityOAuthCredentialsStore(),
+        keychainAccessPolicy: SettingsStoreKeychainAccessPolicy = .live,
         performInitialProviderDetection: Bool = !SettingsStore.isRunningTests)
     {
+        // Legacy credential migration must see the saved policy, including shared-defaults fallback.
+        keychainAccessPolicy.setDisabled(Self.loadDebugDisableKeychainAccess(userDefaults: userDefaults))
         if !Self.isRunningTests {
             _ = UserProviderPluginRegistry.refresh()
         }
         // Capture this before app-group/config migrations can create prior-installation state.
         let hadExistingConfig = (try? configStore.load()) != nil
         let hadPreviousInstallationState = hadExistingConfig || Self.hadPreviousAppLaunch(userDefaults: userDefaults)
-        let appGroupID = AppGroupSupport.currentGroupID()
-        let appGroupMigration: AppGroupSupport.MigrationResult
-        if Self.isRunningTests {
-            appGroupMigration = AppGroupSupport.migrateLegacyDataIfNeeded(standardDefaults: userDefaults)
-        } else {
-            Self.scheduleAppGroupMigration()
-            appGroupMigration = AppGroupSupport.MigrationResult(status: .targetUnavailable)
-        }
-        let sharedDefaultsAvailable = Self.sharedDefaults != nil
+        // Migration tests inject every dependency directly; ordinary settings tests must not discover user state.
         if !Self.isRunningTests {
+            let appGroupID = AppGroupSupport.currentGroupID()
+            Self.scheduleAppGroupMigration()
+            let appGroupMigration = AppGroupSupport.MigrationResult(status: .targetUnavailable)
+            let sharedDefaultsAvailable = Self.sharedDefaults != nil
             CodexBarLog.logger(LogCategories.settings).info(
                 "App group resolved",
                 metadata: [
@@ -375,10 +387,12 @@ final class SettingsStore {
         let config = CodexBarConfigMigrator.loadOrMigrate(
             configStore: configStore,
             userDefaults: userDefaults,
+            keychainAccessDisabled: keychainAccessPolicy.isExplicitlyDisabled(),
             stores: legacyStores)
         self.userDefaults = userDefaults
         self.configStore = configStore
         self.antigravityOAuthCredentialsStore = antigravityOAuthCredentialsStore
+        self.keychainAccessPolicy = keychainAccessPolicy
         self.config = config
         self.configLoading = true
         let defaultsState = Self.loadDefaultsState(
@@ -417,7 +431,7 @@ final class SettingsStore {
         } else {
             self.defaultsState.openAIWebAccessEnabled = resolvedOpenAIWebAccessEnabled
         }
-        KeychainAccessGate.isDisabled = self.debugDisableKeychainAccess
+        self.keychainAccessPolicy.setDisabled(self.debugDisableKeychainAccess)
         self.startConfigFileWatcher()
         self.observeSystemPowerStateChanges()
     }
@@ -879,16 +893,20 @@ extension SettingsStore {
     private static func loadMenuBarLayout(userDefaults: UserDefaults) -> MenuBarLayout? {
         MenuBarLayoutPersistence.loadLayout(
             current: self.decodeMenuBarLayout(userDefaults.data(forKey: MenuBarLayoutUserDefaultsKey.layoutCurrent)),
+            released: self.decodeMenuBarLayout(
+                userDefaults.data(forKey: MenuBarLayoutUserDefaultsKey.layoutReleased)),
             legacy: self.decodeMenuBarLayout(userDefaults.data(forKey: MenuBarLayoutUserDefaultsKey.layout)),
             into: userDefaults)
     }
 
     private static func loadMenuBarLayoutConditionals(userDefaults: UserDefaults) -> [MenuBarLayoutConditional] {
-        // Neither key present means a fresh install, so hand back the shipped library. Any edit, add, or
-        // removal writes both keys, so a library the user deliberately emptied is never reseeded.
+        // No persisted generation means a fresh install, so hand back the shipped library. Any edit, add,
+        // or removal writes every generation, so a library the user deliberately emptied is never reseeded.
         MenuBarLayoutPersistence.loadLibrary(
             current: self.decodeMenuBarLayoutConditionals(
                 userDefaults.data(forKey: MenuBarLayoutUserDefaultsKey.conditionalsCurrent)),
+            released: self.decodeMenuBarLayoutConditionals(
+                userDefaults.data(forKey: MenuBarLayoutUserDefaultsKey.conditionalsReleased)),
             legacy: self.decodeMenuBarLayoutConditionals(
                 userDefaults.data(forKey: MenuBarLayoutUserDefaultsKey.conditionals)),
             into: userDefaults)
@@ -907,6 +925,8 @@ extension SettingsStore {
         MenuBarLayoutPersistence.loadOverrides(
             current: self.decodeMenuBarLayoutOverrides(
                 userDefaults.data(forKey: MenuBarLayoutUserDefaultsKey.overridesCurrent)),
+            released: self.decodeMenuBarLayoutOverrides(
+                userDefaults.data(forKey: MenuBarLayoutUserDefaultsKey.overridesReleased)),
             legacy: self.decodeMenuBarLayoutOverrides(
                 userDefaults.data(forKey: MenuBarLayoutUserDefaultsKey.overrides)),
             into: userDefaults)
@@ -934,13 +954,17 @@ extension SettingsStore {
         userDefaults.string(forKey: "copilotIconSecondaryWindowID") ?? CopilotIconSecondaryWindowSelection.chat
     }
 
-    private static func loadDebugDisableKeychainAccess(userDefaults: UserDefaults) -> Bool {
+    static func loadDebugDisableKeychainAccess(userDefaults: UserDefaults) -> Bool {
+        self.loadDebugDisableKeychainAccess(
+            userDefaults: userDefaults,
+            sharedDefaults: self.shouldBridgeSharedDefaults(for: userDefaults) ? self.sharedDefaults : nil)
+    }
+
+    static func loadDebugDisableKeychainAccess(userDefaults: UserDefaults, sharedDefaults: UserDefaults?) -> Bool {
         if let stored = userDefaults.object(forKey: "debugDisableKeychainAccess") as? Bool {
             return stored
         }
-        if Self.shouldBridgeSharedDefaults(for: userDefaults),
-           let shared = Self.sharedDefaults?.object(forKey: "debugDisableKeychainAccess") as? Bool
-        {
+        if let shared = sharedDefaults?.object(forKey: "debugDisableKeychainAccess") as? Bool {
             if Self.isRunningTests {
                 userDefaults.set(shared, forKey: "debugDisableKeychainAccess")
             }
@@ -1074,14 +1098,9 @@ extension SettingsStore {
     }
 
     private static func providerConfigFingerprint(_ config: ProviderConfig) -> Data {
-        // This fingerprint gates provider refresh publication, so it must cover only fields a fetch
-        // depends on. A purely cosmetic field would otherwise discard an in-flight probe result, and
-        // a cosmetic edit schedules no replacement fetch.
-        var fetchRelevant = config
-        fetchRelevant.accentColor = nil
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
-        return (try? encoder.encode(fetchRelevant)) ?? Data()
+        return (try? encoder.encode(config.fetchIdentityConfig)) ?? Data()
     }
 
     func providerEnablementRevision(for provider: UsageProvider) -> UInt64 {

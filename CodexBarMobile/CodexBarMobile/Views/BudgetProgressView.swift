@@ -81,6 +81,9 @@ struct BudgetProgressView: View {
     }
 
     static func formatCurrency(_ value: Double, code: String) -> String {
+        if code == "Credits" {
+            return ProviderAmountCard.formattedAmount(value, currencyCode: code)
+        }
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = code

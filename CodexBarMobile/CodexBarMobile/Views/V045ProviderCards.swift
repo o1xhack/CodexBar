@@ -217,11 +217,19 @@ struct ProviderAmountCard: View {
     }
 
     static func formattedAmount(_ value: Double, currencyCode: String) -> String {
-        value.formatted(.currency(code: currencyCode))
+        if currencyCode == "Credits" {
+            return value.formatted(.number.precision(.fractionLength(0...2)))
+                + " " + String(localized: "Credits")
+        }
+        return value.formatted(.currency(code: currencyCode))
     }
 
     static func localizedPeriod(_ period: String) -> String {
         switch period {
+        case "Extra usage":
+            String(localized: "Extra usage")
+        case "Monthly credit limit":
+            String(localized: "Monthly credit limit")
         case "Last 30 days":
             String(localized: "v045_period_last_30_days", defaultValue: "Last 30 days")
         case "Last 30 days (partial)":

@@ -53,7 +53,8 @@ extension CostUsageScanner {
         priorityTurns: [String: CodexPriorityTurnMetadata],
         modelsDevCatalog: ModelsDevCatalog?,
         modelsDevCacheRoot: URL?,
-        customPricing: CostUsageCustomPricing? = nil) -> CodexRowCostBreakdown
+        customPricing: CostUsageCustomPricing? = nil,
+        pricingResolver: CostUsagePricing.CodexResolver? = nil) -> CodexRowCostBreakdown
     {
         var breakdown = CodexRowCostBreakdown()
         for row in rows {
@@ -84,7 +85,8 @@ extension CostUsageScanner {
                 priorityTurns: priorityTurns,
                 modelsDevCatalog: modelsDevCatalog,
                 modelsDevCacheRoot: modelsDevCacheRoot,
-                customPricing: customPricing)
+                customPricing: customPricing,
+                pricingResolver: pricingResolver)
             else {
                 breakdown.hasIncompletePricing = breakdown.hasIncompletePricing || hasTokens
                 continue
@@ -94,7 +96,8 @@ extension CostUsageScanner {
                     for: row,
                     priorityMetadata: priorityMetadata,
                     modelsDevCatalog: modelsDevCatalog,
-                    customPricing: customPricing)
+                    customPricing: customPricing,
+                    pricingResolver: pricingResolver)
             if isPriority {
                 breakdown.priorityCostUSD += cost
                 breakdown.sawPriorityCost = true
@@ -111,7 +114,8 @@ extension CostUsageScanner {
         priorityTurns: [String: CodexPriorityTurnMetadata] = [:],
         modelsDevCatalog: ModelsDevCatalog?,
         modelsDevCacheRoot: URL?,
-        customPricing: CostUsageCustomPricing? = nil) -> Double?
+        customPricing: CostUsageCustomPricing? = nil,
+        pricingResolver: CostUsagePricing.CodexResolver? = nil) -> Double?
     {
         if let authoritativeCostNanos = row.knownCostNanos {
             return Double(authoritativeCostNanos) / self.costScale
@@ -129,7 +133,8 @@ extension CostUsageScanner {
             pricingDate: pricingDate,
             modelsDevCatalog: modelsDevCatalog,
             modelsDevCacheRoot: modelsDevCacheRoot,
-            customPricing: overlay)
+            customPricing: overlay,
+            pricingResolver: pricingResolver)
         guard isPriority else { return baseCost }
         guard let priorityCost = CostUsagePricing.codexPriorityCostUSD(
             model: pricedModel,
@@ -139,7 +144,8 @@ extension CostUsageScanner {
             pricingDate: pricingDate,
             modelsDevCatalog: modelsDevCatalog,
             modelsDevCacheRoot: modelsDevCacheRoot,
-            customPricing: overlay)
+            customPricing: overlay,
+            pricingResolver: pricingResolver)
         else { return baseCost }
         return max(priorityCost, baseCost ?? priorityCost)
     }
@@ -207,7 +213,8 @@ extension CostUsageScanner {
         for row: CodexUsageRow,
         priorityMetadata: CodexPriorityTurnMetadata?,
         modelsDevCatalog: ModelsDevCatalog?,
-        customPricing: CostUsageCustomPricing? = nil) -> Bool
+        customPricing: CostUsageCustomPricing? = nil,
+        pricingResolver: CostUsagePricing.CodexResolver? = nil) -> Bool
     {
         guard row.knownCostNanos == nil else { return false }
         let model = self.codexPricingModel(for: row, priorityMetadata: priorityMetadata)
@@ -219,7 +226,8 @@ extension CostUsageScanner {
         }
         return !CostUsagePricing.hasExactCodexPricing(
             model,
-            modelsDevCatalog: modelsDevCatalog)
+            modelsDevCatalog: modelsDevCatalog,
+            pricingResolver: pricingResolver)
     }
 
     static func codexPricingIsEstimated(
@@ -228,7 +236,8 @@ extension CostUsageScanner {
         rowCost: CodexRowCostBreakdown?,
         rowCostIsTrusted: Bool,
         modelsDevCatalog: ModelsDevCatalog?,
-        customPricing: CostUsageCustomPricing? = nil) -> Bool
+        customPricing: CostUsageCustomPricing? = nil,
+        pricingResolver: CostUsagePricing.CodexResolver? = nil) -> Bool
     {
         guard cost != nil else { return false }
         if rowCostIsTrusted, rowCost?.totalCostUSD != nil {
@@ -240,6 +249,9 @@ extension CostUsageScanner {
         {
             return false
         }
-        return !CostUsagePricing.hasExactCodexPricing(model, modelsDevCatalog: modelsDevCatalog)
+        return !CostUsagePricing.hasExactCodexPricing(
+            model,
+            modelsDevCatalog: modelsDevCatalog,
+            pricingResolver: pricingResolver)
     }
 }

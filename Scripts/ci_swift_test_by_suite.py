@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import ctypes
 import errno
+import fcntl
 import os
 from pathlib import Path
 import re
@@ -121,6 +122,8 @@ if sys.platform == "darwin":
     _libproc = ctypes.CDLL("/usr/lib/libproc.dylib", use_errno=True)
     _libproc.proc_pidinfo.argtypes = [ctypes.c_int, ctypes.c_int, ctypes.c_uint64, ctypes.c_void_p, ctypes.c_int]
     _libproc.proc_pidinfo.restype = ctypes.c_int
+    _libproc.proc_listpids.argtypes = [ctypes.c_uint32, ctypes.c_uint32, ctypes.c_void_p, ctypes.c_int]
+    _libproc.proc_listpids.restype = ctypes.c_int
     _proc_signal_with_audittoken = getattr(_libproc, "proc_signal_with_audittoken", None)
     if _proc_signal_with_audittoken is not None:
         _proc_signal_with_audittoken.argtypes = [ctypes.POINTER(AuditToken), ctypes.c_int]
@@ -181,12 +184,41 @@ def test_process(pid: int) -> TestProcess | None:
         raise OSError(errno.EIO, f"Incomplete process metadata for PID {pid}") from error
 
 
+def test_process_ids() -> set[int]:
+    # Native enumeration avoids launching ps during every ownership/cleanup poll.
+    if sys.platform == "darwin":
+        ctypes.set_errno(0)
+        size = _libproc.proc_listpids(1, 0, None, 0)  # PROC_ALL_PIDS; result is bytes, not a PID count.
+        if size <= 0 or size % ctypes.sizeof(ctypes.c_int):
+            raise OSError(ctypes.get_errno() or errno.EIO, "Cannot size process inventory")
+        capacity = size // ctypes.sizeof(ctypes.c_int) + 128
+        for _ in range(4):
+            if capacity > (2**31 - 1) // ctypes.sizeof(ctypes.c_int):
+                raise OSError(errno.EOVERFLOW, "Process inventory exceeds native buffer size")
+            pids = (ctypes.c_int * capacity)()
+            ctypes.set_errno(0)
+            size = _libproc.proc_listpids(1, 0, pids, ctypes.sizeof(pids))
+            if size <= 0 or size % ctypes.sizeof(ctypes.c_int) or size > ctypes.sizeof(pids):
+                raise OSError(ctypes.get_errno() or errno.EIO, "Cannot enumerate process inventory")
+            if size < ctypes.sizeof(pids):
+                return {pid for pid in pids[: size // ctypes.sizeof(ctypes.c_int)] if pid > 0}
+            # A full buffer may omit descendants; retry growth instead of accepting a partial inventory.
+            capacity *= 2
+        raise OSError(errno.EAGAIN, "Process inventory kept growing during enumeration")
+    if sys.platform.startswith("linux"):
+        return {
+            int(path.name) for path in Path("/proc").iterdir()
+            if path.name.isascii() and path.name.isdecimal() and int(path.name) > 0
+        }
+    raise RuntimeError("Swift test process containment requires macOS or Linux")
+
+
 def test_process_snapshot(required: Iterable[int] = ()) -> dict[int, TestProcess]:
     # Numeric metadata only; never inspect command lines or environments of peer jobs.
-    pids = subprocess.check_output(["ps", "-axo", "pid="], text=True, timeout=2).split()
+    pids = test_process_ids()
     required = set(required)
     snapshot = {}
-    for pid in {int(pid) for pid in pids} | required:
+    for pid in pids | required:
         try:
             info = test_process(pid)
         except OSError:
@@ -204,9 +236,11 @@ class TestProcessOwnership:
         self.process = process
         self.known = {root.pid: root.birth}
         self.sessions = {root.pid: root.birth} if root.session == root.pid else {}
+        self.pending_members: dict[int, TestProcess] = {}
+        self.pending_sessions: dict[int, set[int]] = {}
 
-    def refresh(self) -> dict[int, TestProcess]:
-        snapshot = test_process_snapshot(self.known.keys() | self.sessions.keys())
+    def refresh(self, *, observing: bool = False) -> dict[int, TestProcess]:
+        snapshot = test_process_snapshot(self.known.keys() | self.sessions.keys() | self.pending_members.keys())
         if self.process is not None:
             if self.process.returncode is not None:
                 raise RuntimeError("Test root was reaped before cleanup completed")
@@ -225,6 +259,7 @@ class TestProcessOwnership:
                 self.root.pid, self.root.parent, self.root.session, self.root.birth, exited)
         owned = {pid: info for pid, info in snapshot.items() if self.known.get(pid) == info.birth}
         checked_sessions = {}
+        replaced_sessions = set()
         while True:
             self.known.update({pid: info.birth for pid, info in owned.items()})
             self.sessions.update({pid: info.birth for pid, info in owned.items() if info.session == pid})
@@ -238,6 +273,8 @@ class TestProcessOwnership:
                 # Recheck AFTER enumeration: the leader might have been reaped during the snapshot.
                 current = test_process(sid) if anchor is not None and anchor.birth == birth else None
                 checked_sessions[sid] = current is not None and current.birth == birth
+                if (anchor is not None and anchor.birth != birth) or (current is not None and current.birth != birth):
+                    replaced_sessions.add(sid)
             additions = {
                 pid: info for pid, info in snapshot.items()
                 if pid not in owned and (
@@ -248,18 +285,53 @@ class TestProcessOwnership:
             if not additions:
                 break
             owned.update(additions)
+        # Uncertain members can change sessions. Retain their births until confirmed gone
+        # or independently attributed; keeping only the old SID could silently lose them.
+        pending_members = {
+            pid: info for pid, info in self.pending_members.items()
+            if pid in snapshot and snapshot[pid].birth == info.birth
+        }
         for sid in list(self.sessions):
             if checked_sessions[sid]:
                 continue
             members = {pid for pid, info in snapshot.items() if info.session == sid and not info.zombie}
             if members - owned.keys():
-                raise RuntimeError(
-                    f"Lost test session continuity for SID {sid}; "
-                    f"cannot attribute PIDs {sorted(members - owned.keys())}")
+                # A nested owner may still be draining its hidden, unreaped child's session.
+                # Observation retains uncertainty; cleanup never adopts or signals these PIDs.
+                if observing and self.process is not None and not exited and sid not in replaced_sessions:
+                    pending_members.update({pid: snapshot[pid] for pid in members - owned.keys()})
+                else:
+                    raise RuntimeError(
+                        f"Lost test session continuity for SID {sid}; "
+                        f"cannot attribute PIDs {sorted(members - owned.keys())}")
             if not members:
                 del self.sessions[sid]
+        pending_members = {pid: info for pid, info in pending_members.items() if pid not in owned}
+        # Uncertainty follows observed ancestry and live pending session leaders, without
+        # granting ownership. Use current sessions after migration; old SIDs are not anchors.
+        while True:
+            additions = {
+                pid: info for pid, info in snapshot.items()
+                if pid not in owned and pid not in pending_members and (
+                    (info.parent in pending_members and info.birth >= pending_members[info.parent].birth)
+                    or (info.session in pending_members and snapshot[info.session].session == info.session
+                        and not snapshot[info.session].zombie and info.birth >= pending_members[info.session].birth)
+                )
+            }
+            if not additions:
+                break
+            pending_members.update(additions)
+        # Matching zombies can still prove ancestry above, but do not themselves need draining.
+        pending_members = {pid: info for pid, info in pending_members.items() if not snapshot[pid].zombie}
+        pending_sessions: dict[int, set[int]] = {}
+        for pid, info in pending_members.items():
+            pending_sessions.setdefault(info.session, set()).add(pid)
+        if pending_sessions and (not observing or self.process is None or exited):
+            raise RuntimeError(f"Lost test session continuity; cannot attribute pending PIDs {sorted(pending_members)}")
         # Confirmed exits/replacements retire; unavailable known metadata raises before reaching here.
         self.known = {pid: info.birth for pid, info in owned.items()}
+        self.pending_members = pending_members
+        self.pending_sessions = pending_sessions
         return {pid: info for pid, info in owned.items() if not info.zombie}
 
     def send(self, info: TestProcess, sig: signal.Signals) -> None:
@@ -360,11 +432,29 @@ def stop_unreaped_child(process: subprocess.Popen) -> None:
     process.wait(timeout=2)
 
 
-def run_command(command: list[str], timeout: int | None = None) -> int:
+CONTAINMENT_CAPABILITIES = ("waitid", "P_PID", "WEXITED", "WNOHANG", "WNOWAIT")
+
+
+def containment_support_error(capabilities: object = os) -> str | None:
     if sys.platform != "darwin" and not sys.platform.startswith("linux"):
-        raise RuntimeError("Swift test process containment requires macOS or Linux")
-    if not all(hasattr(os, name) for name in ("waitid", "P_PID", "WEXITED", "WNOHANG", "WNOWAIT")):
-        raise RuntimeError("Swift test process containment requires waitid with WNOWAIT")
+        return f"Swift test process containment requires macOS or Linux, not {sys.platform}."
+    missing = [name for name in CONTAINMENT_CAPABILITIES if not hasattr(capabilities, name)]
+    if not missing:
+        return None
+    # A version number alone does not tell the reader which build of python3 to reach for.
+    version = ".".join(str(part) for part in sys.version_info[:3])
+    return (
+        "Swift test process containment requires waitid with WNOWAIT. "
+        f"{sys.executable} is Python {version} and does not provide: {', '.join(missing)}. "
+        "Run make test and make check with a python3 that provides them, "
+        "for example Homebrew python@3.14 placed first on PATH."
+    )
+
+
+def run_command(command: list[str], timeout: int | None = None) -> int:
+    error = containment_support_error()
+    if error is not None:
+        raise RuntimeError(error)
     print(f"+ {' '.join(command)}", flush=True)
     started = time.monotonic()
     ownership = None
@@ -382,7 +472,7 @@ def run_command(command: list[str], timeout: int | None = None) -> int:
         ownership = TestProcessOwnership(root, process)
         next_diagnostic = started + 30
         while True:
-            owned = ownership.refresh()
+            owned = ownership.refresh(observing=True)
             result = unreaped_exit_code(process)
             if result is not None:
                 return result
@@ -412,6 +502,72 @@ def run_command(command: list[str], timeout: int | None = None) -> int:
             print(f"Cleanup also failed: {type(error).__name__}: {error}", file=sys.stderr, flush=True)
         finally:
             signal.signal(signal.SIGINT, previous_interrupt)
+
+
+def is_missing_sparkle_runtime_failure(result: subprocess.CompletedProcess[str]) -> bool:
+    output = f"{result.stdout}\n{result.stderr}"
+    return (
+        "Library not loaded: @rpath/Sparkle.framework/Versions/B/Sparkle" in output
+        and "PackageFrameworks/Sparkle.framework" in output
+    )
+
+
+def valid_sparkle_runtime(path: Path) -> bool:
+    return path.is_dir() and any(
+        (path / "Versions" / version / "Sparkle").is_file()
+        for version in ("Current", "B")
+    )
+
+
+def sparkle_runtime_matches_source(destination: Path, source: Path) -> bool:
+    if not destination.is_symlink():
+        return False
+    try:
+        return destination.resolve(strict=True) == source.resolve(strict=True)
+    except (OSError, RuntimeError):
+        return False
+
+
+def repair_sparkle_test_runtime(swift_command: list[str]) -> bool:
+    result = subprocess.run(
+        [*swift_command, "build", "--show-bin-path"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return False
+    lines = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+    if len(lines) != 1:
+        return False
+
+    bin_dir = Path(lines[0])
+    if not bin_dir.is_absolute():
+        bin_dir = Path.cwd() / bin_dir
+    source = bin_dir / "Sparkle.framework"
+    if not valid_sparkle_runtime(source):
+        return False
+
+    package_frameworks = bin_dir / "PackageFrameworks"
+    package_frameworks.mkdir(parents=True, exist_ok=True)
+    destination = package_frameworks / "Sparkle.framework"
+    lock_path = package_frameworks / ".sparkle-runtime.lock"
+    with lock_path.open("a+") as lock_file:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+        if sparkle_runtime_matches_source(destination, source):
+            return True
+        if destination.exists() and not destination.is_symlink():
+            return valid_sparkle_runtime(destination)
+
+        temporary = package_frameworks / f".Sparkle.framework.{os.getpid()}.{time.time_ns()}"
+        try:
+            temporary.symlink_to(Path("..") / "Sparkle.framework", target_is_directory=True)
+            os.replace(temporary, destination)
+        except IsADirectoryError:
+            return valid_sparkle_runtime(destination)
+        finally:
+            if temporary.is_symlink():
+                temporary.unlink()
+        return sparkle_runtime_matches_source(destination, source)
 
 
 def parse_swift_test_list(output: str) -> list[TestSelection]:
@@ -458,12 +614,19 @@ def swift_test_list(swift_command: list[str]) -> list[TestSelection]:
     expected_selections: tuple[TestSelection, ...] | None = None
     valid_results = 0
     parse_errors: list[str] = []
+    repaired_runtime = False
     for attempt in range(4):
         command = [*swift_command, "test", "list"]
         if attempt > 0:
             command.append("--skip-build")
         try:
-            result = subprocess.run(command, check=True, capture_output=True, text=True)
+            result = subprocess.run(command, capture_output=True, text=True)
+            if result.returncode != 0 and not repaired_runtime and is_missing_sparkle_runtime_failure(result):
+                if repair_sparkle_test_runtime(swift_command):
+                    repaired_runtime = True
+                    print("Recovered SwiftPM Sparkle test runtime; retrying discovery once.", flush=True)
+                    result = subprocess.run(command, capture_output=True, text=True)
+            result.check_returncode()
         except subprocess.CalledProcessError as error:
             print(f"+ {' '.join(command)}", flush=True)
             if error.stdout:
@@ -594,6 +757,13 @@ def main() -> int:
     if args.group_size < 1:
         print("--group-size must be positive", file=sys.stderr)
         return 2
+    # Discovery builds the package, so report an unusable interpreter before that cost.
+    # --list-only never runs a test command and keeps working without containment.
+    if not args.list_only:
+        error = containment_support_error()
+        if error is not None:
+            print(error, file=sys.stderr)
+            return 2
 
     swift_command = [args.swift_command, *args.swift_command_arg]
     result = 0

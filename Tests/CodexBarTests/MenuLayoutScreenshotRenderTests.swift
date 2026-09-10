@@ -14,6 +14,106 @@ final class MenuLayoutScreenshotRenderTests: XCTestCase {
     private static let width: CGFloat = 320
     private static let now = Date(timeIntervalSince1970: 1_782_000_000)
 
+    func test_renderCatalanLocalizationProof() throws {
+        guard let dir = ProcessInfo.processInfo.environment["CODEXBAR_CATALAN_SCREENSHOT_DIR"] else {
+            throw XCTSkip("Set CODEXBAR_CATALAN_SCREENSHOT_DIR to render the Catalan localization proof.")
+        }
+        XCTAssertTrue(SettingsStore.isRunningTests)
+        guard SettingsStore.isRunningTests else { return }
+        let previousOverride = KeychainAccessGate.currentOverrideForTesting
+        defer {
+            if let previousOverride {
+                KeychainAccessGate.isDisabled = previousOverride
+            } else {
+                KeychainAccessGate.resetOverrideForTesting()
+            }
+        }
+        let directory = URL(fileURLWithPath: dir, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let root = FileManager.default.temporaryDirectory
+            .appendingPathComponent("catalan-proof-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+
+        try CodexCredentialFileAccess.withFixtureScope(.init()) {
+            try OpenAIDashboardCacheStore.$cacheURLOverride.withValue(root.appendingPathComponent("dashboard.json")) {
+                try CodexBarLocalizationOverride.$appLanguage.withValue("ca") {
+                    let settings = testSettingsStore(
+                        suiteName: "MenuLayoutScreenshotRenderTests-catalan",
+                        config: testConfigWithAllProvidersDisabled(),
+                        prepareDefaults: { defaults in
+                            defaults.set(AppGroupSupport.migrationVersion, forKey: AppGroupSupport.migrationVersionKey)
+                            defaults.set(true, forKey: "debugDisableKeychainAccess")
+                        })
+                    let state = CloudSyncState()
+                    state.availability = .noICloudAccount
+                    let store = UsageStore(
+                        fetcher: UsageFetcher(environment: [:]),
+                        browserDetection: BrowserDetection(
+                            homeDirectory: root.path,
+                            fileExists: { _ in false },
+                            directoryContents: { _ in nil }),
+                        settings: settings,
+                        historicalUsageHistoryStore: HistoricalUsageHistoryStore(
+                            fileURL: root.appendingPathComponent("history.json")),
+                        planUtilizationHistoryStore: PlanUtilizationHistoryStore(
+                            directoryURL: root.appendingPathComponent("plan-history")),
+                        startupBehavior: .testing,
+                        environmentBase: [:],
+                        widgetSnapshotURL: root.appendingPathComponent("widget.json"))
+                    let fixture = try CursorOverviewProofFixture.make()
+                    let group = try XCTUnwrap(fixture.model.groups.first)
+                    // Render production views, with no engine, providers, hooks, or credential access running.
+                    // Offscreen Forms do not expose their children through the accessibility traversal.
+                    let views: [(String, AnyView, [String])] = [
+                        ("sidebar", AnyView(SettingsSidebarView(
+                            settings: settings, store: store, selection: .constant(.plugins))
+                            .frame(width: SettingsPane.sidebarMinWidth, height: 620)), []),
+                        ("icloud", AnyView(ICloudSyncPane(settings: settings, state: state)
+                                .frame(width: 560, height: 600)), []),
+                        ("hooks", AnyView(HooksPane(settings: settings)
+                                .frame(width: 560, height: 350)), []),
+                        ("layout", AnyView(MenuBarLayoutEditor(settings: settings, store: store)
+                                .frame(width: 560).padding(16)), ["menu_bar_layout_drag_remove"]),
+                        ("spend", AnyView(SpendDashboardCurrencySection(group: group, requestedDays: 30)
+                                .padding(24).frame(width: 680)), ["Input", "Cache write", "List-price equivalent"]),
+                    ]
+                    for dark in [false, true] {
+                        for (name, content, keys) in views {
+                            let view = AnyView(content
+                                .environment(\.locale, Locale(identifier: "ca_ES"))
+                                .environment(\.timeZone, TimeZone(secondsFromGMT: 0)!)
+                                .environment(\.colorScheme, dark ? .dark : .light)
+                                .environment(\.displayScale, 2)
+                                .environment(\.accessibilityEnabled, true)
+                                .background(Color(nsColor: .windowBackgroundColor)))
+                            let hosting = NSHostingView(rootView: view)
+                            hosting.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
+                            let stem = "catalan-\(name)-\(dark ? "dark" : "light")"
+                            let data = name == "sidebar"
+                                ? Self.pngDataWithWindow(hosting: hosting)
+                                : Self.pngData(hosting: hosting)
+                            let png = try XCTUnwrap(data)
+                            XCTAssertFalse(png.isEmpty)
+                            try png.write(to: directory.appendingPathComponent("\(stem).png"))
+                            let accessibility = Self.accessibilityText(hosting)
+                            try accessibility.write(
+                                to: directory.appendingPathComponent("\(stem)-accessibility.txt"),
+                                atomically: true,
+                                encoding: .utf8)
+                            for key in keys {
+                                XCTAssertTrue(accessibility.contains(L(key)), "\(stem): missing \(key)")
+                            }
+                        }
+                    }
+                    XCTAssertTrue(store.snapshots.isEmpty)
+                    XCTAssertFalse(settings.iCloudSyncEnabled)
+                    XCTAssertFalse(settings.hooksEnabled)
+                }
+            }
+        }
+    }
+
     func test_renderCursorOverviewCoverageProof() throws {
         guard let dir = ProcessInfo.processInfo.environment["CODEXBAR_CURSOR_OVERVIEW_SCREENSHOT_DIR"] else {
             throw XCTSkip("Set CODEXBAR_CURSOR_OVERVIEW_SCREENSHOT_DIR to render the Cursor Overview proof.")
@@ -685,12 +785,9 @@ final class MenuLayoutScreenshotRenderTests: XCTestCase {
                 case let .compact(compactRow):
                     MenuCardCompactAccountRowView(
                         model: MenuCardCompactAccountRowView.Model(
-                            label: compactRow.label,
-                            headroomPercent: compactRow.headroomPercent,
-                            severity: compactRow.severity,
-                            constraintDetail: compactRow.constraintDetail,
-                            hasError: compactRow.hasError,
-                            showsBestBadge: compactRow.isBestCandidate),
+                            row: compactRow,
+                            resetTimeDisplayStyle: .countdown,
+                            now: Self.now),
                         progressColor: progressColor,
                         width: self.width)
                 case let .collapsedHealthy(count):
@@ -751,6 +848,226 @@ final class MenuLayoutScreenshotRenderTests: XCTestCase {
         representation.size = size
         guard let context = NSGraphicsContext(bitmapImageRep: representation) else { return nil }
         hosting.displayIgnoringOpacity(hosting.bounds, in: context)
+        return representation.representation(using: .png, properties: [:])
+    }
+}
+
+extension MenuLayoutScreenshotRenderTests {
+    func test_renderClaudeUsageDetailProof() throws {
+        guard let dir = ProcessInfo.processInfo.environment["CODEXBAR_CLAUDE_DETAIL_SCREENSHOT_DIR"] else {
+            throw XCTSkip("Set CODEXBAR_CLAUDE_DETAIL_SCREENSHOT_DIR to render the Claude detail proof.")
+        }
+        let expected = ProcessInfo.processInfo.environment["CODEXBAR_CLAUDE_DETAIL_EXPECTED_NOTE"]
+            ?? "Limited usage detail"
+        let directory = URL(fileURLWithPath: dir, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try CodexBarLocalizationOverride.$appLanguage.withValue("en") {
+            let snapshot = ClaudeUsageDetailTestSupport.snapshot()
+            XCTAssertNil(snapshot.identity)
+            let model = ClaudeUsageDetailTestSupport.model(
+                snapshot: snapshot,
+                lastError: "Could not refresh. Showing last-known usage captured 5 minutes ago.",
+                sourceLabel: "auto")
+            XCTAssertEqual(model.usageNotes, [expected])
+            for dark in [false, true] {
+                let view = AnyView(UsageMenuCardView(model: model, width: Self.width)
+                    .environment(\.locale, Locale(identifier: "en_US_POSIX"))
+                    .environment(\.colorScheme, dark ? .dark : .light)
+                    .environment(\.displayScale, 2)
+                    .environment(\.accessibilityEnabled, true)
+                    .background(Color(nsColor: .windowBackgroundColor)))
+                let hosting = NSHostingView(rootView: view)
+                hosting.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
+                let name = "claude-detail-\(dark ? "dark" : "light")"
+                let png = try XCTUnwrap(Self.pngData(hosting: hosting))
+                try png.write(to: directory.appendingPathComponent("\(name).png"))
+                let accessibility = Self.accessibilityText(hosting)
+                XCTAssertTrue(accessibility.contains(expected), accessibility)
+                XCTAssertTrue(accessibility.contains("last-known usage"), accessibility)
+                try accessibility.write(
+                    to: directory.appendingPathComponent("\(name)-accessibility.txt"),
+                    atomically: true,
+                    encoding: .utf8)
+            }
+        }
+    }
+
+    func test_renderOllamaMonthlyCompatibilityProof() throws {
+        guard let dir = ProcessInfo.processInfo.environment["CODEXBAR_OLLAMA_MONTHLY_SCREENSHOT_DIR"] else {
+            throw XCTSkip("Set CODEXBAR_OLLAMA_MONTHLY_SCREENSHOT_DIR to render the Ollama compatibility proof.")
+        }
+        UsageFormatter.setLocalizationProvider { $0 }
+        defer { UsageFormatter.clearLocalizationProvider() }
+        let now = Date(timeIntervalSince1970: 1_789_473_600)
+        let html = """
+        <h2><span>Included usage</span><span>pro</span
+        ></h2>
+        <div>
+          <span>Monthly usage</span><span>$7.50 of $60 used</span>
+          <div style="width: 12.5%;"></div>
+          <div data-time="2026-09-30T15:14:29Z">Resets in 2 weeks.</div>
+        </div>
+        """
+        var snapshot: UsageSnapshot?
+        var failure: String?
+        do {
+            snapshot = try OllamaUsageParser.parse(html: html, now: now).toUsageSnapshot()
+        } catch {
+            failure = OllamaUIErrorMapper.userFacingMessage(error.localizedDescription)
+        }
+        let model = try UsageMenuCardView.Model.make(.init(
+            provider: .ollama,
+            metadata: XCTUnwrap(ProviderDefaults.metadata[.ollama]),
+            snapshot: snapshot,
+            credits: nil,
+            creditsError: nil,
+            dashboard: nil,
+            dashboardError: nil,
+            tokenSnapshot: nil,
+            tokenError: nil,
+            account: AccountInfo(email: nil, plan: nil),
+            isRefreshing: false,
+            lastError: failure,
+            usageBarsShowUsed: true,
+            resetTimeDisplayStyle: .absolute,
+            tokenCostUsageEnabled: false,
+            showOptionalCreditsAndExtraUsage: false,
+            hidePersonalInfo: true,
+            paceVisible: false,
+            usesLiveSubtitle: false,
+            now: now))
+        // Only the assertions change for a baseline capture; input and production rendering stay identical.
+        let expectsMissing = ProcessInfo.processInfo.environment["CODEXBAR_OLLAMA_MONTHLY_EXPECT_MISSING"] == "1"
+        if expectsMissing {
+            XCTAssertNil(snapshot)
+            XCTAssertTrue(failure?.contains("Missing Ollama usage data") == true)
+            XCTAssertTrue(model.metrics.isEmpty)
+        } else {
+            XCTAssertNil(failure)
+            XCTAssertEqual(snapshot?.primary?.usedPercent, 12.5)
+            XCTAssertEqual(model.metrics.map(\.title), ["Monthly"])
+            XCTAssertEqual(model.metrics.first?.percent, 12.5)
+        }
+        let directory = URL(fileURLWithPath: dir, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        for dark in [false, true] {
+            let view = try AnyView(UsageMenuCardView(model: model, width: Self.width)
+                .environment(\.locale, Locale(identifier: "en_US_POSIX"))
+                .environment(\.timeZone, XCTUnwrap(TimeZone(secondsFromGMT: 0)))
+                .environment(\.colorScheme, dark ? .dark : .light)
+                .environment(\.displayScale, 2)
+                .environment(\.accessibilityEnabled, true)
+                .background(Color(nsColor: .windowBackgroundColor)))
+            let hosting = NSHostingView(rootView: view)
+            hosting.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
+            let stem = "ollama-monthly-\(dark ? "dark" : "light")"
+            let png = try XCTUnwrap(Self.pngData(hosting: hosting))
+            try png.write(to: directory.appendingPathComponent("\(stem).png"))
+            let accessibility = Self.accessibilityText(hosting)
+            XCTAssertTrue(
+                accessibility.contains(expectsMissing ? "Missing Ollama usage data" : "Monthly"),
+                accessibility)
+            try accessibility.write(
+                to: directory.appendingPathComponent("\(stem)-accessibility.txt"),
+                atomically: true,
+                encoding: .utf8)
+        }
+    }
+}
+
+extension MenuLayoutScreenshotRenderTests {
+    func test_renderSingularResetLabelProof() throws {
+        guard let dir = ProcessInfo.processInfo.environment["CODEXBAR_RESET_LABEL_SCREENSHOT_DIR"] else {
+            throw XCTSkip("Set CODEXBAR_RESET_LABEL_SCREENSHOT_DIR to render the reset label proof.")
+        }
+        UsageFormatter.setLocalizationProvider { $0 }
+        defer { UsageFormatter.clearLocalizationProvider() }
+        let expected = ProcessInfo.processInfo.environment["CODEXBAR_RESET_LABEL_EXPECTED"]
+            ?? "Resets Jul 10 at 2:59am (Europe/Prague)"
+        let metadata = try XCTUnwrap(ProviderDefaults.metadata[.claude])
+        let snapshot = UsageSnapshot(
+            primary: nil,
+            secondary: nil,
+            extraRateWindows: [NamedRateWindow(
+                id: "claude-weekly-scoped-example",
+                title: "Example Model only",
+                window: RateWindow(
+                    usedPercent: 68,
+                    windowMinutes: 10080,
+                    resetsAt: nil,
+                    resetDescription: "Reset Jul 10 at 2:59am (Europe/Prague)"))],
+            updatedAt: Self.now)
+        let directory = URL(fileURLWithPath: dir, isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+
+        for style in [ResetTimeDisplayStyle.countdown, .absolute] {
+            let model = UsageMenuCardView.Model.make(.init(
+                provider: .claude,
+                metadata: metadata,
+                snapshot: snapshot,
+                credits: nil,
+                creditsError: nil,
+                dashboard: nil,
+                dashboardError: nil,
+                tokenSnapshot: nil,
+                tokenError: nil,
+                account: AccountInfo(email: nil, plan: nil),
+                isRefreshing: false,
+                lastError: nil,
+                usageBarsShowUsed: true,
+                resetTimeDisplayStyle: style,
+                tokenCostUsageEnabled: false,
+                showOptionalCreditsAndExtraUsage: false,
+                hidePersonalInfo: true,
+                paceVisible: false,
+                usesLiveSubtitle: false,
+                now: Self.now))
+            XCTAssertEqual(model.metrics.count, 1)
+            XCTAssertEqual(model.metrics.first?.resetText, expected)
+            for dark in [false, true] {
+                let view = AnyView(UsageMenuCardUsageSectionView(
+                    model: model,
+                    layoutModel: model,
+                    showBottomDivider: false,
+                    bottomPadding: 12,
+                    width: Self.width)
+                    .environment(\.locale, Locale(identifier: "en_US_POSIX"))
+                    .environment(\.colorScheme, dark ? .dark : .light)
+                    .environment(\.accessibilityEnabled, true)
+                    .background(Color(nsColor: .windowBackgroundColor)))
+                let hosting = NSHostingView(rootView: view)
+                hosting.appearance = NSAppearance(named: dark ? .darkAqua : .aqua)
+                let stem = "reset-label-\(style.rawValue)-\(dark ? "dark" : "light")"
+                let png = try XCTUnwrap(Self.pngData(hosting: hosting))
+                try png.write(to: directory.appendingPathComponent("\(stem).png"))
+                let accessibility = Self.accessibilityText(hosting)
+                XCTAssertTrue(accessibility.contains(expected), accessibility)
+                try accessibility.write(
+                    to: directory.appendingPathComponent("\(stem)-accessibility.txt"),
+                    atomically: true,
+                    encoding: .utf8)
+            }
+        }
+    }
+
+    fileprivate static func pngDataWithWindow(hosting: NSHostingView<AnyView>) -> Data? {
+        // Native List rows need a window to materialize, but it never needs to be ordered onscreen.
+        let size = hosting.fittingSize
+        hosting.frame = CGRect(origin: .zero, size: size)
+        let window = NSWindow(
+            contentRect: hosting.frame, styleMask: [.borderless], backing: .buffered, defer: false)
+        window.isReleasedWhenClosed = false
+        window.appearance = hosting.appearance
+        window.contentView = hosting
+        defer {
+            window.contentView = nil
+            window.close()
+        }
+        window.layoutIfNeeded()
+        hosting.layoutSubtreeIfNeeded()
+        RunLoop.current.run(until: Date().addingTimeInterval(0.1))
+        guard let representation = hosting.bitmapImageRepForCachingDisplay(in: hosting.bounds) else { return nil }
+        hosting.cacheDisplay(in: hosting.bounds, to: representation)
         return representation.representation(using: .png, properties: [:])
     }
 }

@@ -224,6 +224,7 @@
 "No cost history data." = "Tidak ada data riwayat biaya.";
 "No data available" = "Tidak ada data tersedia";
 "No data yet" = "Belum ada data";
+"Workspaces" = "Ruang Kerja";
 "No enabled providers available for Overview." = "Tidak ada penyedia aktif untuk Ikhtisar.";
 "No providers selected" = "Tidak ada penyedia dipilih";
 "No token accounts yet." = "Belum ada akun token.";
@@ -501,7 +502,6 @@
 "provider_accent_color_reset" = "Gunakan bawaan";
 "quota_warnings_title" = "Peringatan kuota";
 "quota_warning_session" = "sesi";
-"quota_warning_session_capitalized" = "Sesi";
 "quota_warning_weekly" = "mingguan";
 "quota_warning_weekly_capitalized" = "Mingguan";
 "quota_warning_notification_title" = "%1$@ kuota %2$@ rendah";
@@ -566,6 +566,7 @@
 "hooks_any_provider" = "Penyedia apa pun";
 "hooks_threshold" = "Picu saat penggunaan ≥";
 "hooks_threshold_placeholder" = "90";
+"hooks_executable" = "Berkas yang dapat dijalankan";
 "hooks_executable_placeholder" = "/usr/local/bin/my-command";
 "hooks_arguments_placeholder" = "Argumen";
 "hooks_argument_placeholder" = "Argumen";
@@ -675,6 +676,9 @@
 "surprise_me_subtitle" = "Centang jika Anda suka agen bersenang-senang di atas sana.";
 "hide_personal_info_title" = "Sembunyikan informasi pribadi";
 "hide_personal_info_subtitle" = "Samarkan alamat email di menu bar dan antarmuka menu.";
+"hide_cost_history_identity_subtitle" = "Juga sembunyikan nama dan jalur proyek/sumber dalam riwayat biaya tanpa mengubah data tersimpan.";
+"Project %d" = "Proyek %d";
+"Source %d" = "Sumber %d";
 "show_provider_storage_usage_title" = "Tampilkan penggunaan penyimpanan penyedia";
 "show_provider_storage_usage_subtitle" = "Tampilkan penggunaan disk lokal di menu. Memindai path milik penyedia di latar belakang.";
 "section_keychain_access" = "Akses Keychain";
@@ -1517,6 +1521,7 @@
 "More" = "Banyak";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "Pasang…";
 "Install plugin" = "Pasang plugin";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "Menyalin file JavaScript atau TypeScript ke direktori plugin.";
@@ -1558,6 +1563,7 @@
 "Total usage" = "Total penggunaan";
 "claude_oauth_keychain_access_revoked" = "Akses Rantai Kunci Claude dicabut akibat rotasi token Claude Code. Klik Segarkan untuk memberikan akses lagi, atau ubah sumber penggunaan Claude ke CLI/Web.";
 "claude_showing_last_known_usage" = "Menampilkan penggunaan terakhir yang diketahui, diambil %@.";
+"claude_limited_usage_detail" = "Rincian penggunaan terbatas";
 /* Spend dashboard cost analysis */
 "90d" = "90d";
 "Input" = "Input";
@@ -1612,4 +1618,9 @@
 "menu_bar_layout_conditional_default_session_spent" = "Sesi hampir habis";
 "menu_bar_layout_conditional_default_either_high" = "Sesi atau mingguan sedang tinggi";
 "menu_bar_layout_conditional_default_scoped_weekly" = "Mingguan per model di atas 60%";
+"Visible usage items" = "Item penggunaan yang terlihat";
+"Restore Defaults" = "Pulihkan Default";
+"Choose which usage rows appear in this provider's menu, Settings preview, and Overview." = "Pilih baris penggunaan yang muncul di menu penyedia ini, pratinjau Pengaturan, dan Ringkasan.";
+"%@ (unavailable)" = "%@ (tidak tersedia)";
 "Spending cap, not balance" = "Batas pengeluaran, bukan saldo";
+"%@ weekly" = "%@ mingguan";

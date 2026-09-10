@@ -136,6 +136,7 @@ final class UsageStore {
     var providerStorageFootprints: [ProviderInstanceID: ProviderStorageFootprint] = [:]
     @ObservationIgnored var lastCreditsSnapshot: CreditsSnapshot?
     @ObservationIgnored var lastCreditsSnapshotAccountKey: String?
+    @ObservationIgnored var lastCreditsSnapshotOwnerGuard: CodexAccountScopedRefreshGuard?
     @ObservationIgnored var lastCreditsSource: CodexCreditsSource = .none
     @ObservationIgnored var creditsFailureStreak: Int = 0
     @ObservationIgnored var openAIDashboardAttachmentAuthorized: Bool = false {
@@ -165,6 +166,10 @@ final class UsageStore {
     @ObservationIgnored var openAIDashboardRefreshTask: Task<Void, Never>?
     @ObservationIgnored var openAIDashboardRefreshTaskKey: String?
     @ObservationIgnored var openAIDashboardRefreshTaskToken: UUID?
+    @ObservationIgnored var openAISubscriptionMetadataEnrichmentTask: Task<Void, Never>?
+    @ObservationIgnored var openAISubscriptionMetadataEnrichmentToken: UUID?
+    @ObservationIgnored var _test_openAISubscriptionMetadataLoaderOverride: (@MainActor (String?) async
+        -> OpenAISubscriptionFetchResult)?
     @ObservationIgnored var _test_openAIDashboardCookieImportOverride: (@MainActor (
         String?,
         Bool,
@@ -229,6 +234,7 @@ final class UsageStore {
     @ObservationIgnored var widgetSnapshotPersistTask: Task<Void, Never>?
     @ObservationIgnored var lastQueuedWidgetSnapshot: WidgetSnapshot?
     @ObservationIgnored let widgetSnapshotURL: URL?
+    @ObservationIgnored let widgetTimelineReloader: @MainActor () -> Void
     @ObservationIgnored var widgetUsagePreservationBlockedProviders: Set<ProviderInstanceID> = []
 
     @ObservationIgnored let codexFetcher: UsageFetcher
@@ -406,6 +412,7 @@ final class UsageStore {
         startupBehavior: StartupBehavior = .automatic,
         environmentBase: [String: String] = ProcessInfo.processInfo.environment,
         widgetSnapshotURL: URL? = nil,
+        widgetTimelineReloader: @escaping @MainActor () -> Void = UsageStore.reloadWidgetTimelines,
         planUtilizationHistoryLoadGateForTesting: PlanUtilizationHistoryLoadGate? = nil)
     {
         self.codexFetcher = fetcher
@@ -416,6 +423,7 @@ final class UsageStore {
         self.registry = registry
         self.environmentBase = environmentBase
         self.widgetSnapshotURL = widgetSnapshotURL
+        self.widgetTimelineReloader = widgetTimelineReloader
         self.historicalUsageHistoryStore = historicalUsageHistoryStore
         self.quotaTransitionWriter = quotaTransitionWriter
         self.startupBehavior = startupBehavior.resolved(isRunningTests: Self.isRunningTestsProcess())
@@ -904,6 +912,7 @@ final class UsageStore {
         self.creditsRefreshTask?.cancel()
         self.openAIDashboardBackgroundRefreshTask?.cancel()
         self.openAIDashboardRefreshTask?.cancel()
+        self.openAISubscriptionMetadataEnrichmentTask?.cancel()
         self.memoryPressureReliefTask?.cancel()
         self.startupConnectivityRetryTask?.cancel()
         self.storageRefreshTask?.cancel()

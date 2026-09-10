@@ -45,6 +45,7 @@
 "hooks_any_provider" = "任何提供者";
 "hooks_threshold" = "使用率 ≥ 時執行";
 "hooks_threshold_placeholder" = "90";
+"hooks_executable" = "執行檔";
 "hooks_executable_placeholder" = "/usr/local/bin/my-command";
 "hooks_arguments_placeholder" = "引數";
 "hooks_argument_placeholder" = "引數";
@@ -247,6 +248,7 @@
 "No credits history data." = "尚無額度歷史資料。";
 "No data available" = "沒有可用資料";
 "No data yet" = "尚無資料";
+"Workspaces" = "工作區";
 "No enabled providers available for Overview." = "「概覽」中沒有可用的已啟用提供者。";
 "No providers selected" = "未選擇提供者";
 "No token accounts yet." = "尚無 token 帳號。";
@@ -519,7 +521,6 @@
 "provider_accent_color_reset" = "使用預設值";
 "quota_warnings_title" = "配額提醒";
 "quota_warning_session" = "工作階段";
-"quota_warning_session_capitalized" = "工作階段";
 "quota_warning_weekly" = "每週";
 "quota_warning_weekly_capitalized" = "每週";
 "quota_warning_notification_title" = "%1$@ %2$@配額偏低";
@@ -665,6 +666,9 @@
 "surprise_me_subtitle" = "讓選單列上的 Agent 多一點變化。";
 "hide_personal_info_title" = "隱藏個人資訊";
 "hide_personal_info_subtitle" = "在選單列和選單介面中隱藏電子郵件地址。";
+"hide_cost_history_identity_subtitle" = "同時隱藏費用歷史中的專案和來源名稱及路徑，不變更已儲存的資料。";
+"Project %d" = "專案 %d";
+"Source %d" = "來源 %d";
 "show_provider_storage_usage_title" = "顯示提供者儲存使用量";
 "show_provider_storage_usage_subtitle" = "在選單中顯示本機磁碟使用量。會在背景掃描已知的提供者專用路徑。";
 "section_keychain_access" = "鑰匙圈存取";
@@ -1544,6 +1548,7 @@
 "More" = "多";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "安裝…";
 "Install plugin" = "安裝外掛程式";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "將 JavaScript 或 TypeScript 檔案複製到外掛程式目錄。";
@@ -1585,6 +1590,7 @@
 "Total usage" = "總用量";
 "claude_oauth_keychain_access_revoked" = "Claude Code 輪替權杖後撤銷了 Claude 鑰匙圈的存取權。按一下「重新整理」以重新授權，或將 Claude 使用量來源切換為 CLI/Web。";
 "claude_showing_last_known_usage" = "正在顯示於 %@ 擷取的最後已知使用量。";
+"claude_limited_usage_detail" = "使用量詳細資訊有限";
 /* Spend dashboard cost analysis */
 "90d" = "90d";
 "Input" = "Input";
@@ -1640,4 +1646,9 @@
 "menu_bar_layout_conditional_default_session_spent" = "工作階段即將用盡";
 "menu_bar_layout_conditional_default_either_high" = "工作階段或每週用量偏高";
 "menu_bar_layout_conditional_default_scoped_weekly" = "模型專屬每週已用超過 60%";
+"Visible usage items" = "可見用量項目";
+"Restore Defaults" = "回復預設值";
+"Choose which usage rows appear in this provider's menu, Settings preview, and Overview." = "選擇要在此供應商的選單、設定預覽與概覽中顯示的用量列。";
+"%@ (unavailable)" = "%@（無法使用）";
 "Spending cap, not balance" = "支出上限，並非餘額";
+"%@ weekly" = "%@ 每週";

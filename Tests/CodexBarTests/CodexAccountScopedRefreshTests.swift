@@ -158,6 +158,9 @@ struct CodexAccountScopedRefreshTests {
             errorMessage: "Network error: offline")
         { store, snapshotStore, priorSnapshots in
             await store.refreshCodexVisibleAccountsForMenu()
+            await store.refreshCodexVisibleAccountsForMenu()
+            #expect(store.snapshots[.codex]?.primary?.usedPercent == 17)
+            #expect(store.snapshots[.codex]?.updatedAt == priorSnapshots.first?.snapshot?.updatedAt)
 
             #expect(store.codexAccountSnapshots.count == priorSnapshots.count)
             #expect(store.codexAccountSnapshots.allSatisfy { $0.snapshot?.primary?.usedPercent == 17 })
@@ -201,6 +204,7 @@ struct CodexAccountScopedRefreshTests {
         store._setSnapshotForTesting(self.codexSnapshot(email: "alpha@example.com", usedPercent: 10), provider: .codex)
         store.lastCreditsSnapshot = cachedCredits
         store.lastCreditsSnapshotAccountKey = "alpha@example.com"
+        store.lastCreditsSnapshotOwnerGuard = store.freshCodexAccountScopedRefreshGuard()
         store._test_codexCreditsLoaderOverride = {
             throw TestRefreshError(message: "Codex credits data not available yet")
         }
@@ -930,5 +934,25 @@ struct CodexAccountScopedRefreshTests {
         #expect(settings.codexActiveSource == .managedAccount(id: managedAccountID))
         #expect(store.snapshots[.codex]?.accountEmail(for: .codex) == "managed@example.com")
         #expect(store.credits?.remaining == 55)
+    }
+}
+
+extension CodexAccountScopedRefreshTests {
+    @Test
+    func `localized Codex transport errors retain the selected cached snapshot`() async throws {
+        try await self.withCodexVisibleAccountFailureStore(
+            suite: "CodexAccountScopedRefreshTests-localized-network",
+            errorMessage: "fixture")
+        { store, _, priorSnapshots in
+            self.installFailingCodexProvider(on: store, error: NSError(
+                domain: NSURLErrorDomain,
+                code: NSURLErrorCannotFindHost,
+                userInfo: [NSLocalizedDescriptionKey: "Verbindung fehlgeschlagen"]))
+            await store.refreshCodexVisibleAccountsForMenu()
+            await store.refreshCodexVisibleAccountsForMenu()
+            #expect(store.snapshots[.codex]?.primary?.usedPercent == 17)
+            #expect(store.snapshots[.codex]?.updatedAt == priorSnapshots.first?.snapshot?.updatedAt)
+            #expect(store.codexAccountSnapshots.allSatisfy { $0.snapshot?.primary?.usedPercent == 17 })
+        }
     }
 }
