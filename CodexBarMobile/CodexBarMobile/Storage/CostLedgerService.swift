@@ -757,7 +757,8 @@ enum CostLedgerService {
         providerID: String,
         accountEmail: String?,
         accountRecordKey: String? = nil,
-        in context: ModelContext) throws
+        in context: ModelContext,
+        saveChanges: Bool = true) throws
     {
         let descriptor = FetchDescriptor<DailyCostPoint>(
             predicate: #Predicate {
@@ -773,7 +774,7 @@ enum CostLedgerService {
             context.delete(row)
             didDelete = true
         }
-        if didDelete {
+        if didDelete && saveChanges {
             try context.save()
         }
     }

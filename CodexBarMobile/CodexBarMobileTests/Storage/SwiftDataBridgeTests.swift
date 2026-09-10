@@ -920,4 +920,70 @@ struct SwiftDataBridgeTests {
         #expect(rows.first?.accountRecordKey == "alice-record")
         #expect(rows.first?.costUSD == 3)
     }
+    @Test
+    @MainActor
+    func `An interrupted two Mac batch preserves old history and cursor for replay after reopening`() throws {
+        struct DiskFailure: Error {}
+        let container = self.makeContainer()
+        let url = try #require(container.configurations.first?.url)
+        let context = ModelContext(container)
+        context.autosaveEnabled = false
+        func snapshots(cost: Double, updatedAt: Date) -> [SyncedUsageSnapshot] {
+            ["mac-A", "mac-B"].map { device in
+                self.makeSnapshot(
+                    deviceID: device,
+                    providers: [self.makeProvider(lastUpdated: updatedAt, costSummary: SyncCostSummary(
+                        sessionCostUSD: nil, sessionTokens: nil,
+                        last30DaysCostUSD: cost, last30DaysTokens: 100,
+                        daily: [SyncDailyPoint(dayKey: "2026-01-01", costUSD: cost, totalTokens: 100)]))],
+                    timestamp: updatedAt)
+            }
+        }
+        let oldToken = Data("old-token".utf8)
+        let newToken = Data("new-token".utf8)
+        try SwiftDataBridge.commitIncrementalBatch(
+            snapshots: snapshots(cost: 6000, updatedAt: self.ts1), deletedRecordNames: [],
+            replacingAllDevices: false, zoneName: "test-zone", tokenData: oldToken, in: context)
+        #expect(throws: DiskFailure.self) {
+            try SwiftDataBridge.commitIncrementalBatch(
+                snapshots: snapshots(cost: 7000, updatedAt: self.ts2), deletedRecordNames: [],
+                replacingAllDevices: false, zoneName: "test-zone", tokenData: newToken,
+                in: context, beforeSave: { throw DiskFailure() })
+        }
+        let reopened = ModelContext(ModelContainerFactory.makeContainer(at: url))
+        #expect(try SwiftDataBridge.loadChangeToken(forZone: "test-zone", from: reopened) == oldToken)
+        let oldRows = try reopened.fetch(FetchDescriptor<DailyCostPoint>())
+        #expect(oldRows.count == 2)
+        #expect(oldRows.reduce(0) { $0 + $1.costUSD } == 12000)
+        try SwiftDataBridge.commitIncrementalBatch(
+            snapshots: snapshots(cost: 7000, updatedAt: self.ts2), deletedRecordNames: [],
+            replacingAllDevices: false, zoneName: "test-zone", tokenData: newToken, in: reopened)
+        let finalContext = ModelContext(ModelContainerFactory.makeContainer(at: url))
+        #expect(try SwiftDataBridge.loadChangeToken(forZone: "test-zone", from: finalContext) == newToken)
+        let finalRows = try finalContext.fetch(FetchDescriptor<DailyCostPoint>())
+        #expect(finalRows.count == 2)
+        #expect(finalRows.reduce(0) { $0 + $1.costUSD } == 14000)
+    }
+
+    @Test
+    @MainActor
+    func `A committed private context batch is visible to an already loaded main context`() throws {
+        let container = self.makeContainer()
+        let uiContext = container.mainContext
+        func snapshot(_ cost: Double, at date: Date) -> SyncedUsageSnapshot {
+            self.makeSnapshot(deviceID: "mac", providers: [self.makeProvider(
+                lastUpdated: date, costSummary: SyncCostSummary(
+                    sessionCostUSD: nil, sessionTokens: nil, last30DaysCostUSD: cost, last30DaysTokens: 100,
+                    daily: [SyncDailyPoint(dayKey: "2026-01-01", costUSD: cost, totalTokens: 100)]))], timestamp: date)
+        }
+        try SwiftDataBridge.upsert(deviceSnapshots: [snapshot(10000, at: self.ts1)], into: uiContext)
+        let observed = try uiContext.fetch(FetchDescriptor<DailyCostPoint>())
+        #expect(observed.first?.costUSD == 10000)
+        let writer = ModelContext(container)
+        try SwiftDataBridge.commitIncrementalBatch(
+            snapshots: [snapshot(12000, at: self.ts2)], deletedRecordNames: [], replacingAllDevices: false,
+            zoneName: "zone", tokenData: Data([1]), in: writer)
+        #expect(try uiContext.fetch(FetchDescriptor<DailyCostPoint>()).first?.costUSD == 12000)
+    }
+
 }

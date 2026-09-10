@@ -41,7 +41,8 @@ enum SwiftDataBridge {
     /// for a single device.
     static func upsert(
         deviceSnapshots: [SyncedUsageSnapshot],
-        into context: ModelContext) throws
+        into context: ModelContext,
+        saveChanges: Bool = true) throws
     {
         // Build the set of deviceIDs that should exist after this upsert. Anything
         // currently in the store but NOT in this set has been removed upstream
@@ -63,10 +64,9 @@ enum SwiftDataBridge {
             context.delete(device)
         }
 
-        // Persist the top-level prune. `upsertSnapshot` saves per-snapshot state already,
-        // but device deletions happen only here, so without a final save() they would stay
-        // pending in memory and revert on app relaunch. Flagged in Codex review (P2).
-        try context.save()
+        // One save includes all device writes and pruning. Incremental batch
+        // callers defer this boundary until the change token is staged too.
+        if saveChanges { try context.save() }
     }
 
     /// Mirror the cache state after an incremental refresh.
@@ -78,7 +78,8 @@ enum SwiftDataBridge {
     static func upsertIncrementalCacheMirror(
         cacheDeviceSnapshots: [SyncedUsageSnapshot],
         deletedRecordNames: [String] = [],
-        into context: ModelContext) throws
+        into context: ModelContext,
+        saveChanges: Bool = true) throws
     {
         // Upsert first so an email-key → opaque-key identity upgrade can
         // rekey its provider and long ledger history before the same delta's
@@ -87,13 +88,14 @@ enum SwiftDataBridge {
         for snapshot in cacheDeviceSnapshots {
             try self.upsertSnapshot(snapshot, into: context)
         }
-        try self.deleteProviderRecords(named: deletedRecordNames, from: context)
-        try context.save()
+        try self.deleteProviderRecords(named: deletedRecordNames, from: context, saveChanges: false)
+        if saveChanges { try context.save() }
     }
 
     static func deleteProviderRecords(
         named recordNames: [String],
-        from context: ModelContext) throws
+        from context: ModelContext,
+        saveChanges: Bool = true) throws
     {
         guard !recordNames.isEmpty else { return }
 
@@ -115,12 +117,47 @@ enum SwiftDataBridge {
                     providerID: parsed.providerID,
                     accountEmail: provider.accountEmail,
                     accountRecordKey: provider.accountRecordKey,
-                    in: context)
+                    in: context, saveChanges: false)
                 context.delete(provider)
             }
         }
 
-        try context.save()
+        if saveChanges { try context.save() }
+    }
+
+    /// Commit one CloudKit batch and its cursor together. Failed writes must
+    /// leave the previous cursor replayable, including after app relaunch.
+    static func commitIncrementalBatch(
+        snapshots: [SyncedUsageSnapshot],
+        deletedRecordNames: [String],
+        replacingAllDevices: Bool,
+        zoneName: String,
+        tokenData: Data?,
+        in context: ModelContext,
+        beforeSave: () throws -> Void = {}) throws
+    {
+        let autosaveEnabled = context.autosaveEnabled
+        context.autosaveEnabled = false
+        defer { context.autosaveEnabled = autosaveEnabled }
+        do {
+            if replacingAllDevices {
+                try self.upsert(deviceSnapshots: snapshots, into: context, saveChanges: false)
+            } else {
+                try self.upsertIncrementalCacheMirror(
+                    cacheDeviceSnapshots: snapshots,
+                    deletedRecordNames: deletedRecordNames,
+                    into: context, saveChanges: false)
+            }
+            if let tokenData {
+                try self.saveChangeToken(
+                    forZone: zoneName, tokenData: tokenData, context: context, saveChanges: false)
+            }
+            try beforeSave()
+            try context.save()
+        } catch {
+            context.rollback()
+            throw error
+        }
     }
 
     // MARK: - Core upsert
@@ -226,12 +263,10 @@ enum SwiftDataBridge {
                 providerID: existing.providerID,
                 accountEmail: existing.accountEmail,
                 accountRecordKey: existing.accountRecordKey,
-                in: context)
+                in: context, saveChanges: false)
         }
 
-        // Flush pending inserts/deletes so @Attribute(.unique) lookups resolve
-        // on the next call (e.g. when upserting multiple device snapshots in one pass).
-        try context.save()
+
     }
 
     /// Providers whose cost summaries describe one account rather than a
@@ -384,7 +419,7 @@ enum SwiftDataBridge {
                 providerID: provider.providerID,
                 accountEmail: provider.accountEmail,
                 accountRecordKey: provider.accountRecordKey,
-                in: context)
+                in: context, saveChanges: false)
         } else if CostLedgerService.isEnabled() {
             try CostLedgerService.upsertFromSnapshot(
                 provider, deviceID: deviceID, in: context)
@@ -608,7 +643,8 @@ enum SwiftDataBridge {
     static func saveChangeToken(
         forZone zoneName: String,
         tokenData: Data?,
-        context: ModelContext) throws
+        context: ModelContext,
+        saveChanges: Bool = true) throws
     {
         let descriptor = FetchDescriptor<SyncStateRecord>(
             predicate: #Predicate { $0.zoneName == zoneName })
@@ -621,6 +657,6 @@ enum SwiftDataBridge {
                 changeTokenData: tokenData,
                 lastSyncAt: Date()))
         }
-        try context.save()
+        if saveChanges { try context.save() }
     }
 }

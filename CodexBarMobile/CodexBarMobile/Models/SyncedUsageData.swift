@@ -584,7 +584,8 @@ final class SyncedUsageData {
 
     private func performIncrementalRefresh() async {
         let zoneName = CloudSyncConstants.providerZoneName
-        let context = ModelContainerFactory.sharedMainContext()
+        let context = ModelContext(ModelContainerFactory.shared())
+        context.autosaveEnabled = false
 
         // 1. Load persisted token.
         let storedToken: CKServerChangeToken?
@@ -615,18 +616,12 @@ final class SyncedUsageData {
                 forZone: zoneName, tokenData: nil, context: context)
             delta = await reader.fetchPerProviderZoneChanges(since: nil)
             if !delta.tokenExpired, !delta.zoneMissing {
-                self.cache.replacePerProviderFromReplay(delta.upserted)
                 didReplayProviderZoneReplacement = true
             }
         } else if delta.zoneMissing {
             // No zone yet — nothing to apply. The priority merge will fall
             // through to the legacy bucket. This is normal before any Mac
             // has upgraded to P4.
-        } else {
-            // Normal incremental apply. Only touches perProviderByDevice.
-            self.cache.applyDelta(
-                upserted: delta.upserted,
-                deletedRecordNames: delta.deletedRecordNames)
         }
 
         async let linkagesResult = self.reader.fetchProviderAccountLinkages()
@@ -654,28 +649,39 @@ final class SyncedUsageData {
             }
         }
 
-        // 4. Persist the new token.
-        if let newToken = delta.newToken {
-            do {
-                let tokenData = try NSKeyedArchiver.archivedData(
-                    withRootObject: newToken, requiringSecureCoding: true)
-                try SwiftDataBridge.saveChangeToken(
-                    forZone: zoneName, tokenData: tokenData, context: context)
-            } catch {
-                print("[CodexBar Sync v2] token persist failed: \(error)")
-            }
+        // KVS callbacks can seed the legacy bucket during network suspension.
+        // Start from the latest cache only after every network await completes.
+        var nextCache = self.cache
+        if didReplayProviderZoneReplacement {
+            nextCache.replacePerProviderFromReplay(delta.upserted)
+        } else if !delta.zoneMissing, !delta.tokenExpired {
+            nextCache.applyDelta(upserted: delta.upserted, deletedRecordNames: delta.deletedRecordNames)
         }
 
-        // 5. Mirror the incrementally refreshed cache to SwiftData, then
-        // republish the merged view. The Cost ledger reads SwiftData by
-        // default, so incremental sync must keep it in lockstep with the
-        // in-memory snapshot cache.
-        if didReplayProviderZoneReplacement {
-            self.republishFromCache(persistToSwiftData: context)
-        } else {
-            self.republishFromCache(
-                persistIncrementallyToSwiftData: context,
-                deletedRecordNames: delta.deletedRecordNames)
+        // Persist the entire mirror and cursor before publishing the new cache.
+        // A failed batch keeps the old cache and cursor, so the next refresh
+        // (including after relaunch) can replay the same records safely.
+        do {
+            let tokenData = try delta.newToken.map {
+                try NSKeyedArchiver.archivedData(withRootObject: $0, requiringSecureCoding: true)
+            }
+            let rawSnapshots = nextCache.buildDeviceSnapshots()
+            let snapshots = didReplayProviderZoneReplacement
+                ? rawSnapshots
+                : Self.snapshotsFilteringDeletedProvidersForIncrementalPersistence(
+                    rawSnapshots, deletedRecordNames: delta.deletedRecordNames)
+            try SwiftDataBridge.commitIncrementalBatch(
+                snapshots: snapshots,
+                deletedRecordNames: delta.deletedRecordNames,
+                replacingAllDevices: didReplayProviderZoneReplacement,
+                zoneName: zoneName,
+                tokenData: tokenData,
+                in: context)
+            self.cache = nextCache
+            self.republishFromCache()
+        } catch {
+            self.syncStatus = .error(message: String(localized:
+                "Could not save synced data. Your previous data has been kept. Pull to refresh and try again."))
         }
     }
 

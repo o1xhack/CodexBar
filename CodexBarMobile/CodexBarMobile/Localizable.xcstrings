@@ -1,6 +1,34 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Could not save synced data. Your previous data has been kept. Pull to refresh and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not save synced data. Your previous data has been kept. Pull to refresh and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法保存同步数据。已保留之前的数据，请下拉刷新重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法儲存同步資料。已保留先前的資料，請下拉重新整理後重試。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同期データを保存できませんでした。以前のデータは保持されています。下に引いて更新し、再試行してください。"
+          }
+        }
+      }
+    },
     "Restore access to local history before clearing it.": {
       "localizations": {
         "en": {
