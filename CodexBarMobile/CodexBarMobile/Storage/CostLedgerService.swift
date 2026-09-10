@@ -114,7 +114,7 @@ struct CostLedgerProviderRollup: Equatable {
 /// Lightweight ledger diagnostics for the Settings panel (P4). All fields
 /// are O(rows) to compute; safe for an immediate call. `estimatedBytes` is a
 /// coarse estimate (`row count × 200`), not a real on-disk measurement.
-struct CostLedgerDiagnostics: Equatable {
+struct CostLedgerDiagnostics: Equatable, Sendable {
     let deviceCount: Int
     let providerCount: Int
     let dayCount: Int
@@ -267,6 +267,8 @@ enum CostLedgerService {
         let identityData = accountIdentityKeys.flatMap { try? enc.encode($0) }
 
         if let existing = try context.fetch(descriptor).first {
+            // An older publication must not roll back account identity either.
+            guard lastUpdated >= existing.lastUpdated else { return }
             // Identity metadata may be newly available on an otherwise equal
             // payload. Backfill it before the freshness early-return so an
             // upgrade never strands a legacy email-key row.
@@ -774,7 +776,7 @@ enum CostLedgerService {
             context.delete(row)
             didDelete = true
         }
-        if didDelete && saveChanges {
+        if didDelete, saveChanges {
             try context.save()
         }
     }

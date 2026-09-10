@@ -93,7 +93,9 @@ struct ContentView: View {
         .modifier(TabBarMinimizeModifier())
         .safeAreaInset(edge: .top) {
             if ModelContainerFactory.isUsingTemporaryStore {
-                Text(String(localized: "Local history could not be opened. Your saved data has been kept. Restart the app to try again. New data is temporary."))
+                Text(
+                    String(
+                        localized: "Local history could not be opened. Your saved data has been kept. Restart the app to try again. New data is temporary."))
                     .font(.footnote)
                     .padding()
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -680,8 +682,8 @@ private struct CostTab: View {
     let usageData: SyncedUsageData
     @Binding var isDemoMode: Bool
     @State private var showShareSheet = false
-    @State private var cachedLedgerSignature: String?
-    @State private var cachedLedgerAggregation: CostLedgerAggregation?
+    @State private var completedHistory: CostHistoryPresentation?
+    @State private var historyError: String?
 
     // Round 6 / P4b — Cost Window Ledger dispatch. When `cwlEnabled` and not
     // in demo mode, the dashboard reads the ledger (re-windowed by
@@ -700,23 +702,29 @@ private struct CostTab: View {
         return self.usageData.snapshot
     }
 
-    /// Synchronous computed insights. `CostDashboardInsights.init` is O(providers × daily × breakdowns)
-    /// which is fine to recompute per render here — Cost tab has no hover/selection state that would
-    /// trigger frequent re-renders. (Hover-heavy views UtilizationAggregateView / UtilizationHistoryView
-    /// use `@State` + `.task(id:)` caching because hover changes selection state every frame.)
-    /// Synchronous compute ensures first render has data for UI tests and user-perceived responsiveness.
+    private var historyScope: String {
+        [
+            "\(self.shouldUseLedger)",
+            "\(self.isDemoMode)",
+            "\(self.cwlWindowDays)",
+            self.activeDeviceIDsForLedger?.sorted().joined(separator: ",") ?? "_",
+            "\(self.cwlBlobSeedClearedAt)",
+            self.readerTimeZoneIdentifier,
+            (self.displaySnapshot?.providers ?? []).map {
+                [
+                    $0.cardIdentityKey,
+                    $0.accountEmail ?? "",
+                    CostLedgerService.accountIdentityKeys(for: $0).sorted().joined(separator: ","),
+                ].joined(separator: ":")
+            }.sorted().joined(separator: ";"),
+            self.usageData.providerLinkages.map {
+                "\($0.recordID):\($0.unmerge):\($0.linkedIdentifiers.sorted())"
+            }.sorted().joined(separator: ";"),
+        ].joined(separator: "|")
+    }
+
     private var currentInsights: CostDashboardInsights? {
-        guard let snapshot = self.displaySnapshot else { return nil }
-        let aggregation = self.shouldUseLedger && self.cachedLedgerSignature == self.ledgerRefreshSignature
-            ? self.cachedLedgerAggregation
-            : nil
-        return CostTabInsightsResolver.make(
-            snapshot: snapshot,
-            ledgerAggregation: aggregation,
-            isLedgerEnabled: self.cwlEnabled,
-            isDemoMode: self.isDemoMode,
-            localHistoryClearedAt: CostLedgerService.blobSeedClearTombstoneDate(),
-            ledgerWindowDays: self.cwlWindowDays)
+        self.completedHistory?.scope == self.historyScope ? self.completedHistory?.insights : nil
     }
 
     private var activeDeviceIDsForLedger: Set<String>? {
@@ -740,27 +748,38 @@ private struct CostTab: View {
 
     private var ledgerRefreshSignature: String {
         CostLedgerRefreshSignature.make(
-            isEnabled: self.shouldUseLedger,
+            isEnabled: true,
             windowDays: self.cwlWindowDays,
             activeDeviceIDs: self.activeDeviceIDsForLedger,
             snapshots: self.usageData.deviceSnapshots,
             clearTombstone: self.cwlBlobSeedClearedAt,
-            currentDayKey: self.ledgerRefreshDayKey)
+            currentDayKey: self.ledgerRefreshDayKey) + "|\(self.historyScope)|\(self.usageData.publicationRevision)"
     }
 
     @MainActor
-    private func refreshLedgerAggregation(for signature: String) {
-        guard self.shouldUseLedger else {
-            self.cachedLedgerSignature = signature
-            self.cachedLedgerAggregation = nil
+    private func refreshLedgerAggregation(for signature: String) async {
+        guard let snapshot = self.displaySnapshot else { return }
+        let scope = self.historyScope
+        self.historyError = nil
+        do {
+            let insights = try await CostHistoryWorker.shared.load(.init(
+                snapshot: snapshot,
+                sourceSnapshots: self.usageData.deviceSnapshots,
+                activeDeviceIDs: self.activeDeviceIDsForLedger,
+                windowDays: self.cwlWindowDays,
+                useLedger: self.shouldUseLedger,
+                isDemoMode: self.isDemoMode,
+                clearTombstone: CostLedgerService.blobSeedClearTombstoneDate()))
+            guard !Task.isCancelled, signature == self.ledgerRefreshSignature else { return }
+            self.completedHistory = CostHistoryPresentation(scope: scope, insights: insights)
+        } catch is CancellationError {
             return
+        } catch {
+            guard !Task.isCancelled, signature == self.ledgerRefreshSignature else { return }
+            self
+                .historyError =
+                String(localized: "Could not refresh local history. Previously loaded data has been kept.")
         }
-        self.cachedLedgerAggregation = try? CostLedgerService.aggregateSeedingFromExistingBlobsIfNeeded(
-            windowDays: self.cwlWindowDays,
-            in: self.modelContext,
-            activeDeviceIDs: self.activeDeviceIDsForLedger,
-            sourceSnapshots: self.usageData.deviceSnapshots)
-        self.cachedLedgerSignature = signature
     }
 
     var body: some View {
@@ -772,6 +791,8 @@ private struct CostTab: View {
                             insights: insights,
                             usageData: self.usageData,
                             isDemoMode: self.isDemoMode)
+                    } else if self.completedHistory?.scope != self.historyScope, self.historyError == nil {
+                        ProgressView(String(localized: "Loading local history…"))
                     } else {
                         EmptyStateView(
                             title: "No Cost Data Yet",
@@ -780,6 +801,15 @@ private struct CostTab: View {
                     }
                 } else {
                     OnboardingView(onDemo: { self.isDemoMode = true })
+                }
+            }
+            .safeAreaInset(edge: .top) {
+                if let historyError {
+                    Text(historyError)
+                        .font(.footnote)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(.regularMaterial)
                 }
             }
             .navigationTitle(self.isDemoMode ? String(localized: "Cost (Demo)") : String(localized: "Cost"))
@@ -811,12 +841,14 @@ private struct CostTab: View {
                 }
             }
             .task(id: self.ledgerRefreshSignature) {
-                self.refreshLedgerAggregation(for: self.ledgerRefreshSignature)
+                await self.refreshLedgerAggregation(for: self.ledgerRefreshSignature)
             }
             .task(id: self.costClockRestartKey) {
                 await self.keepLedgerRefreshDayCurrent()
             }
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.significantTimeChangeNotification)) { _ in
+            .onReceive(NotificationCenter.default
+                .publisher(for: UIApplication.significantTimeChangeNotification))
+            { _ in
                 self.readerTimeZoneIdentifier = TimeZone.current.identifier
                 self.ledgerRefreshDayKey = CostLedgerRefreshClock.refreshKey()
             }
@@ -1357,8 +1389,8 @@ private struct CostBreakdownMetricColumn: View {
     }
 }
 
-struct CostDashboardInsights {
-    struct DailyPoint: Identifiable {
+struct CostDashboardInsights: Sendable {
+    struct DailyPoint: Identifiable, Sendable {
         let dayKey: String
         let date: Date
         let costUSD: Double
@@ -1396,7 +1428,7 @@ struct CostDashboardInsights {
         }
     }
 
-    struct ProviderRow: Identifiable {
+    struct ProviderRow: Identifiable, Sendable {
         let provider: ProviderUsageSnapshot
         let thirtyDayCost: Double
         let todayCost: Double
@@ -2314,7 +2346,7 @@ private struct FullBudgetListView: View {
     }
 }
 
-struct CostBreakdownRow: Identifiable {
+struct CostBreakdownRow: Identifiable, Sendable {
     let label: String
     let amountUSD: Double
     let subtitle: String?
@@ -2349,7 +2381,7 @@ struct CostBreakdownRow: Identifiable {
     }
 }
 
-struct CostBudgetRow: Identifiable {
+struct CostBudgetRow: Identifiable, Sendable {
     let provider: ProviderUsageSnapshot
     let budget: SyncBudgetSnapshot
 
@@ -2462,7 +2494,7 @@ private struct SettingsTab: View {
                     }
 
                     NavigationLink {
-                        CostSettingsView()
+                        CostSettingsView(usageData: self.usageData)
                     } label: {
                         SettingSummaryRow(
                             title: "Cost Setting",
@@ -3736,7 +3768,7 @@ private struct CostDiagnosticsView: View {
         }
         .navigationTitle("Cost Diagnostics")
         .task(id: self.ledgerRefreshSignature) {
-            self.refreshLedgerAggregation(for: self.ledgerRefreshSignature)
+            await self.refreshLedgerAggregation(for: self.ledgerRefreshSignature)
         }
         .task(id: self.costClockRestartKey) {
             await self.keepLedgerRefreshDayCurrent()
@@ -3789,18 +3821,18 @@ private struct CostDiagnosticsView: View {
     }
 
     @MainActor
-    private func refreshLedgerAggregation(for signature: String) {
+    private func refreshLedgerAggregation(for signature: String) async {
         guard self.cwlEnabled else {
             self.cachedLedgerSignature = signature
             self.cachedLedgerAggregation = nil
             return
         }
-        self.cachedLedgerAggregation = CostDiagnosticsLedgerAggregationResolver.make(
-            cwlEnabled: self.cwlEnabled,
-            cwlWindowDays: self.cwlWindowDays,
-            modelContext: self.modelContext,
+        let aggregation = try? await CostHistoryWorker.shared.aggregate(
+            windowDays: self.cwlWindowDays,
             activeDeviceIDs: self.activeDeviceIDsForLedger,
             sourceSnapshots: self.usageData.deviceSnapshots)
+        guard !Task.isCancelled, signature == self.ledgerRefreshSignature else { return }
+        self.cachedLedgerAggregation = aggregation
         self.cachedLedgerSignature = signature
     }
 
@@ -4094,17 +4126,26 @@ private enum MobileReleaseNotesCatalog {
         ReleaseNotesVersion(
             version: "1.24.0",
             status: String(localized: "Latest"),
-            summary: String(localized: "iPhone 1.24 adds purchased Codex credits and clearer monthly quotas, with more reliable data from newer Macs."),
+            summary: String(
+                localized: "iPhone 1.24 adds purchased Codex credits and clearer monthly quotas, with more reliable data from newer Macs."),
             sections: [
                 .init(title: String(localized: "What's New"), items: [
-                    String(localized: "Daily activity — view daily requests, tokens and costs in the current Mac sync window; unavailable counts stay clearly marked."),
-                    String(localized: "Moonshot balances — RMB formatting, thousands separators and zero or negative balances now sync correctly."),
-                    String(localized: "Purchased credits — see your Codex extra-credit balance separately from the monthly limit, including confirmed zero balances."),
-                    String(localized: "Clearer quotas — Ollama monthly credits use the correct label, and credit amounts display as credits rather than money."),
-                    String(localized: "Reliable balances across Macs — balance timestamps stay separate from quota refreshes so an older Mac observation cannot restore an outdated balance."),
+                    String(
+                        localized: "Daily activity — view daily requests, tokens and costs in the current Mac sync window; unavailable counts stay clearly marked."),
+                    String(
+                        localized: "Moonshot balances — RMB formatting, thousands separators and zero or negative balances now sync correctly."),
+                    String(
+                        localized: "Purchased credits — see your Codex extra-credit balance separately from the monthly limit, including confirmed zero balances."),
+                    String(
+                        localized: "Clearer quotas — Ollama monthly credits use the correct label, and credit amounts display as credits rather than money."),
+                    String(
+                        localized: "Reliable balances across Macs — balance timestamps stay separate from quota refreshes so an older Mac observation cannot restore an outdated balance."),
+                    String(
+                        localized: "Steadier cost history — keep the last complete view while history refreshes in the background, and preserve saved history if local storage cannot open."),
                 ]),
                 .init(title: String(localized: "Required Mac version"), items: [
-                    String(localized: "Update CodexBar on Mac to 0.58.0.1 or later for all new data. Older Mac versions remain supported."),
+                    String(
+                        localized: "Update CodexBar on Mac to 0.58.0.1 or later for all new data. Older Mac versions remain supported."),
                 ]),
             ]),
         ReleaseNotesVersion(
@@ -5048,6 +5089,10 @@ private struct UsageSettingsView: View {
 }
 
 private struct CostSettingsView: View {
+    let usageData: SyncedUsageData
+    @State private var ledgerDiagnostics: CostLedgerDiagnostics?
+    @State private var isClearingHistory = false
+    @State private var clearHistoryError: String?
     @AppStorage(MobileSettingsKeys.dashboardCostChartStyle) private var dashboardCostChartStyleRawValue =
         CostChartStyle.line.rawValue
     @AppStorage(MobileSettingsKeys.openCostByDefault) private var openCostByDefault = false
@@ -5107,21 +5152,38 @@ private struct CostSettingsView: View {
                     } label: {
                         Text("Clear local cost history")
                     }
-                    .disabled(ModelContainerFactory.isUsingTemporaryStore)
+                    .disabled(ModelContainerFactory.isUsingTemporaryStore || self.isClearingHistory)
                     .confirmationDialog(
                         Text("Clear local cost history?"),
                         isPresented: self.$showClearLedgerConfirm,
                         titleVisibility: .visible)
                     {
                         Button("Clear", role: .destructive) {
-                            try? CostLedgerService.clearAll(
-                                in: self.modelContext,
-                                persistentStorageAvailable: !ModelContainerFactory.isUsingTemporaryStore)
+                            self.isClearingHistory = true
+                            Task {
+                                defer { self.isClearingHistory = false }
+                                do {
+                                    try await CostHistoryWorker.shared.clear(
+                                        persistentStorageAvailable: !ModelContainerFactory.isUsingTemporaryStore)
+                                    self.clearHistoryError = nil
+                                    self.ledgerDiagnostics = try? await CostHistoryWorker.shared
+                                        .diagnostics(seed: false)
+                                } catch {
+                                    self
+                                        .clearHistoryError =
+                                        String(localized: "Could not clear local history. Please try again.")
+                                }
+                            }
                         }
                         Button("Cancel", role: .cancel) {}
                     } message: {
                         Text(
                             "Deletes the on-device cost ledger only. Synced data is unaffected; history rebuilds as the Mac keeps syncing.")
+                    }
+                    if let clearHistoryError = self.clearHistoryError {
+                        Text(clearHistoryError)
+                            .font(.footnote)
+                            .foregroundStyle(.red)
                     }
                     if ModelContainerFactory.isUsingTemporaryStore {
                         Text(String(localized: "Restore access to local history before clearing it."))
@@ -5158,27 +5220,16 @@ private struct CostSettingsView: View {
             }
         }
         .navigationTitle("Cost Setting")
-        .onChange(of: self.cwlEnabled) { _, isOn in
-            // First enable: import the existing blob history into the ledger so
-            // the dashboard has data immediately instead of waiting for the next
-            // Mac sync. If the user previously cleared local history, keep that
-            // clear boundary so re-enabling does not restore older blob data. On
-            // failure, revert the toggle (CWL stays off, blob path keeps working).
-            // Idempotent — re-enabling is a cheap no-op.
-            guard isOn else { return }
+        .task(id: "\(self.cwlEnabled)|\(self.usageData.publicationRevision)") {
             do {
-                try CostLedgerService.seedFromExistingBlobsRespectingClearTombstone(
-                    in: self.modelContext)
+                let diagnostics = try await CostHistoryWorker.shared.diagnostics(seed: self.cwlEnabled)
+                guard !Task.isCancelled else { return }
+                self.ledgerDiagnostics = diagnostics
             } catch {
-                self.cwlEnabled = false
+                guard !Task.isCancelled else { return }
+                self.ledgerDiagnostics = nil
             }
         }
-    }
-
-    /// Read-on-render ledger diagnostics for the Settings panel. O(rows);
-    /// fine for a settings screen. `try?` → nil on any read error (panel hides).
-    private var ledgerDiagnostics: CostLedgerDiagnostics? {
-        try? CostLedgerService.diagnostics(in: self.modelContext)
     }
 
     private var dashboardChartStyle: Binding<CostChartStyle> {
