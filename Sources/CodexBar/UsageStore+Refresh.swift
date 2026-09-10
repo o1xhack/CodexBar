@@ -301,7 +301,7 @@ extension UsageStore {
             self.lastKnownResetSnapshots[.codex] = hydratedSnapshot
             self.errors[.codex] = hydratedPrior.error
             self.lastSourceLabels[.codex] = hydratedPrior.sourceLabel
-            self.publishHydratedCodexCreditsIfNeeded(from: hydratedPrior.credits, accountKey: expectedGuard.accountKey)
+            self.publishHydratedCodexCreditsIfNeeded(from: hydratedPrior.credits, ownerGuard: expectedGuard)
             self.lastCodexUsagePublicationGuard = expectedGuard
             self.lastCodexAccountScopedRefreshGuard = expectedGuard
         }
@@ -1315,7 +1315,7 @@ extension UsageStore {
     }
 
     private func clearClaudeCredentialDerivedStateForCredentialSwap() {
-        // Provider-specific by design: Claude credential swaps invalidate OAuth, swap, widget, quota, and token state.
+        // Provider-specific by design: retire Claude projections but preserve known accounts' warning episodes.
         self.widgetUsagePreservationBlockedProviders.insert(.claude)
         self.snapshots.removeValue(forKey: .claude)
         self.lastKnownResetSnapshots.removeValue(forKey: .claude)
@@ -1328,7 +1328,9 @@ extension UsageStore {
         self.failureGates[.claude]?.reset()
         self.tokenFailureGates[.claude]?.reset()
         self.clearSessionQuotaTransitionState(provider: .claude)
-        self.quotaWarningState = self.quotaWarningState.filter { $0.key.provider != .claude }
+        self.quotaWarningState = self.quotaWarningState.filter {
+            $0.key.provider != .claude || $0.key.accountDiscriminator != nil
+        }
         self.lastTokenFetchAt.removeValue(forKey: .claude)
     }
 
@@ -1586,7 +1588,13 @@ extension UsageStore {
         if case ClaudeWebAPIFetcher.FetchError.unauthorized = error {
             return true
         }
-        return error.localizedDescription == ClaudeWebAPIFetcher.FetchError.unauthorized.localizedDescription
+        if case ClaudeWebAPIFetcher.FetchError.cloudflareChallenge = error {
+            return true
+        }
+        return [
+            ClaudeWebAPIFetcher.FetchError.unauthorized.localizedDescription,
+            ClaudeWebAPIFetcher.FetchError.cloudflareChallenge.localizedDescription,
+        ].contains(error.localizedDescription)
     }
 
     nonisolated static func isPermissionPromptWaiting(_ error: Error) -> Bool {

@@ -1,6 +1,377 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "iPhone 1.24 adds purchased Codex credits and clearer monthly quotas, with more reliable data from newer Macs.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone 1.24 adds purchased Codex credits and clearer monthly quotas, with more reliable data from newer Macs."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone 1.24 新增 Codex 购买点数与更清晰的月度额度，并支持新版 Mac 更可靠的数据。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone 1.24 新增 Codex 購買點數與更清晰的月度額度，並支援新版 Mac 更可靠的資料。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "iPhone 1.24 では Codex の購入クレジットと月間使用枠をより明確に表示し、新しい Mac からのデータの信頼性を向上します。"
+          }
+        }
+      }
+    },
+    "Purchased credits — see your Codex extra-credit balance separately from the monthly limit, including confirmed zero balances.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchased credits — see your Codex extra-credit balance separately from the monthly limit, including confirmed zero balances."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "购买点数 — 单独查看 Codex 额外购买余额，与月度限额区分；已确认的零余额也会正确显示。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "購買點數 — 單獨查看 Codex 額外購買餘額，與月度限額區分；已確認的零餘額也會正確顯示。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "購入クレジット — Codex の追加購入残高を月間上限とは別に表示し、確認済みのゼロ残高も正しく反映します。"
+          }
+        }
+      }
+    },
+    "Clearer quotas — Ollama monthly credits use the correct label, and credit amounts display as credits rather than money.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clearer quotas — Ollama monthly credits use the correct label, and credit amounts display as credits rather than money."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更清晰的额度 — Ollama 月度点数使用正确标签，点数金额按点数而非货币显示。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更清晰的額度 — Ollama 月度點數使用正確標籤，點數金額按點數而非貨幣顯示。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "わかりやすい使用枠 — Ollama の月間クレジットを正しく表示し、クレジット数を通貨と区別します。"
+          }
+        }
+      }
+    },
+    "Reliable balances across Macs — balance timestamps stay separate from quota refreshes so an older Mac observation cannot restore an outdated balance.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reliable balances across Macs — balance timestamps stay separate from quota refreshes so an older Mac observation cannot restore an outdated balance."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "多台 Mac 余额更可靠 — 余额时间与额度刷新分开处理，避免较旧的余额观测覆盖新值。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "多台 Mac 餘額更可靠 — 餘額時間與額度重新整理分開處理，避免較舊的餘額觀測覆蓋新值。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "複数の Mac でも正確な残高 — 残高の確認時刻と使用枠の更新を分け、古い残高が再表示されるのを防ぎます。"
+          }
+        }
+      }
+    },
+    "Update CodexBar on Mac to 0.58.0.1 or later for all new data. Older Mac versions remain supported.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update CodexBar on Mac to 0.58.0.1 or later for all new data. Older Mac versions remain supported."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请将 Mac 版 CodexBar 更新至 0.58.0.1 或更高版本以获取全部新数据。仍兼容旧版 Mac。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請將 Mac 版 CodexBar 更新至 0.58.0.1 或更高版本以取得全部新資料。仍相容舊版 Mac。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべての新しいデータを表示するには Mac 版 CodexBar を 0.58.0.1 以降に更新してください。旧バージョンも引き続き利用できます。"
+          }
+        }
+      }
+    },
+    "Monthly credit limit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monthly credit limit"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月度点数限额"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月度點數限額"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "月間クレジット上限"
+          }
+        }
+      }
+    },
+    "Daily activity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily activity"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每日用量"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每日用量"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日別アクティビティ"
+          }
+        }
+      }
+    },
+    "From the current Mac sync window. Missing counts are shown as unavailable.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From the current Mac sync window. Missing counts are shown as unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "来自 Mac 当前同步时段；缺失的计数显示为不可用。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "來自 Mac 目前同步時段；缺少的計數顯示為無法使用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac の現在の同期期間です。不明な件数は利用不可と表示されます。"
+          }
+        }
+      }
+    },
+    "Unavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unavailable"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不可用"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法使用"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "利用不可"
+          }
+        }
+      }
+    },
+    "Daily activity — view daily requests, tokens and costs in the current Mac sync window; unavailable counts stay clearly marked.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily activity — view daily requests, tokens and costs in the current Mac sync window; unavailable counts stay clearly marked."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每日用量 — 查看 Mac 当前同步时段内每天的请求数、Token 数和费用，明确标注缺失的计数。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每日用量 — 查看 Mac 目前同步時段內每天的請求數、Token 數與費用，明確標示缺少的計數。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日別アクティビティ — Mac の現在の同期期間のリクエスト数、トークン数、費用を日別に表示し、不明な件数を明示します。"
+          }
+        }
+      }
+    },
+    "Moonshot balances — RMB formatting, thousands separators and zero or negative balances now sync correctly.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moonshot balances — RMB formatting, thousands separators and zero or negative balances now sync correctly."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moonshot 余额 — 正确同步人民币格式、千位分隔符及零或负余额。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moonshot 餘額 — 正確同步人民幣格式、千位分隔符及零或負餘額。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moonshot 残高 — 人民元表記、桁区切り、ゼロおよび負の残高が正しく同期されます。"
+          }
+        }
+      }
+    },
+    "Show all days": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show all days"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示全部日期"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顯示全部日期"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべての日を表示"
+          }
+        }
+      }
+    },
+    "Show fewer days": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show fewer days"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收起日期"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收合日期"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "表示日数を減らす"
+          }
+        }
+      }
+    },
+
     "A current Mac companion — CodexBar for Mac now includes upstream 0.54.1–0.56.0 provider, performance, reliability, and security updates.": {
       "extractionState": "manual",
       "localizations": {

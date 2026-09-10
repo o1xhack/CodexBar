@@ -224,6 +224,7 @@
 "No cost history data." = "بيانات تاريخ مجانية.";
 "No data available" = "لا توجد بيانات متاحة";
 "No data yet" = "لا توجد بيانات حتى الآن";
+"Workspaces" = "مساحات العمل";
 "No enabled providers available for Overview." = "لا يوجد مزودون مفعلون متاحون للنظرة العامة.";
 "No providers selected" = "لم يتم اختيار أي مقدمي خدمة";
 "No token accounts yet." = "لا توجد حسابات رمزية حتى الآن.";
@@ -499,7 +500,6 @@
 "provider_accent_color_reset" = "استخدام الافتراضي";
 "quota_warnings_title" = "تحذيرات الحصص";
 "quota_warning_session" = "الجلسة";
-"quota_warning_session_capitalized" = "الجلسة";
 "quota_warning_weekly" = "أسبوعيا";
 "quota_warning_weekly_capitalized" = "الأسبوعي";
 "quota_warning_notification_title" = "انخفاض حصة %2$@ لدى %1$@";
@@ -565,6 +565,7 @@
 "hooks_any_provider" = "أي مزود";
 "hooks_threshold" = "التشغيل عند الاستخدام ≥";
 "hooks_threshold_placeholder" = "90";
+"hooks_executable" = "الملف التنفيذي";
 "hooks_executable_placeholder" = "/usr/local/bin/my-command";
 "hooks_arguments_placeholder" = "الوسائط";
 "hooks_argument_placeholder" = "الوسيطة";
@@ -673,6 +674,9 @@
 "surprise_me_subtitle" = "تحقق إذا كنت تحب وكلائنك يستمتعون هناك.";
 "hide_personal_info_title" = "إخفاء المعلومات الشخصية";
 "hide_personal_info_subtitle" = "عناوين بريد إلكتروني غامضة في شريط القائمة وواجهة القائمة.";
+"hide_cost_history_identity_subtitle" = "إخفاء أسماء المشاريع والمصادر ومساراتها في سجل التكاليف أيضًا، دون تغيير البيانات المخزنة.";
+"Project %d" = "المشروع %d";
+"Source %d" = "المصدر %d";
 "show_provider_storage_usage_title" = "عرض استخدام التخزين لمزود الخدمة";
 "show_provider_storage_usage_subtitle" = "عرض استخدام القرص المحلي في القوائم. يمسح المسارات المعروفة المملوكة لمزود الخدمة في الخلفية.";
 "section_keychain_access" = "Keychain الوصول";
@@ -1517,6 +1521,7 @@
 "More" = "أكثر";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "تثبيت…";
 "Install plugin" = "تثبيت إضافة";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "ينسخ ملف JavaScript أو TypeScript إلى مجلد الإضافات.";
@@ -1558,6 +1563,7 @@
 "Total usage" = "إجمالي الاستخدام";
 "claude_oauth_keychain_access_revoked" = "تم إلغاء وصول CodexBar إلى سلسلة مفاتيح Claude بسبب تدوير الرمز المميز في Claude Code. انقر على «تحديث» لمنح الوصول مجددًا، أو بدّل مصدر استخدام Claude إلى CLI/Web.";
 "claude_showing_last_known_usage" = "يتم عرض آخر بيانات استخدام معروفة، تم التقاطها %@.";
+"claude_limited_usage_detail" = "تفاصيل الاستخدام محدودة";
 /* Spend dashboard cost analysis */
 "90d" = "90d";
 "Input" = "Input";
@@ -1613,4 +1619,9 @@
 "menu_bar_layout_conditional_default_session_spent" = "الجلسة على وشك النفاد";
 "menu_bar_layout_conditional_default_either_high" = "الجلسة أو الأسبوع في مستوى مرتفع";
 "menu_bar_layout_conditional_default_scoped_weekly" = "نافذة الطراز الأسبوعية فوق 60٪";
+"Visible usage items" = "عناصر الاستخدام المرئية";
+"Restore Defaults" = "استعادة الإعدادات الافتراضية";
+"Choose which usage rows appear in this provider's menu, Settings preview, and Overview." = "اختر صفوف الاستخدام التي تظهر في قائمة هذا المزوّد ومعاينة الإعدادات والنظرة العامة.";
+"%@ (unavailable)" = "%@ (غير متوفر)";
 "Spending cap, not balance" = "حد الإنفاق، وليس الرصيد";
+"%@ weekly" = "%@ أسبوعيًا";

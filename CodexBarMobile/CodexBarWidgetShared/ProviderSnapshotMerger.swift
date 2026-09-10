@@ -257,6 +257,36 @@ enum ProviderSnapshotMerger {
             .flatMap { entries[$0][keyPath: keyPath] }
     }
 
+    /// Balance observations age independently of quota refreshes; zero is an authoritative observation.
+    private static func latestProviderAmount(
+        _ entries: [ProviderUsageSnapshot],
+        sourceDeviceIDs: [String]) -> SyncProviderAmount?
+    {
+        precondition(entries.count == sourceDeviceIDs.count)
+        return entries.indices.filter { entries[$0].providerAmount != nil }
+            .sorted { lhs, rhs in
+                let left = entries[lhs].providerAmount?.observedAt ?? entries[lhs].lastUpdated
+                let right = entries[rhs].providerAmount?.observedAt ?? entries[rhs].lastUpdated
+                return left == right ? sourceDeviceIDs[lhs] > sourceDeviceIDs[rhs] : left > right
+            }
+            .first.flatMap { entries[$0].providerAmount }
+    }
+
+    /// Budget observations age independently of quota refreshes.
+    private static func latestBudget(
+        _ entries: [ProviderUsageSnapshot],
+        sourceDeviceIDs: [String]) -> SyncBudgetSnapshot?
+    {
+        precondition(entries.count == sourceDeviceIDs.count)
+        return entries.indices.filter { entries[$0].budget != nil }
+            .sorted { lhs, rhs in
+                let left = entries[lhs].budget?.observedAt ?? entries[lhs].lastUpdated
+                let right = entries[rhs].budget?.observedAt ?? entries[rhs].lastUpdated
+                return left == right ? sourceDeviceIDs[lhs] > sourceDeviceIDs[rhs] : left > right
+            }
+            .first.flatMap { entries[$0].budget }
+    }
+
     /// A pre-v0.41 Mac reports both Claude Max tiers as a generic label. During
     /// a rolling upgrade, keep the specific label from a v0.41+ Mac only when
     /// the freshest generic writer is provably old. A current or unknown-version
@@ -443,7 +473,7 @@ enum ProviderSnapshotMerger {
             lastUpdated: base.lastUpdated,
             costSummary: costState.summary,
             costSummaryCleared: costState.cleared,
-            budget: Self.latestNonNil(entries, sourceDeviceIDs: sourceDeviceIDs, \.budget),
+            budget: Self.latestBudget(entries, sourceDeviceIDs: sourceDeviceIDs),
             subscriptionExpiresAt: Self.latestNonNil(
                 entries, sourceDeviceIDs: sourceDeviceIDs, \.subscriptionExpiresAt),
             subscriptionRenewsAt: Self.latestNonNil(
@@ -478,7 +508,7 @@ enum ProviderSnapshotMerger {
             crossModelUsage: Self.latestNonNil(entries, sourceDeviceIDs: sourceDeviceIDs, \.crossModelUsage),
             wayfinderUsage: Self.latestNonNil(entries, sourceDeviceIDs: sourceDeviceIDs, \.wayfinderUsage),
             sub2APIUsage: Self.latestNonNil(entries, sourceDeviceIDs: sourceDeviceIDs, \.sub2APIUsage),
-            providerAmount: Self.latestNonNil(entries, sourceDeviceIDs: sourceDeviceIDs, \.providerAmount),
+            providerAmount: Self.latestProviderAmount(entries, sourceDeviceIDs: sourceDeviceIDs),
             accountRecordKey: Self.latestNonNil(entries, sourceDeviceIDs: sourceDeviceIDs, \.accountRecordKey),
             accountOrganization: Self.latestNonNil(entries, sourceDeviceIDs: sourceDeviceIDs, \.accountOrganization),
             zoomMateCredits: Self.latestNonNil(entries, sourceDeviceIDs: sourceDeviceIDs, \.zoomMateCredits),
@@ -506,18 +536,18 @@ enum ProviderSnapshotMerger {
             entries[$0].costSummary != nil || entries[$0].costSummaryCleared == true
         }
         guard let winner = candidates.max(by: { lhs, rhs in
-                let lhsFreshness = entries[lhs].costSummary?.sourceUpdatedAt
-                    ?? sourceSyncTimestamps[lhs]
-                let rhsFreshness = entries[rhs].costSummary?.sourceUpdatedAt
-                    ?? sourceSyncTimestamps[rhs]
-                if lhsFreshness != rhsFreshness {
-                    return lhsFreshness < rhsFreshness
-                }
-                if sourceSyncTimestamps[lhs] != sourceSyncTimestamps[rhs] {
-                    return sourceSyncTimestamps[lhs] < sourceSyncTimestamps[rhs]
-                }
-                return sourceDeviceIDs[lhs] < sourceDeviceIDs[rhs]
-            })
+            let lhsFreshness = entries[lhs].costSummary?.sourceUpdatedAt
+                ?? sourceSyncTimestamps[lhs]
+            let rhsFreshness = entries[rhs].costSummary?.sourceUpdatedAt
+                ?? sourceSyncTimestamps[rhs]
+            if lhsFreshness != rhsFreshness {
+                return lhsFreshness < rhsFreshness
+            }
+            if sourceSyncTimestamps[lhs] != sourceSyncTimestamps[rhs] {
+                return sourceSyncTimestamps[lhs] < sourceSyncTimestamps[rhs]
+            }
+            return sourceDeviceIDs[lhs] < sourceDeviceIDs[rhs]
+        })
         else { return (nil, nil) }
         // A contradictory entry fails closed: a clear tombstone is
         // authoritative over a simultaneously supplied legacy summary.
@@ -601,7 +631,9 @@ enum ProviderSnapshotMerger {
                         dayKey: dayKey,
                         costUSD: sessionCost,
                         totalTokens: summary.sessionTokens ?? 0,
-                        costIsKnown: true))
+                        costIsKnown: true,
+                        requestCount: summary.sessionRequests,
+                        tokenCountIsKnown: summary.sessionTokens != nil))
                     continue
                 }
                 let scanIsIncomplete = summary.historyCoverageIsEstablished == false
@@ -843,6 +875,9 @@ enum ProviderSnapshotMerger {
         let dayKey: String
         var costUSD: Double = 0
         var totalTokens: Int = 0
+        var requests: Int = 0
+        var requestsUnknown = false
+        var tokensUnknown = false
         var modelBreakdowns: [String: CostBreakdownAccumulator] = [:]
         var serviceBreakdowns: [String: CostBreakdownAccumulator] = [:]
         var isEstimated = false
@@ -852,7 +887,16 @@ enum ProviderSnapshotMerger {
 
         mutating func ingest(_ point: SyncDailyPoint) {
             self.costUSD += point.costUSD
-            self.totalTokens += point.totalTokens
+            let (tokens, tokenOverflow) = self.totalTokens.addingReportingOverflow(point.totalTokens)
+            self.totalTokens = tokenOverflow ? self.totalTokens : tokens
+            self.tokensUnknown = self.tokensUnknown || tokenOverflow || point.tokenCountIsKnown == false
+            if let count = point.requestCount, count >= 0 {
+                let (total, overflow) = self.requests.addingReportingOverflow(count)
+                self.requests = overflow ? self.requests : total
+                self.requestsUnknown = self.requestsUnknown || overflow
+            } else {
+                self.requestsUnknown = true
+            }
             if point.isEstimated == true {
                 self.isEstimated = true
             }
@@ -871,6 +915,8 @@ enum ProviderSnapshotMerger {
 
         mutating func ingestMissingIncompleteContribution() {
             self.sawUnavailableCost = true
+            self.requestsUnknown = true
+            self.tokensUnknown = true
         }
 
         func toDailyPoint(forceUnavailable: Bool = false) -> SyncDailyPoint {
@@ -881,7 +927,9 @@ enum ProviderSnapshotMerger {
                 modelBreakdowns: Self.sortedBreakdowns(self.modelBreakdowns),
                 serviceBreakdowns: Self.sortedBreakdowns(self.serviceBreakdowns),
                 isEstimated: self.isEstimated ? true : nil,
-                costIsKnown: forceUnavailable ? false : self.mergedCostIsKnown)
+                costIsKnown: forceUnavailable ? false : self.mergedCostIsKnown,
+                requestCount: forceUnavailable || self.requestsUnknown ? nil : self.requests,
+                tokenCountIsKnown: !forceUnavailable && !self.tokensUnknown)
         }
 
         private var mergedCostIsKnown: Bool? {

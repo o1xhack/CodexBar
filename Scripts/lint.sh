@@ -195,6 +195,10 @@ check_pr_review_gate() {
   "${ROOT_DIR}/Scripts/test_pr_review_gate.sh"
 }
 
+check_mimo_usage_script() {
+  python3 "${ROOT_DIR}/Scripts/test_mimo_usage.py"
+}
+
 check_swift_test_sharding() {
   "${ROOT_DIR}/Scripts/test_swift_test_sharding.sh"
 }
@@ -266,6 +270,7 @@ run_portable_checks() {
   check_fork_readme
   check_release_cli_workflow
   check_pr_review_gate
+  check_mimo_usage_script
   check_swift_test_sharding
   check_ci_path_gate
   check_ci_upstream_check_gate

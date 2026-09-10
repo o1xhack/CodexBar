@@ -28,7 +28,7 @@ Mac MARKETING_VERSION=0.58.0.1；BUILD_NUMBER=141.1（上游 v0.58.0 为 141）�
 MOBILE_VERSION=1.23.0（沿用现有配套版本，未把未上传 iOS 当作已发版本）；
 Sparkle=141.1.1.23.0；candidate tag=v0.58.0.1-mobile.1.23.0。
 UPSTREAM_VERSION=v0.58.0 / UPSTREAM_SYNC_DATE=2026-09-10。
-iOS 预计 1.24.0 (198)，四 targets 同步；若审计仅需修复而无新功能，记录最终版本判断。
+iOS 最终候选 1.24.0 (198)，四 targets 同步；日请求明细与购买额度是功能新增，因此采用feature minor。
 不因 checkpoint 增加用户可见版本。docs/versioning.md 后半旧决策树与顶部冲突时以顶部明确四段规则为准。
 
 ## 验证与 review

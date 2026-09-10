@@ -76,6 +76,8 @@ git diff $LAST_TAG..HEAD -- Shared/Models/UsageSnapshot.swift | grep -E "^\+.*pu
 | v0.54.0.1-mobile.1.22.0 | ❌ 不需要 | 最后published `v0.52.0.1-mobile.1.21.0` → candidate 的`CloudConstants.swift`无schema diff，`providerPayloadVersion=1`；provenance、coverage、token mix、metered cost与history coverage都是既有`DeviceProviderSnapshot.payload`内的optional JSON。2026-08-22 Production export仍为同一组10 types，无新type/field/index/zone/query/subscription。 |
 | v0.56.0.1-mobile.1.23.0 | ❌ 不需要 | 最后published `v0.54.0.1-mobile.1.22.0` → candidate 的`CloudConstants.swift`无schema diff，`UsageSnapshot.swift`无新增非optional `public let`，`providerPayloadVersion=1`；Kiro、Cursor、Fireworks与Antigravity变化只进入既有`DeviceProviderSnapshot.payload` opaque JSON。2026-08-28 `cktool export-schema` Production回读仍为同一组10 types，无新type/field/index/zone/query/subscription。 |
 
+| v0.58.0.1-mobile.1.23.0 candidate | ❌ 不需要（代码审计） | published v0.56.0.1-mobile.1.23.0 → candidate：CloudConstants 无 diff；amount/budget observedAt、daily requestCount/tokenCountIsKnown 均是既有 opaque payload 内的 optional JSON，未改 record type/field/index/zone/query/subscription，providerPayloadVersion=1。本轮未调用 Production export 或 schema deploy。 |
+
 ## 注意事项
 
 - **`providerPayloadVersion` bump = 强制全量重写**。看到 commit 改它必须警惕：除了 CK deploy，还会触发用户首次启动新版后 CPU/网络 spike。Phase B 加 6 个 optional 字段时**故意不 bump** 就是为了避这个。

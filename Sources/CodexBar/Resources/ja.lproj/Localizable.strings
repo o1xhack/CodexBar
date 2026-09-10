@@ -45,6 +45,7 @@
 "hooks_any_provider" = "すべてのプロバイダー";
 "hooks_threshold" = "使用率 ≥ で実行";
 "hooks_threshold_placeholder" = "90";
+"hooks_executable" = "実行ファイル";
 "hooks_executable_placeholder" = "/usr/local/bin/my-command";
 "hooks_arguments_placeholder" = "引数";
 "hooks_argument_placeholder" = "引数";
@@ -239,6 +240,7 @@
 "No cost history data." = "コスト履歴データがありません。";
 "No data available" = "データがありません";
 "No data yet" = "まだデータがありません";
+"Workspaces" = "ワークスペース";
 "No enabled providers available for Overview." = "概要に表示できる有効なプロバイダがありません。";
 "No providers selected" = "プロバイダが選択されていません";
 "No token accounts yet." = "トークンアカウントはまだありません。";
@@ -511,7 +513,6 @@
 "provider_accent_color_reset" = "デフォルトを使用";
 "quota_warnings_title" = "クォータ警告";
 "quota_warning_session" = "セッション";
-"quota_warning_session_capitalized" = "セッション";
 "quota_warning_weekly" = "週間";
 "quota_warning_weekly_capitalized" = "週間";
 "quota_warning_notification_title" = "%1$@ の%2$@クォータが残りわずか";
@@ -664,6 +665,9 @@
 "surprise_me_subtitle" = "エージェントたちがメニューバーで少し遊ぶのが好きか試してみてください。";
 "hide_personal_info_title" = "個人情報を隠す";
 "hide_personal_info_subtitle" = "メニューバーとメニュー UI のメールアドレスを伏せ字にします。";
+"hide_cost_history_identity_subtitle" = "保存データを変更せずに、コスト履歴のプロジェクト名・ソース名とパスも非表示にします。";
+"Project %d" = "プロジェクト %d";
+"Source %d" = "ソース %d";
 "show_provider_storage_usage_title" = "プロバイダのストレージ使用量を表示";
 "show_provider_storage_usage_subtitle" = "ローカルディスクの使用量をメニューに表示します。既知のプロバイダ所有パスをバックグラウンドでスキャンします。";
 "section_keychain_access" = "キーチェーンアクセス";
@@ -1514,6 +1518,7 @@
 "More" = "多";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "インストール…";
 "Install plugin" = "プラグインをインストール";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "JavaScript または TypeScript ファイルをプラグインディレクトリにコピーします。";
@@ -1555,6 +1560,7 @@
 "Total usage" = "合計使用量";
 "claude_oauth_keychain_access_revoked" = "Claude Code のトークン更新により、Claude キーチェーンへのアクセスが取り消されました。「更新」をクリックしてアクセスを再許可するか、Claude の使用量の取得元を CLI/Web に切り替えてください。";
 "claude_showing_last_known_usage" = "最後に取得した既知の使用量を表示しています（取得: %@）。";
+"claude_limited_usage_detail" = "使用量の詳細情報は限られています";
 /* Spend dashboard cost analysis */
 "90d" = "90d";
 "Input" = "Input";
@@ -1609,4 +1615,9 @@
 "menu_bar_layout_conditional_default_session_spent" = "セッションがほぼ上限";
 "menu_bar_layout_conditional_default_either_high" = "セッションまたは週間が高水準";
 "menu_bar_layout_conditional_default_scoped_weekly" = "モデル別週間の使用率 60% 超";
+"Visible usage items" = "表示する使用量項目";
+"Restore Defaults" = "デフォルトに戻す";
+"Choose which usage rows appear in this provider's menu, Settings preview, and Overview." = "このプロバイダーのメニュー、設定プレビュー、概要に表示する使用量の行を選択します。";
+"%@ (unavailable)" = "%@（利用不可）";
 "Spending cap, not balance" = "利用上限額（残高ではありません）";
+"%@ weekly" = "%@（週間）";

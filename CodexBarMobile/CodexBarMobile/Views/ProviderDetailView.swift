@@ -331,6 +331,9 @@ struct ProviderDetailView: View {
 
                 // Daily chart
                 if let cost = self.provider.costSummary {
+                    if !cost.daily.isEmpty {
+                        SyncedDailyActivityView(summary: cost)
+                    }
                     let availableDaily = Self.availableCostPoints(cost.daily)
                     if !availableDaily.isEmpty {
                         self.dailyChartSection(availableDaily, currencyCode: cost.currencyCode)

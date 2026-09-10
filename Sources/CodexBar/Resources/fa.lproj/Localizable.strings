@@ -224,6 +224,7 @@
 "No cost history data." = "داده های تاریخچه رایگان.";
 "No data available" = "داده ای در دسترس نیست";
 "No data yet" = "هنوز داده ای وجود ندارد";
+"Workspaces" = "فضاهای کاری";
 "No enabled providers available for Overview." = "هیچ ارائه دهنده فعالی برای مرور کلی در دسترس نیست.";
 "No providers selected" = "هیچ ارائه دهنده ای انتخاب نشده است";
 "No token accounts yet." = "هنوز حساب توکنی ندارم.";
@@ -499,7 +500,6 @@
 "provider_accent_color_reset" = "استفاده از پیش‌فرض";
 "quota_warnings_title" = "هشدارهای سهمیه";
 "quota_warning_session" = "جلسه";
-"quota_warning_session_capitalized" = "جلسه";
 "quota_warning_weekly" = "هفتگی";
 "quota_warning_weekly_capitalized" = "هفتگی";
 "quota_warning_notification_title" = "سهمیه %2$@ در %1$@ رو به اتمام است";
@@ -565,6 +565,7 @@
 "hooks_any_provider" = "هر ارائه‌دهنده";
 "hooks_threshold" = "اجرا در مصرف ≥";
 "hooks_threshold_placeholder" = "90";
+"hooks_executable" = "فایل اجرایی";
 "hooks_executable_placeholder" = "/usr/local/bin/my-command";
 "hooks_arguments_placeholder" = "آرگومان‌ها";
 "hooks_argument_placeholder" = "آرگومان";
@@ -673,6 +674,9 @@
 "surprise_me_subtitle" = "بررسی کن که آیا دوست داری مأمورانت آنجا خوش بگذرانند یا نه.";
 "hide_personal_info_title" = "مخفی کردن اطلاعات شخصی";
 "hide_personal_info_subtitle" = "آدرس های ایمیل مبهم در نوار منو و رابط کاربری منو.";
+"hide_cost_history_identity_subtitle" = "نام و مسیر پروژه‌ها و منابع را در تاریخچهٔ هزینه‌ها نیز بدون تغییر داده‌های ذخیره‌شده پنهان می‌کند.";
+"Project %d" = "پروژهٔ %d";
+"Source %d" = "منبع %d";
 "show_provider_storage_usage_title" = "استفاده از ذخیره سازی ارائه دهنده را نمایش دهید";
 "show_provider_storage_usage_subtitle" = "استفاده محلی از دیسک را در منوها نمایش دهید. مسیرهای شناخته شده متعلق به ارائه دهندگان را در پس زمینه اسکن می کند.";
 "section_keychain_access" = "دسترسی Keychain";
@@ -1517,6 +1521,7 @@
 "More" = "بیشتر";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "نصب…";
 "Install plugin" = "نصب افزونه";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "یک فایل JavaScript یا TypeScript را در پوشهٔ افزونه‌ها کپی می‌کند.";
@@ -1558,6 +1563,7 @@
 "Total usage" = "مصرف کل";
 "claude_oauth_keychain_access_revoked" = "دسترسی به Keychain کلود با چرخش توکن Claude Code لغو شد. برای اعطای مجدد دسترسی روی «تازه‌سازی» کلیک کنید، یا منبع استفاده Claude را به CLI/Web تغییر دهید.";
 "claude_showing_last_known_usage" = "آخرین میزان استفاده شناخته‌شده که در %@ ثبت شده نمایش داده می‌شود.";
+"claude_limited_usage_detail" = "جزئیات استفاده محدود است";
 /* Spend dashboard cost analysis */
 "90d" = "90d";
 "Input" = "Input";
@@ -1613,4 +1619,9 @@
 "menu_bar_layout_conditional_default_session_spent" = "نشست تقریباً تمام شده";
 "menu_bar_layout_conditional_default_either_high" = "نشست یا هفته در سطح بالا";
 "menu_bar_layout_conditional_default_scoped_weekly" = "پنجره هفتگی مدل بیش از ۶۰٪";
+"Visible usage items" = "موارد قابل مشاهده استفاده";
+"Restore Defaults" = "بازیابی پیش‌فرض‌ها";
+"Choose which usage rows appear in this provider's menu, Settings preview, and Overview." = "انتخاب کنید کدام ردیف‌های استفاده در منوی این ارائه‌دهنده، پیش‌نمایش تنظیمات و نمای کلی نمایش داده شوند.";
+"%@ (unavailable)" = "%@ (در دسترس نیست)";
 "Spending cap, not balance" = "سقف هزینه، نه موجودی";
+"%@ weekly" = "%@ هفتگی";

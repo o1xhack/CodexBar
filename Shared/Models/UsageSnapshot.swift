@@ -101,6 +101,8 @@ public struct SyncDailyPoint: Codable, Sendable, Equatable {
     public let dayKey: String
     public let costUSD: Double
     public let totalTokens: Int
+    public let requestCount: Int?
+    public let tokenCountIsKnown: Bool?
     public let modelBreakdowns: [SyncCostBreakdown]
     public let serviceBreakdowns: [SyncCostBreakdown]
     /// Day-level OR aggregate of `modelBreakdowns[*].isEstimated`. `nil`
@@ -119,11 +121,15 @@ public struct SyncDailyPoint: Codable, Sendable, Equatable {
         modelBreakdowns: [SyncCostBreakdown] = [],
         serviceBreakdowns: [SyncCostBreakdown] = [],
         isEstimated: Bool? = nil,
-        costIsKnown: Bool? = nil)
+        costIsKnown: Bool? = nil,
+        requestCount: Int? = nil,
+        tokenCountIsKnown: Bool? = nil)
     {
         self.dayKey = dayKey
         self.costUSD = costUSD
         self.totalTokens = totalTokens
+        self.requestCount = requestCount
+        self.tokenCountIsKnown = tokenCountIsKnown
         self.modelBreakdowns = modelBreakdowns
         self.serviceBreakdowns = serviceBreakdowns
         self.isEstimated = isEstimated
@@ -135,6 +141,8 @@ public struct SyncDailyPoint: Codable, Sendable, Equatable {
         self.dayKey = try container.decode(String.self, forKey: .dayKey)
         self.costUSD = try container.decode(Double.self, forKey: .costUSD)
         self.totalTokens = try container.decode(Int.self, forKey: .totalTokens)
+        self.requestCount = try container.decodeIfPresent(Int.self, forKey: .requestCount)
+        self.tokenCountIsKnown = try container.decodeIfPresent(Bool.self, forKey: .tokenCountIsKnown)
         // `?? []` backward-compat fallback: Mac builds prior to 0.18 didn't
         // write `modelBreakdowns` / `serviceBreakdowns`. Those old payloads
         // must still decode — an iPhone reading them treats the day as "no
@@ -430,19 +438,23 @@ public struct SyncBudgetSnapshot: Codable, Sendable, Equatable {
     public let currencyCode: String
     public let period: String?
     public let resetsAt: Date?
+    /// Budget measurement time, independent of usage-window or purchased-balance refreshes.
+    public let observedAt: Date?
 
     public init(
         usedAmount: Double,
         limitAmount: Double,
         currencyCode: String,
         period: String?,
-        resetsAt: Date?)
+        resetsAt: Date?,
+        observedAt: Date? = nil)
     {
         self.usedAmount = usedAmount
         self.limitAmount = limitAmount
         self.currencyCode = currencyCode
         self.period = period
         self.resetsAt = resetsAt
+        self.observedAt = observedAt
     }
 }
 

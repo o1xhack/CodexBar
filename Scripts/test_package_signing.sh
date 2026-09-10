@@ -79,4 +79,64 @@ if verify_packaged_app_integrity "$APP" 2>/dev/null; then
 fi
 unset MOCK_CODESIGN_STATUS
 
+python3 - "$PACKAGE_SCRIPT" <<'PY'
+import itertools
+import os
+import plistlib
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+source = Path(sys.argv[1]).read_text()
+start = source.index('BUNDLE_ID="com.o1xhack.codexbar"')
+end = source.index('BUILD_TIMESTAMP=', start)
+generation = source[start:end]
+start = source.index('PROVISION_PROFILE="$ROOT/Provisioning/CodexBar_Dev.provisionprofile"')
+end = source.index('\nfi', start) + len('\nfi')
+embedding = source[start:end]
+
+for configuration, signing, profile_present, allow_lldb in itertools.product(
+    ['release', 'debug'], ['identity', 'adhoc'], [False, True], ['0', '1'],
+):
+    with tempfile.TemporaryDirectory(prefix='codexbar-entitlement-test-') as directory:
+        root = Path(directory)
+        app = root / 'CodexBar.app'
+        (app / 'Contents').mkdir(parents=True)
+        profile = root / 'Provisioning/CodexBar_Dev.provisionprofile'
+        if profile_present:
+            profile.parent.mkdir(parents=True)
+            profile.write_text('synthetic fork profile selection marker\n')
+        # An upstream profile must never satisfy the fork's provisioning requirement.
+        upstream = root / 'Scripts/profiles/CodexBar-DeveloperID.provisionprofile'
+        upstream.parent.mkdir(parents=True)
+        upstream.write_text('incompatible upstream profile marker\n')
+        env = dict(os.environ, ROOT=str(root), APP=str(app), APP_TEAM_ID='3TUERHN53E',
+                   CONF=configuration, LOWER_CONF=configuration, SIGNING_MODE=signing, ALLOW_LLDB=allow_lldb)
+        result = subprocess.run(['bash', '-eu', '-c', generation + '\n' + embedding],
+                                env=env, capture_output=True, text=True)
+        expected_failure = (allow_lldb == '1' and configuration != 'debug') or (
+            configuration == 'release' and signing == 'identity' and not profile_present)
+        if expected_failure:
+            assert result.returncode != 0, (configuration, signing, profile_present, allow_lldb)
+            continue
+        assert result.returncode == 0, result.stderr
+        app_entitlements = plistlib.loads((root / '.build/entitlements/CodexBar.entitlements').read_bytes())
+        widget_entitlements = plistlib.loads((root / '.build/entitlements/CodexBarWidget.entitlements').read_bytes())
+        cloudkit = signing == 'identity'
+        if cloudkit:
+            assert app_entitlements['com.apple.developer.team-identifier'] == '3TUERHN53E'
+            assert app_entitlements['com.apple.developer.icloud-container-environment'] == 'Production'
+            assert app_entitlements['com.apple.developer.icloud-container-identifiers'] == ['iCloud.com.o1xhack.codexbar']
+            assert app_entitlements['com.apple.security.application-groups'][0].startswith('group.com.o1xhack.codexbar')
+        else:
+            assert 'com.apple.developer.icloud-services' not in app_entitlements
+        assert widget_entitlements['com.apple.security.app-sandbox'] is True
+        embedded = app / 'Contents/embedded.provisionprofile'
+        assert embedded.exists() == profile_present
+        if embedded.exists():
+            assert embedded.read_bytes() == profile.read_bytes()
+print('16 entitlement/profile configuration cases passed.')
+PY
+
 echo "Package signing tests passed."

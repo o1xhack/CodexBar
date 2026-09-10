@@ -26,6 +26,11 @@ enum CodexBarEntryPoint {
         if CodexBarCoreResourceSmoke.isRequested() {
             exit(CodexBarCoreResourceSmoke.run())
         }
+        #if DEBUG
+        if MenuBarLayoutNativeProof.runIfRequested() {
+            return
+        }
+        #endif
         guard CodexBarLaunchMode.resolve(arguments: CommandLine.arguments) == .application else {
             return
         }
@@ -65,7 +70,7 @@ struct CodexBarApp: App {
                 "built": buildTimestamp,
             ])
 
-        KeychainAccessGate.isDisabled = UserDefaults.standard.bool(forKey: "debugDisableKeychainAccess")
+        KeychainAccessGate.isDisabled = SettingsStore.loadDebugDisableKeychainAccess(userDefaults: .standard)
         KeychainPromptCoordinator.install()
         if MainThreadHangWatchdog.isEnabledForCurrentProcess {
             MainThreadHangWatchdog.shared.start()
@@ -116,6 +121,11 @@ struct CodexBarApp: App {
             EmptyView()
         }
         .commands {
+            CommandGroup(replacing: .appInfo) {
+                Button(L("About CodexBar")) {
+                    self.appDelegate.openSettings(pane: .about)
+                }
+            }
             CommandGroup(replacing: .appSettings) {
                 Button(self.settingsMenuTitle) {
                     self.appDelegate.openSettings(pane: nil)

@@ -45,6 +45,7 @@
 "hooks_any_provider" = "任意提供商";
 "hooks_threshold" = "使用率 ≥ 时运行";
 "hooks_threshold_placeholder" = "90";
+"hooks_executable" = "可执行文件";
 "hooks_executable_placeholder" = "/usr/local/bin/my-command";
 "hooks_arguments_placeholder" = "参数";
 "hooks_argument_placeholder" = "参数";
@@ -247,6 +248,7 @@
 "No credits history data." = "暂无额度记录。";
 "No data available" = "无可用数据";
 "No data yet" = "暂无数据";
+"Workspaces" = "工作区";
 "No enabled providers available for Overview." = "“概览”中没有可用的已启用提供商。";
 "No providers selected" = "未选择提供商";
 "No token accounts yet." = "尚无令牌账户。";
@@ -522,7 +524,6 @@
 "provider_accent_color_reset" = "使用默认值";
 "quota_warnings_title" = "配额预警";
 "quota_warning_session" = "会话";
-"quota_warning_session_capitalized" = "会话";
 "quota_warning_weekly" = "每周";
 "quota_warning_weekly_capitalized" = "每周";
 "quota_warning_warn_at" = "预警阈值";
@@ -640,6 +641,9 @@
 "surprise_me_subtitle" = "看看你是否喜欢你的智能体在上面找点乐子。";
 "hide_personal_info_title" = "隐藏个人信息";
 "hide_personal_info_subtitle" = "在菜单栏和菜单界面中隐藏电子邮件地址。";
+"hide_cost_history_identity_subtitle" = "同时隐藏费用历史中的项目和来源名称及路径，不更改已存储的数据。";
+"Project %d" = "项目 %d";
+"Source %d" = "来源 %d";
 "show_provider_storage_usage_title" = "显示提供商存储用量";
 "show_provider_storage_usage_subtitle" = "在菜单中显示本地磁盘用量。会在后台扫描已知的提供商自有路径。";
 "section_keychain_access" = "钥匙串访问";
@@ -1514,6 +1518,7 @@
 "More" = "多";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "安装…";
 "Install plugin" = "安装插件";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "将 JavaScript 或 TypeScript 文件复制到插件目录。";
@@ -1555,6 +1560,7 @@
 "Total usage" = "总用量";
 "claude_oauth_keychain_access_revoked" = "Claude Code 轮换令牌后撤销了对 Claude 钥匙串的访问权限。点击“刷新”以重新授权，或将 Claude 用量来源切换为 CLI/Web。";
 "claude_showing_last_known_usage" = "正在显示 %@ 采集的最后已知用量。";
+"claude_limited_usage_detail" = "用量详情有限";
 
 "menu_bar_layout_token_conditional" = "条件";
 "menu_bar_layout_group_conditionals" = "条件";
@@ -1621,4 +1627,9 @@
 "in %@h" = "%@ 小时后";
 "in %@m" = "%@ 分钟后";
 "now" = "现在";
+"Visible usage items" = "可见用量项目";
+"Restore Defaults" = "恢复默认设置";
+"Choose which usage rows appear in this provider's menu, Settings preview, and Overview." = "选择要在此提供商的菜单、设置预览和概览中显示的用量行。";
+"%@ (unavailable)" = "%@（不可用）";
 "Spending cap, not balance" = "支出上限，并非余额";
+"%@ weekly" = "%@ 每周";

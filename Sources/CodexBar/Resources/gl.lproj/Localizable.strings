@@ -222,6 +222,7 @@
 "No credits history data." = "Non hai datos de historial de créditos.";
 "No data available" = "Non hai datos dispoñibles";
 "No data yet" = "Aínda non hai datos";
+"Workspaces" = "Espazos de traballo";
 "No enabled providers available for Overview." = "Non hai provedores activados dispoñibles para o Resumo.";
 "No providers selected" = "Non se seleccionou ningún provedor";
 "No token accounts yet." = "Aínda non hai contas con token.";
@@ -493,7 +494,6 @@
 "provider_accent_color_reset" = "Usar o predeterminado";
 "quota_warnings_title" = "Avisos de cota";
 "quota_warning_session" = "sesión";
-"quota_warning_session_capitalized" = "Sesión";
 "quota_warning_weekly" = "semanal";
 "quota_warning_weekly_capitalized" = "Semanal";
 "quota_warning_warn_at" = "Avisar ao";
@@ -539,6 +539,7 @@
 "hooks_any_provider" = "Calquera provedor";
 "hooks_threshold" = "Activar cun uso ≥";
 "hooks_threshold_placeholder" = "90";
+"hooks_executable" = "Executable";
 "hooks_executable_placeholder" = "/usr/local/bin/my-command";
 "hooks_arguments_placeholder" = "Argumentos";
 "hooks_argument_placeholder" = "Argumento";
@@ -646,6 +647,9 @@
 "surprise_me_subtitle" = "Actívao se che gusta que os teus axentes se divirtan aí arriba.";
 "hide_personal_info_title" = "Ocultar información persoal";
 "hide_personal_info_subtitle" = "Oculta os enderezos de correo na barra de menús e na interface do menú.";
+"hide_cost_history_identity_subtitle" = "Oculta tamén os nomes e rutas de proxectos e fontes no historial de custos, sen modificar os datos gardados.";
+"Project %d" = "Proxecto %d";
+"Source %d" = "Fonte %d";
 "show_provider_storage_usage_title" = "Amosar o uso de almacenamento do provedor";
 "show_provider_storage_usage_subtitle" = "Amosa o uso do disco local nos menús. Analiza en segundo plano as rutas coñecidas do provedor.";
 "section_keychain_access" = "Acceso ao Chaveiro";
@@ -1513,6 +1517,7 @@
 "More" = "Máis";
 
 /* Provider Plugins */
+"Plugins" = "Plugins";
 "Install…" = "Instalar…";
 "Install plugin" = "Instalar complemento";
 "Copies a JavaScript or TypeScript file into the plugins directory." = "Copia un ficheiro JavaScript ou TypeScript no directorio de complementos.";
@@ -1554,6 +1559,7 @@
 "Total usage" = "Uso total";
 "claude_oauth_keychain_access_revoked" = "O acceso ao chaveiro de Claude foi revogado pola rotación do token de Claude Code. Preme Actualizar para volver conceder o acceso ou cambia a orixe de uso de Claude a CLI/Web.";
 "claude_showing_last_known_usage" = "Mostrando o último uso coñecido, capturado %@.";
+"claude_limited_usage_detail" = "Detalles de uso limitados";
 /* Spend dashboard cost analysis */
 "90d" = "90d";
 "Input" = "Input";
@@ -1608,4 +1614,9 @@
 "menu_bar_layout_conditional_default_session_spent" = "Sesión case esgotada";
 "menu_bar_layout_conditional_default_either_high" = "Sesión ou semana en nivel alto";
 "menu_bar_layout_conditional_default_scoped_weekly" = "Semana por modelo por riba do 60 %";
+"Visible usage items" = "Elementos de uso visibles";
+"Restore Defaults" = "Restaurar valores predeterminados";
+"Choose which usage rows appear in this provider's menu, Settings preview, and Overview." = "Escolle as filas de uso que aparecen no menú deste provedor, na vista previa de Configuración e na Vista xeral.";
+"%@ (unavailable)" = "%@ (non dispoñible)";
 "Spending cap, not balance" = "Límite de gasto, non saldo";
+"%@ weekly" = "%@ semanal";
