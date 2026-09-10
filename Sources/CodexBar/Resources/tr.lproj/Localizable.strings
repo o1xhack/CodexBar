@@ -1551,7 +1551,6 @@
 "%@ weekly" = "%@ haftalık";
 
 // Retained fork translations.
-"quota_warning_session_capitalized" = "Oturum";
 "5-hour" = "5 saat";
 "API key verified. Ollama does not expose Cloud quota limits through the API." = "API anahtarı doğrulandı. Ollama, Cloud kota limitlerini API üzerinden göstermez.";
 "CodexBar will ask macOS Keychain for your Kimi K2 API key so it can fetch usage. Click OK to continue." = "CodexBar, kullanımı getirmek için macOS Anahtarlığı'ndan Kimi K2 API anahtarınızı isteyecek. Devam etmek için Tamam'a tıklayın.";
