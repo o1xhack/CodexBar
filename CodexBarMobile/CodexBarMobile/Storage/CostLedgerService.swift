@@ -728,11 +728,15 @@ enum CostLedgerService {
     /// path (`ProviderSnapshotModel.costSummaryData`) and all other SwiftData
     /// entities are untouched. A clear timestamp is written so the default-on
     /// migration path cannot immediately rebuild the ledger from older blobs.
+    enum ClearError: Error { case persistentStorageUnavailable }
+
     static func clearAll(
         in context: ModelContext,
         clearedAt: Date = Date(),
-        userDefaults: UserDefaults = .standard) throws
+        userDefaults: UserDefaults = .standard,
+        persistentStorageAvailable: Bool = true) throws
     {
+        guard persistentStorageAvailable else { throw ClearError.persistentStorageUnavailable }
         try context.delete(model: DailyCostPoint.self)
         try context.save()
         userDefaults.set(

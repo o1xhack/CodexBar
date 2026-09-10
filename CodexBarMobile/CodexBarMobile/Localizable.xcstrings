@@ -1,6 +1,62 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Restore access to local history before clearing it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore access to local history before clearing it."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先恢复对本地历史记录的访问，再执行清除。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請先恢復對本機歷史記錄的存取，再執行清除。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "履歴を消去する前に、ローカル履歴へのアクセスを復旧してください。"
+          }
+        }
+      }
+    },
+    "Local history could not be opened. Your saved data has been kept. Restart the app to try again. New data is temporary.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local history could not be opened. Your saved data has been kept. Restart the app to try again. New data is temporary."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法打开本地历史记录。已保留原有数据，请重新启动 App 重试。新数据仅暂时保存。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法開啟本機歷史記錄。已保留原有資料，請重新啟動 App 重試。新資料僅暫時儲存。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローカル履歴を開けませんでした。保存済みのデータは保持されています。アプリを再起動して再試行してください。新しいデータは一時保存です。"
+          }
+        }
+      }
+    },
     "iPhone 1.24 adds purchased Codex credits and clearer monthly quotas, with more reliable data from newer Macs.": {
       "extractionState": "manual",
       "localizations": {

@@ -91,6 +91,15 @@ struct ContentView: View {
                 }
         }
         .modifier(TabBarMinimizeModifier())
+        .safeAreaInset(edge: .top) {
+            if ModelContainerFactory.isUsingTemporaryStore {
+                Text(String(localized: "Local history could not be opened. Your saved data has been kept. Restart the app to try again. New data is temporary."))
+                    .font(.footnote)
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.regularMaterial)
+            }
+        }
         .task(id: self.costClockRestartKey) {
             await self.keepCostReferenceDateCurrent()
         }
@@ -5098,18 +5107,26 @@ private struct CostSettingsView: View {
                     } label: {
                         Text("Clear local cost history")
                     }
+                    .disabled(ModelContainerFactory.isUsingTemporaryStore)
                     .confirmationDialog(
                         Text("Clear local cost history?"),
                         isPresented: self.$showClearLedgerConfirm,
                         titleVisibility: .visible)
                     {
                         Button("Clear", role: .destructive) {
-                            try? CostLedgerService.clearAll(in: self.modelContext)
+                            try? CostLedgerService.clearAll(
+                                in: self.modelContext,
+                                persistentStorageAvailable: !ModelContainerFactory.isUsingTemporaryStore)
                         }
                         Button("Cancel", role: .cancel) {}
                     } message: {
                         Text(
                             "Deletes the on-device cost ledger only. Synced data is unaffected; history rebuilds as the Mac keeps syncing.")
+                    }
+                    if ModelContainerFactory.isUsingTemporaryStore {
+                        Text(String(localized: "Restore access to local history before clearing it."))
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
                     }
                 }
             }
