@@ -199,11 +199,9 @@ struct V026EndToEndPipelineTests {
     }
 
     @Test
-    func `Moonshot end-to-end: zero balance → mapper returns nil → iOS hides card (not '0.00')`() {
-        // A real Moonshot user can hit zero balance temporarily. The
-        // mapper should return nil so iOS hides the card rather than
-        // displaying "0.00" — which is what the C2 bug ACTUALLY did
-        // for every user, regardless of their real balance.
+    func `Moonshot end-to-end: confirmed zero survives mapping and wire round-trip`() throws {
+        // v0.58 preserves a confirmed zero rather than hiding a depleted account.
+        // The C2 regression remains covered by the separate nonzero-value test.
         let moonshot = MoonshotUsageSummary(
             availableBalance: 0,
             voucherBalance: 0,
@@ -214,7 +212,11 @@ struct V026EndToEndPipelineTests {
             provider: .moonshot,
             snapshot: upstreamSnapshot,
             primaryWindow: nil)
-        #expect(mapped == nil)
+        let value = try #require(mapped)
+        let restored = try Self.decoder.decode(SyncMoonshotBalance.self, from: Self.encoder.encode(value))
+        #expect(restored.balanceAmount == 0)
+        #expect(restored.balanceCurrency == "USD")
+        #expect(restored.updatedAt == Self.now)
     }
 
     // MARK: - Wire-contract pin
