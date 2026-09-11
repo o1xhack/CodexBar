@@ -133,8 +133,9 @@ struct TokenActivitySection: View {
                             let values = self.series.compactMap { item in
                                 TokenActivity.recordedTokens(item.days.first { $0.dayKey == selectedDay }, series: item)
                             }
-                            Text(String(localized: "Recorded tokens") + ": " + SyncCounterMath.saturatingSum(values)
-                                .formatted())
+                            Text(String(localized: "Recorded tokens") + ": " + (values.isEmpty
+                                    ? String(localized: "Unavailable")
+                                    : SyncCounterMath.saturatingSum(values).formatted()))
                                 .font(.subheadline.monospacedDigit())
                         }
                         ForEach(self.series) { item in

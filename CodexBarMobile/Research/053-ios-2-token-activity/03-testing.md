@@ -68,3 +68,4 @@ UI夹具说明：`UI_TEST_PREVIEW_DATA`只注入内存快照，不写本地账�
 - `/tmp/cbm-2-cr1-tests.log`：TokenActivityTests + CostHistoryWorkerTests，11 tests / 2 suites passed；相关 3 个文件 strict lint 与 diff check 通过。
 - 应用代码已变化，上传前必须重新归档，原 build 200 archive 不再作为最终上传产物。
 - 同轮自查补充：新热力图日合并、全年总计和所选日总计均使用现有 SyncCounterMath.saturatingSum，避免极端同步计数溢出。`/tmp/cbm-2-counter-tests.log`：12 tests / 2 suites passed，包含 Int.max + 1 回归；相关文件 strict lint 通过。
+- 自查空日总计：所选日所有 provider 都没有可用计数时显示 Unavailable，保留已知 0；复用已有四语言文案。`/tmp/cbm-2-cr-final-ui.log`：Cost overview 滑动/日期选择 UI 测试通过；strict lint 通过。上传使用该修正之后的重新归档。
