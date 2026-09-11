@@ -81,3 +81,10 @@ UI夹具说明：`UI_TEST_PREVIEW_DATA`只注入内存快照，不写本地账�
 - Codex 指出 CWL 关闭、Token 全部明确为零且费用不可用时，旧 CostDashboardInsights guard 会删除该 provider，导致总数卡片不可达。
 - 入口判断现在接受 available daily token counts（包括确认零）；未把未知费用变成已知零。
 - `/tmp/cbm-2-zero-tests.log`：27 tests / 2 suites（TokenActivityTests + SyncModelTests）通过，覆盖 blob resolver 可达、provider 保留、费用仍未知与热力图零计数；测试文件 strict lint 通过。
+
+## CR 边界闭环与完整回归
+- 日期窗口统一为 today-364 至 today 的 365 个自然日；周网格在窗口外的补齐格子隐藏且禁止触摸/VoiceOver，页脚以真实窗口起点显示。测试覆盖 7 个 weekday 与边界内外。
+- 安全 Token 求和延伸至 ledger 的 day/provider/window 总计、model/service token breakdown，以及 Cost blob/ledger 投影，避免在到达图表前溢出。金额计算不变。
+- 合成两台 Mac、两天、Int.max 已知 Token 与 model token counters，贯穿 persistFull → worker.tokenActivity → aggregate → Cost load/blob projection，均饱和为 Int.max 且不崩溃。
+- `/tmp/cbm-2-boundary-tests.log`：742 tests / 49 suites 全部通过；两个 UI 流程 0 failures；`Test-CodexBarMobile-2026.09.11_14-52-59--0700.xcresult`。
+- 4 个相关新/测试文件 strict lint 通过；git diff --check 通过。实体多设备矩阵仍属于上文明确记录的替代验证。

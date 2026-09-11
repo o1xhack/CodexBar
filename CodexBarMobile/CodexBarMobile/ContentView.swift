@@ -1558,7 +1558,7 @@ struct CostDashboardInsights: Sendable {
     }
 
     var total30DayTokens: Int {
-        self.providerRows.reduce(0) { $0 + $1.thirtyDayTokens }
+        SyncCounterMath.saturatingSum(self.providerRows.map { max(0, $0.thirtyDayTokens) })
     }
 
     var spendProviderRows: [ProviderRow] {
@@ -1627,7 +1627,7 @@ struct CostDashboardInsights: Sendable {
             let resolvedThirtyDayCost = costSummary.last30DaysCostUSD ?? fallbackThirtyDayCost
             let thirtyDayCost = resolvedThirtyDayCost ?? 0
             let thirtyDayTokens = costSummary.last30DaysTokens
-                ?? costSummary.daily.reduce(0) { $0 + $1.totalTokens }
+                ?? SyncCounterMath.saturatingSum(costSummary.daily.map { max(0, $0.totalTokens) })
 
             let todayTotals = costSummary.todayTotals(now: now)
             let resolvedTodayCost = todayTotals.displayCostUSD
@@ -1846,7 +1846,7 @@ struct CostDashboardInsights: Sendable {
             let fallbackDailyCost = availableFallbackPoints.isEmpty
                 ? nil
                 : availableFallbackPoints.reduce(0) { $0 + $1.costUSD }
-            let fallbackDailyTokens = fallbackSyncPoints.reduce(0) { $0 + $1.totalTokens }
+            let fallbackDailyTokens = SyncCounterMath.saturatingSum(fallbackSyncPoints.map { max(0, $0.totalTokens) })
             let resolvedCost = max(totals.costUSD, max(fallbackDailyCost ?? 0, todayCost))
             let resolvedCostIsKnown = totals.costIsKnown || fallbackDailyCost != nil || resolvedTodayCost != nil
             let resolvedTokens = max(totals.tokens, max(fallbackDailyTokens, todayTokens))
@@ -2030,7 +2030,7 @@ struct CostDashboardInsights: Sendable {
 
         mutating func ingest(_ point: SyncDailyPoint) {
             self.costUSD += point.costUSD
-            self.totalTokens += point.totalTokens
+            self.totalTokens = SyncCounterMath.saturatingSum([self.totalTokens, max(0, point.totalTokens)])
             switch point.costIsKnown {
             case true: self.sawKnownCost = true
             case false: self.sawUnavailableCost = true
@@ -2100,11 +2100,11 @@ struct CostDashboardInsights: Sendable {
                 self.hasPriorityCost = true
             }
             if let standardTokens = breakdown.standardTokens {
-                self.standardTokens += standardTokens
+                self.standardTokens = SyncCounterMath.saturatingSum([self.standardTokens, max(0, standardTokens)])
                 self.hasStandardTokens = true
             }
             if let priorityTokens = breakdown.priorityTokens {
-                self.priorityTokens += priorityTokens
+                self.priorityTokens = SyncCounterMath.saturatingSum([self.priorityTokens, max(0, priorityTokens)])
                 self.hasPriorityTokens = true
             }
         }

@@ -22,3 +22,9 @@ Status: in-review（PR #123；尚未上传）。
 - Todoist Dev 已记录本轮 PR / TestFlight，保持 In Progress。
 
 本地归档并不等于上传成功；尚未执行 export/upload、merge、tag 或 live release。真实费用差额与实体设备同步/性能验收仍按03-testing保留，TF阶段也不得声称已解决。
+
+## 当前发布候选
+- Cost 主页面为总 Token 卡片，点入 Provider 热力图；四语言说明与该布局一致。
+- 本轮 CR 修复 catch-up 刷新、未知/零、365 天补齐与完整 Token 聚合溢出边界；最新完整回归为 742 项单元测试与 2 项 UI 测试通过，详见03-testing。
+- 上传前按最终审查提交重新生成归档；本节前述 d92c5008e 及中间归档仅为历史准备证据，不可作为最终上传产物。
+- 最终 current-head clean、review gate、CI 与上传回读结果继续记录到 PR #123，避免以尚未完成的结果预填已通过。

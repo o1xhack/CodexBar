@@ -11,6 +11,12 @@ struct TokenActivitySeries: Identifiable, Sendable {
 }
 
 enum TokenActivity {
+    static func window(referenceDate: Date, calendar: Calendar) -> ClosedRange<Date> {
+        let today = calendar.startOfDay(for: referenceDate)
+        let firstDay = calendar.date(byAdding: .day, value: -364, to: today)!
+        return firstDay...today
+    }
+
     static func sourceRevision(_ snapshots: [SyncedUsageSnapshot]) -> String {
         snapshots.flatMap { snapshot in
             snapshot.providers.map { provider in

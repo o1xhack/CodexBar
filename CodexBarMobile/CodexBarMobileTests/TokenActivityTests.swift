@@ -79,6 +79,21 @@ struct TokenActivityTests {
         #expect(TokenActivity.knownTokens(series.first?.days.first) == 0)
     }
 
+    @Test func `A yearly activity window excludes padding across every weekday`() throws {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try #require(TimeZone(identifier: "America/Los_Angeles"))
+        let start = Date(timeIntervalSince1970: 1_789_084_800)
+        for offset in 0..<7 {
+            let reference = try #require(calendar.date(byAdding: .day, value: offset, to: start))
+            let window = TokenActivity.window(referenceDate: reference, calendar: calendar)
+            #expect(calendar.dateComponents([.day], from: window.lowerBound, to: window.upperBound).day == 364)
+            #expect(window.contains(window.lowerBound))
+            #expect(window.contains(window.upperBound))
+            #expect(!window.contains(window.lowerBound.addingTimeInterval(-1)))
+            #expect(!window.contains(window.upperBound.addingTimeInterval(86400)))
+        }
+    }
+
     @Test func `Unknown and absent token counts differ from confirmed zero`() {
         #expect(TokenActivity.knownTokens(nil) == nil)
         #expect(TokenActivity.knownTokens(SyncDailyPoint(

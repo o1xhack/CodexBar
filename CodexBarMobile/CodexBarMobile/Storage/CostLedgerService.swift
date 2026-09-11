@@ -627,7 +627,7 @@ enum CostLedgerService {
             .sortedByCostThenName()
 
         let totalCostUSD = perDay.values.reduce(0) { $0 + $1.costUSD }
-        let totalTokens = perDay.values.reduce(0) { $0 + $1.totalTokens }
+        let totalTokens = SyncCounterMath.saturatingSum(perDay.values.map(\.totalTokens))
         let activeDayCount = perDay.values.count(where: { $0.costUSD > 0 })
 
         return CostLedgerAggregation(
@@ -1315,7 +1315,7 @@ enum CostLedgerService {
 
         mutating func ingest(_ point: AggregatedDailyCostPoint) {
             self.costUSD += point.costUSD
-            self.totalTokens += point.totalTokens
+            self.totalTokens = SyncCounterMath.saturatingSum([self.totalTokens, point.totalTokens])
             self.sawUnknownTokens = self.sawUnknownTokens || point.tokenCountIsKnown == false || point.totalTokens < 0
             if point.isEstimated == true {
                 self.isEstimated = true
@@ -1394,7 +1394,7 @@ enum CostLedgerService {
 
         mutating func ingest(_ point: AggregatedDailyCostPoint) {
             self.costUSD += point.costUSD
-            self.totalTokens += point.totalTokens
+            self.totalTokens = SyncCounterMath.saturatingSum([self.totalTokens, point.totalTokens])
             self.perDay[point.dayKey, default: .init(dayKey: point.dayKey)].ingest(point)
             guard point.costIsKnown != false else { return }
             for breakdown in point.modelBreakdowns where breakdown.costUSD > 0 {
@@ -1451,11 +1451,11 @@ enum CostLedgerService {
                 self.hasPriorityCost = true
             }
             if let value = breakdown.standardTokens {
-                self.standardTokens += value
+                self.standardTokens = SyncCounterMath.saturatingSum([self.standardTokens, max(0, value)])
                 self.hasStandardTokens = true
             }
             if let value = breakdown.priorityTokens {
-                self.priorityTokens += value
+                self.priorityTokens = SyncCounterMath.saturatingSum([self.priorityTokens, max(0, value)])
                 self.hasPriorityTokens = true
             }
         }

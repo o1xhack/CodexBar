@@ -253,8 +253,7 @@ private struct TokenActivityGrid: View {
     }
 
     private var dates: [Date] {
-        let today = self.calendar.startOfDay(for: self.referenceDate)
-        let start = self.calendar.date(byAdding: .day, value: -364, to: today)!
+        let start = TokenActivity.window(referenceDate: self.referenceDate, calendar: self.calendar).lowerBound
         let weekStart = self.calendar.dateInterval(of: .weekOfYear, for: start)!.start
         return (0..<371).compactMap { self.calendar.date(byAdding: .day, value: $0, to: weekStart) }
     }
@@ -279,7 +278,9 @@ private struct TokenActivityGrid: View {
                 }
             }
             HStack {
-                Text(gridDates.first!, format: .dateTime.year().month().day())
+                Text(
+                    TokenActivity.window(referenceDate: self.referenceDate, calendar: self.calendar).lowerBound,
+                    format: .dateTime.year().month().day())
                 Spacer()
                 Text(self.referenceDate, format: .dateTime.year().month().day())
             }.font(.caption2).foregroundStyle(.secondary)
@@ -289,7 +290,7 @@ private struct TokenActivityGrid: View {
 
     private func cell(key: String, date: Date, point: SyncDailyPoint?) -> some View {
         let count = TokenActivity.recordedTokens(point, series: self.series)
-        let future = date > self.calendar.startOfDay(for: self.referenceDate)
+        let padding = !TokenActivity.window(referenceDate: self.referenceDate, calendar: self.calendar).contains(date)
         let fill: Color = count.map {
             $0 == 0 ? Color.secondary.opacity(0.1) :
                 ProviderColorPalette.color(for: self.series.provider).opacity(TokenActivity.intensity($0))
@@ -302,12 +303,13 @@ private struct TokenActivityGrid: View {
             .overlay(RoundedRectangle(cornerRadius: 3).stroke(
                 self.selectedDay == key ? Color.primary : .clear, lineWidth: 2))
             .frame(width: 18, height: 18)
-        return shape.opacity(future ? 0 : 1)
+        return shape.opacity(padding ? 0 : 1)
+            .allowsHitTesting(!padding)
             .contentShape(Rectangle())
-            .onTapGesture { if !future { self.selectedDay = key } }
+            .onTapGesture { if !padding { self.selectedDay = key } }
             .accessibilityAddTraits(.isButton)
-            .accessibilityAction { if !future { self.selectedDay = key } }
-            .accessibilityHidden(future)
+            .accessibilityAction { if !padding { self.selectedDay = key } }
+            .accessibilityHidden(padding)
             .accessibilityIdentifier("token-day-" + key)
             .accessibilityLabel(key + ", " + self.series.provider.providerName + ", " + TokenActivity.tokenText(
                 point,
