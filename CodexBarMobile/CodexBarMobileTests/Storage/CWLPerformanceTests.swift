@@ -96,4 +96,46 @@ struct CWLPerformanceTests {
         // Generous CI ceiling (device target ≤ 50ms is M-perf manual).
         #expect(elapsed < 2.0, "aggregate(365) at scale took \(elapsed)s")
     }
+
+    @Test
+    func `Background history refresh at scale leaves the main actor responsive`() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let container = ModelContainerFactory.makeContainer(at: directory.appendingPathComponent("Store.sqlite"))
+        let context = ModelContext(container)
+        let now = Date()
+        let providers = (0..<40).map { index in
+            ProviderUsageSnapshot(
+                providerID: "p\(index)", providerName: "Provider \(index)",
+                primary: nil, secondary: nil, accountEmail: nil, loginMethod: nil,
+                statusMessage: nil, isError: false, lastUpdated: now)
+        }
+        let snapshot = SyncedUsageSnapshot(
+            providers: providers, syncTimestamp: now, deviceName: "Scale Mac", deviceID: "scale-mac")
+        try SwiftDataBridge.upsert(deviceSnapshots: [snapshot], into: context)
+        for provider in providers {
+            for day in 0..<365 {
+                context.insert(DailyCostPoint(
+                    deviceID: "scale-mac", providerID: provider.providerID, accountEmail: nil,
+                    dayKey: SyncCostSummary.iso8601DayKey(for: now.addingTimeInterval(-Double(day) * 86400)),
+                    costUSD: 1, totalTokens: 100, lastUpdated: now))
+            }
+        }
+        try context.save()
+        let worker = CostHistoryWorker(container: container)
+        let start = Date()
+        let heartbeat = Task { @MainActor in
+            try await Task.sleep(for: .milliseconds(1))
+            return Date()
+        }
+        let insights = try await worker.load(.init(
+            snapshot: snapshot, sourceSnapshots: [snapshot], activeDeviceIDs: ["scale-mac"],
+            windowDays: 365, useLedger: true, isDemoMode: false, clearTombstone: nil))
+        let finished = Date()
+        let heartbeatAt = try await heartbeat.value
+        #expect(insights?.total30DayCost == 14600)
+        #expect(heartbeatAt < finished, "Main actor must service input before the full history refresh completes")
+        print(
+            "CWL background refresh: \(finished.timeIntervalSince(start))s; main actor heartbeat: \(heartbeatAt.timeIntervalSince(start))s")
+    }
 }

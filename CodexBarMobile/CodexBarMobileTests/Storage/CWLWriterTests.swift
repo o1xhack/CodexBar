@@ -200,7 +200,9 @@ struct CWLWriterTests {
 
         let t = Date(timeIntervalSince1970: 1_700_000_000)
         try CostLedgerService.upsertDayPoint(
-            deviceID: "dev-A", providerID: "codex", dayKey: "2026-05-28",
+            deviceID: "dev-A", providerID: "codex",
+            accountIdentityKey: "codex:account:stable", accountIdentityKeys: ["codex:account:stable"],
+            dayKey: "2026-05-28",
             costUSD: 5.0, totalTokens: 500, isEstimated: nil,
             modelBreakdowns: [], serviceBreakdowns: [],
             lastUpdated: t, in: context)
@@ -216,6 +218,9 @@ struct CWLWriterTests {
         let row = try #require(rows.first)
         #expect(row.costUSD == 5.0, "Older write must be rejected")
         #expect(row.lastUpdated == t, "Existing lastUpdated must be preserved")
+        #expect(
+            row.accountIdentityKey == "codex:account:stable",
+            "Older legacy payload must not erase account identity")
     }
 
     @Test

@@ -2,13 +2,16 @@
 
 All notable changes to the CodexBar iOS companion app will be documented in this file.
 
-## [1.24.0 (198)] — 2026-09-10
+## [1.24.0 (199)] — 2026-09-10
 
 ### Added
 - Daily requests, tokens and costs for the current Mac sync window; optional counters preserve unavailable values and old-client decoding.
 - Codex purchased credits alongside monthly limits, with independent balance observation timestamps and confirmed zero values.
 
 ### Fixed
+- Preserve the persistent history database when opening fails; show temporary-storage status and prevent misleading history clearing.
+- Commit incremental snapshots and their CloudKit cursor atomically; reject stale account metadata.
+- Move history writes, seeding, diagnostics and presentation calculations to a serial background worker. Keep the last completed result during same-account refreshes; invalidate it immediately for changed accounts or filters.
 - Moonshot CNY/grouped/zero/negative balances now survive parsing and sync.
 - Monthly budgets preserve their own observation timestamp across Macs.
 - Mixed-Mac balance selection uses amount observation time rather than unrelated quota refreshes.

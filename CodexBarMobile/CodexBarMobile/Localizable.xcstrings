@@ -1,6 +1,202 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Loading local history…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading local history…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在加载本地历史记录…"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在載入本機歷史記錄…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローカル履歴を読み込み中…"
+          }
+        }
+      }
+    },
+    "Could not refresh local history. Previously loaded data has been kept.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not refresh local history. Previously loaded data has been kept."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法刷新本地历史记录。已保留之前加载的数据。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法重新整理本機歷史記錄。已保留先前載入的資料。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローカル履歴を更新できませんでした。以前読み込んだデータは保持されています。"
+          }
+        }
+      }
+    },
+    "Could not clear local history. Please try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not clear local history. Please try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法清除本地历史记录，请重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法清除本機歷史記錄，請再試一次。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローカル履歴を消去できませんでした。もう一度お試しください。"
+          }
+        }
+      }
+    },
+    "Steadier cost history — keep the last complete view while history refreshes in the background, and preserve saved history if local storage cannot open.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Steadier cost history — keep the last complete view while history refreshes in the background, and preserve saved history if local storage cannot open."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更稳定的用量历史 — 后台刷新历史时保留上次完整视图；本地存储无法打开时，仍保留已保存的历史记录。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更穩定的用量歷史 — 背景更新歷史時保留上次完整畫面；本機儲存空間無法開啟時，仍保留已儲存的歷史記錄。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安定したコスト履歴 — バックグラウンド更新中も前回の完全な表示を保ち、ローカルストレージを開けない場合も保存済みの履歴を保持します。"
+          }
+        }
+      }
+    },
+    "Could not save synced data. Your previous data has been kept. Pull to refresh and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not save synced data. Your previous data has been kept. Pull to refresh and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法保存同步数据。已保留之前的数据，请下拉刷新重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法儲存同步資料。已保留先前的資料，請下拉重新整理後重試。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "同期データを保存できませんでした。以前のデータは保持されています。下に引いて更新し、再試行してください。"
+          }
+        }
+      }
+    },
+    "Restore access to local history before clearing it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore access to local history before clearing it."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先恢复对本地历史记录的访问，再执行清除。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請先恢復對本機歷史記錄的存取，再執行清除。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "履歴を消去する前に、ローカル履歴へのアクセスを復旧してください。"
+          }
+        }
+      }
+    },
+    "Local history could not be opened. Your saved data has been kept. Restart the app to try again. New data is temporary.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local history could not be opened. Your saved data has been kept. Restart the app to try again. New data is temporary."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法打开本地历史记录。已保留原有数据，请重新启动 App 重试。新数据仅暂时保存。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法開啟本機歷史記錄。已保留原有資料，請重新啟動 App 重試。新資料僅暫時儲存。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ローカル履歴を開けませんでした。保存済みのデータは保持されています。アプリを再起動して再試行してください。新しいデータは一時保存です。"
+          }
+        }
+      }
+    },
     "iPhone 1.24 adds purchased Codex credits and clearer monthly quotas, with more reliable data from newer Macs.": {
       "extractionState": "manual",
       "localizations": {

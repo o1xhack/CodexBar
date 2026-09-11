@@ -51,3 +51,4 @@ This directory contains research documents for features being considered for Cod
 | 050 | iOS Today Cost Coverage Hotfix (keep independently known current-day spend visible while historical catch-up remains incomplete) | `done` | None; merge/TestFlight/release remain separate authorization gates | [050-ios-today-cost-coverage.md](050-ios-today-cost-coverage.md) | 2026-09-01 |
 
 | 051 | v0.58.0 single upstream sync (10 releases; issues #108/#109/#111–118) | `in-progress` | Mac0.58.0.1已正式发布；iOS未上传，追加历史调查另行处理 | [051-v058-upstream-sync/00-overview.md](051-v058-upstream-sync/00-overview.md) | 2026-09-10 |
+| 052 | iOS历史完整性与后台刷新 | `in-progress` | 已确认代码缺陷已修复；问题手机金额对账待设备/页面确认 | [052-history-refresh-integrity/00-research.md](052-history-refresh-integrity/00-research.md) | 2026-09-10 |

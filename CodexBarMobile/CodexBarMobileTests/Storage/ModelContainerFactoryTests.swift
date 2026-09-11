@@ -63,4 +63,71 @@ struct ModelContainerFactoryTests {
         let parent = url.deletingLastPathComponent()
         #expect(FileManager.default.fileExists(atPath: parent.path))
     }
+    @Test("Open failure preserves the database and both SQLite sidecars")
+    func failedOpenPreservesFiles() throws {
+        struct UnavailableStore: Error {}
+        let url = self.makeTempStoreURL()
+        defer { ModelContainerFactory.deleteStoreFiles(at: url) }
+        let files = ["", "-wal", "-shm"].map { URL(fileURLWithPath: url.path + $0) }
+        for (index, file) in files.enumerated() {
+            try Data("unique saved history \(index)".utf8).write(to: file)
+        }
+        let original = try files.map { try Data(contentsOf: $0) }
+        let result = ModelContainerFactory.openContainer(at: url) { _, _ in
+            throw UnavailableStore()
+        }
+        #expect(!result.isPersistent)
+        #expect(try files.map { try Data(contentsOf: $0) } == original)
+    }
+
+    @Test("A later successful open recovers history after temporary storage")
+    @MainActor
+    func successfulReopenRecoversHistory() throws {
+        struct UnavailableStore: Error {}
+        let url = self.makeTempStoreURL()
+        defer { ModelContainerFactory.deleteStoreFiles(at: url) }
+        do {
+            let context = ModelContext(ModelContainerFactory.makeContainer(at: url))
+            context.insert(DailyCostPoint(
+                deviceID: "history-mac", providerID: "codex", accountEmail: nil,
+                dayKey: "2026-01-01", costUSD: 12000, totalTokens: 900,
+                lastUpdated: Date(timeIntervalSince1970: 1767225600)))
+            try context.save()
+        }
+        let temporary = ModelContainerFactory.openContainer(at: url) { _, _ in
+            throw UnavailableStore()
+        }
+        #expect(!temporary.isPersistent)
+        #expect(try ModelContext(temporary.container).fetch(FetchDescriptor<DailyCostPoint>()).isEmpty)
+        let reopened = ModelContainerFactory.openContainer(at: url)
+        #expect(reopened.isPersistent)
+        let history = try ModelContext(reopened.container).fetch(FetchDescriptor<DailyCostPoint>())
+        #expect(history.count == 1)
+        #expect(history.first?.costUSD == 12000)
+        #expect(history.first?.dayKey == "2026-01-01")
+    }
+
+    @Test("Temporary mode cannot clear preserved history or advance its tombstone")
+    @MainActor
+    func temporaryModeRejectsClear() throws {
+        struct UnavailableStore: Error {}
+        let url = self.makeTempStoreURL()
+        defer { ModelContainerFactory.deleteStoreFiles(at: url) }
+        let suite = "history-clear-\(UUID().uuidString)"
+        let defaults = try #require(UserDefaults(suiteName: suite))
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let result = ModelContainerFactory.openContainer(at: url) { _, _ in throw UnavailableStore() }
+        let context = ModelContext(result.container)
+        context.insert(DailyCostPoint(
+            deviceID: "mac", providerID: "codex", accountEmail: nil,
+            dayKey: "2026-01-01", costUSD: 12000, totalTokens: 900, lastUpdated: Date()))
+        try context.save()
+        #expect(throws: CostLedgerService.ClearError.self) {
+            try CostLedgerService.clearAll(
+                in: context, userDefaults: defaults, persistentStorageAvailable: result.isPersistent)
+        }
+        #expect(!CostLedgerService.hasBlobSeedClearTombstone(userDefaults: defaults))
+        #expect(try context.fetch(FetchDescriptor<DailyCostPoint>()).first?.costUSD == 12000)
+    }
+
 }

@@ -10,12 +10,9 @@ import SwiftData
 ///   the factory work in unit tests + simulator without any provisioning change,
 ///   while the shipping app (which has the App Group entitlement) still lands
 ///   in the shared container ready for an App Extension to read.
-/// - On any `ModelContainer` init failure — typically a schema migration that
-///   SwiftData cannot resolve automatically — the existing store is deleted
-///   and recreated. This is acceptable for P2a because SwiftData is being
-///   introduced for the first time; the data is a cache of CloudKit and can
-///   always be re-populated from the server on next fetch. Future phases
-///   must revisit this once real migrations exist.
+/// - Persistent history is not a disposable CloudKit cache: it can outlive
+///   the producer's current sync window. Opening failures preserve every file
+///   and use explicitly reported temporary storage until the next launch.
 enum ModelContainerFactory {
     /// App Group identifier shared with the menu bar counterpart. See
     /// `Scripts/package_app.sh:142` on the Mac side.
@@ -30,15 +27,28 @@ enum ModelContainerFactory {
     // concurrency.
     private static let lock = NSLock()
     nonisolated(unsafe) private static var sharedContainer: ModelContainer?
+    nonisolated(unsafe) private static var temporaryStorage = false
+
+    struct OpenResult {
+        let container: ModelContainer
+        let isPersistent: Bool
+    }
+
+    static var isUsingTemporaryStore: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return temporaryStorage
+    }
 
     /// Returns a lazily-constructed app-wide container. Thread-safe.
     static func shared() -> ModelContainer {
         lock.lock()
         defer { lock.unlock() }
         if let existing = sharedContainer { return existing }
-        let container = Self.makeContainer(at: Self.defaultStoreURL())
-        sharedContainer = container
-        return container
+        let result = Self.openContainer(at: Self.defaultStoreURL())
+        sharedContainer = result.container
+        temporaryStorage = !result.isPersistent
+        return result.container
     }
 
     /// Main-actor convenience for view code that wants a `ModelContext` directly.
@@ -50,33 +60,35 @@ enum ModelContainerFactory {
     /// Exposed for tests: build a container at an explicit URL (typically a
     /// temporary directory) without touching the shared singleton.
     static func makeContainer(at storeURL: URL) -> ModelContainer {
+        Self.openContainer(at: storeURL).container
+    }
+
+    /// The injectable opener verifies failure handling without corrupting a
+    /// real user's database. Neither failure path deletes or renames the store.
+    static func openContainer(
+        at storeURL: URL,
+        opener: (Schema, ModelConfiguration) throws -> ModelContainer = { schema, configuration in
+            try ModelContainer(for: schema, configurations: configuration)
+        }) -> OpenResult
+    {
         let schema = Schema(CodexBarSwiftDataSchema.models)
         let configuration = ModelConfiguration(
             schema: schema,
             url: storeURL,
             cloudKitDatabase: .none)
         do {
-            return try ModelContainer(for: schema, configurations: configuration)
+            return try OpenResult(container: opener(schema, configuration), isPersistent: true)
         } catch {
-            // Recovery path: wipe the on-disk store and retry once. Acceptable
-            // in P2a because SwiftData holds only a local mirror of CloudKit.
-            print("[CodexBar SwiftData] Initial ModelContainer init failed — " +
-                "deleting store and retrying. Error: \(error)")
-            Self.deleteStoreFiles(at: storeURL)
-            do {
-                return try ModelContainer(for: schema, configurations: configuration)
-            } catch {
-                // If the retry also fails, fall back to a fully in-memory store.
-                // The app keeps running; persistence is disabled for this session.
-                print("[CodexBar SwiftData] Retry after wipe also failed — " +
-                    "falling back to in-memory store. Error: \(error)")
-                let memConfig = ModelConfiguration(
-                    schema: schema,
-                    isStoredInMemoryOnly: true)
-                // As a last resort, this will trap if in-memory also fails —
-                // which would indicate a schema bug, not a runtime condition.
-                return try! ModelContainer(for: schema, configurations: memConfig)
-            }
+            print("[CodexBar SwiftData] Persistent store unavailable; preserving files " +
+                "and using temporary storage. Error: \(error)")
+            let memoryConfiguration = ModelConfiguration(
+                schema: schema,
+                isStoredInMemoryOnly: true,
+                cloudKitDatabase: .none)
+            // If even the in-memory schema cannot open, the application cannot
+            // operate. This failure must still never destroy the original files.
+            let container = try! ModelContainer(for: schema, configurations: memoryConfiguration)
+            return OpenResult(container: container, isPersistent: false)
         }
     }
 
@@ -120,6 +132,7 @@ enum ModelContainerFactory {
     static func _resetSharedForTests() {
         lock.lock()
         sharedContainer = nil
+        temporaryStorage = false
         lock.unlock()
     }
 }

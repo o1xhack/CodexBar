@@ -114,7 +114,7 @@ struct CostLedgerProviderRollup: Equatable {
 /// Lightweight ledger diagnostics for the Settings panel (P4). All fields
 /// are O(rows) to compute; safe for an immediate call. `estimatedBytes` is a
 /// coarse estimate (`row count × 200`), not a real on-disk measurement.
-struct CostLedgerDiagnostics: Equatable {
+struct CostLedgerDiagnostics: Equatable, Sendable {
     let deviceCount: Int
     let providerCount: Int
     let dayCount: Int
@@ -267,6 +267,8 @@ enum CostLedgerService {
         let identityData = accountIdentityKeys.flatMap { try? enc.encode($0) }
 
         if let existing = try context.fetch(descriptor).first {
+            // An older publication must not roll back account identity either.
+            guard lastUpdated >= existing.lastUpdated else { return }
             // Identity metadata may be newly available on an otherwise equal
             // payload. Backfill it before the freshness early-return so an
             // upgrade never strands a legacy email-key row.
@@ -728,11 +730,15 @@ enum CostLedgerService {
     /// path (`ProviderSnapshotModel.costSummaryData`) and all other SwiftData
     /// entities are untouched. A clear timestamp is written so the default-on
     /// migration path cannot immediately rebuild the ledger from older blobs.
+    enum ClearError: Error { case persistentStorageUnavailable }
+
     static func clearAll(
         in context: ModelContext,
         clearedAt: Date = Date(),
-        userDefaults: UserDefaults = .standard) throws
+        userDefaults: UserDefaults = .standard,
+        persistentStorageAvailable: Bool = true) throws
     {
+        guard persistentStorageAvailable else { throw ClearError.persistentStorageUnavailable }
         try context.delete(model: DailyCostPoint.self)
         try context.save()
         userDefaults.set(
@@ -753,7 +759,8 @@ enum CostLedgerService {
         providerID: String,
         accountEmail: String?,
         accountRecordKey: String? = nil,
-        in context: ModelContext) throws
+        in context: ModelContext,
+        saveChanges: Bool = true) throws
     {
         let descriptor = FetchDescriptor<DailyCostPoint>(
             predicate: #Predicate {
@@ -769,7 +776,7 @@ enum CostLedgerService {
             context.delete(row)
             didDelete = true
         }
-        if didDelete {
+        if didDelete, saveChanges {
             try context.save()
         }
     }
