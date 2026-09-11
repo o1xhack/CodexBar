@@ -60,3 +60,10 @@ UI夹具说明：`UI_TEST_PREVIEW_DATA`只注入内存快照，不写本地账�
 - 真机同步过程中的tab切换/滚动与两手机收敛验证；小屏/全部字号/Cost暗色大字号渲染仍未全覆盖（Provider暗色大字号已完成）。
 - 实施上限365天；多年历史回补尚未提供。
 - 远端PR review与发布流程未运行；本轮无push/upload/live release授权。
+
+## PR #123 第一轮 CR 修复
+- Codex 在 49a8d23c0 指出：同 usage/device timestamp 的 provider catch-up publication 不会触发热力图刷新。
+- 新增按 device/card/publicationTimestamp 排序的 sourceRevision，纳入 TokenActivitySection task ID。
+- 回归固定 usage/device timestamp，仅增加 provider publication，并断言 refresh revision 改变；输入顺序改变不产生无效刷新。
+- `/tmp/cbm-2-cr1-tests.log`：TokenActivityTests + CostHistoryWorkerTests，11 tests / 2 suites passed；相关 3 个文件 strict lint 与 diff check 通过。
+- 应用代码已变化，上传前必须重新归档，原 build 200 archive 不再作为最终上传产物。

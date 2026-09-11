@@ -6,6 +6,34 @@ import Testing
 
 @Suite("Token Activity data semantics")
 struct TokenActivityTests {
+    @Test func `Catch up publications invalidate token history even when usage and device timestamps stay fixed`() {
+        let now = Date(timeIntervalSince1970: 1_789_084_800)
+        let provider = ProviderUsageSnapshot(
+            providerID: "codex",
+            providerName: "Codex",
+            primary: nil,
+            secondary: nil,
+            accountEmail: nil,
+            loginMethod: nil,
+            statusMessage: nil,
+            isError: false,
+            lastUpdated: now)
+        func snapshot(publication: Date) -> SyncedUsageSnapshot {
+            SyncedUsageSnapshot(
+                providers: [provider],
+                syncTimestamp: now,
+                deviceName: "Fixture Mac",
+                deviceID: "fixture-mac",
+                providerPublicationTimestamps: [SyncedUsageSnapshot.providerPublicationKey(for: provider): publication])
+        }
+        let old = snapshot(publication: now)
+        let catchUp = snapshot(publication: now.addingTimeInterval(60))
+        #expect(old.syncTimestamp == catchUp.syncTimestamp)
+        #expect(old.providers.first?.lastUpdated == catchUp.providers.first?.lastUpdated)
+        #expect(TokenActivity.sourceRevision([old]) != TokenActivity.sourceRevision([catchUp]))
+        #expect(TokenActivity.sourceRevision([old, catchUp]) == TokenActivity.sourceRevision([catchUp, old]))
+    }
+
     @Test func `Unknown and absent token counts differ from confirmed zero`() {
         #expect(TokenActivity.knownTokens(nil) == nil)
         #expect(TokenActivity.knownTokens(SyncDailyPoint(

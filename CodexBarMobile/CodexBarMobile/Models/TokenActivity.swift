@@ -11,6 +11,15 @@ struct TokenActivitySeries: Identifiable, Sendable {
 }
 
 enum TokenActivity {
+    static func sourceRevision(_ snapshots: [SyncedUsageSnapshot]) -> String {
+        snapshots.flatMap { snapshot in
+            snapshot.providers.map { provider in
+                let publication = snapshot.publicationTimestamp(for: provider).timeIntervalSince1970
+                return "\(snapshot.deviceID ?? "_"):\(provider.cardIdentityKey)@\(publication)"
+            }
+        }.sorted().joined(separator: ";")
+    }
+
     static func knownTokens(_ day: SyncDailyPoint?) -> Int? {
         guard let day, day.tokenCountIsKnown != false, day.totalTokens >= 0 else { return nil }
         return day.totalTokens

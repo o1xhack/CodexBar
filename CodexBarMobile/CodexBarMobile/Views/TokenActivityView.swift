@@ -33,6 +33,7 @@ struct TokenActivitySection: View {
     private var refreshKey: String {
         self.scope + self.providers.map { "\($0.lastUpdated.timeIntervalSince1970)" }.joined(separator: "|")
             + self.sourceSnapshots.map { "\($0.deviceID ?? ""):\($0.syncTimestamp.timeIntervalSince1970)" }.joined()
+            + TokenActivity.sourceRevision(self.sourceSnapshots)
             + TokenActivity.dayKey(self.referenceDate, calendar: .current)
     }
 
