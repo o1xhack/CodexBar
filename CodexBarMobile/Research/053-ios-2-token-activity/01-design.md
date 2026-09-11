@@ -1,6 +1,6 @@
 # iOS 2.0 — Token Activity 与信息归属
 
-Status: in-progress（用户已确认，按本方案实施）。
+Status: done（已实施；最终 Cost 信息层级以末尾用户确认修订为准，2.0.0(200) 已进入 TF）。
 基线：origin/mobile-dev 871829af4，iOS 1.24.0 (199)。实施分支 feature/ios-2-token-activity。
 
 ## 用户目标与事实

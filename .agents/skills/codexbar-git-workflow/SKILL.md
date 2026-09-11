@@ -211,6 +211,15 @@ gaps. An upload does not authorize merging, tagging, or a public App Store relea
 If a PR exists, its review/CI workflow continues independently; beta upload does
 not mark those gates passed or waive them for a later merge.
 
+Before promoting a beta build to App Review/public release, verify its recorded
+archive source commit and tree against the clean reviewed release source. The
+selected ASC build must contain the exact reviewed code, resources, build settings
+and version; an unrelated clean review on a newer head is not evidence for an
+older binary. Record the archive/IPA hash and ASC build ID with that provenance.
+If review fixes change any shipped inputs, or provenance cannot be established,
+archive and upload a new build and select that build for submission. Docs-only
+follow-ups do not require a new binary when the shipped inputs are identical.
+
 ## Todoist Handoff
 
 After pushed commits for CodexBar Mobile, update Todoist if the tools are available.
