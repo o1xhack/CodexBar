@@ -26,6 +26,6 @@ Status: done（Mac正式发布范围）。2026-09-10 用户明确要求先正式
 - Release CLI工作流34538762613已success：六平台tar.gz及各自sha256附件均uploaded；`bash Scripts/check-release-assets.sh v0.58.0.1-mobile.1.23.0`通过。Mac GUI ZIP已公开且通过独立启动验证。
 
 ## iOS后续边界
-用户未要求本次上传iOS。mobile-dev保留原候选1.24.0(198)；追加历史安全/原子事务/后台刷新修复独立保存在本地 `fix/ios-history-refresh-integrity`，提交 c96ef5f21/02486cdbb/39d7eeb08/2b671a46b，候选1.24.0(199)。727项单元测试、3项Simulator UI、Release Simulator构建与独立review通过；14,600条历史后台读取约1.39秒，MainActor heartbeat约30毫秒。没有上传TestFlight，没有覆盖问题真机数据；实际约$2,000下降仍待设备/页面和源数据对账。完整记录见该分支Research052。
+用户未要求本次上传iOS。mobile-dev保留原候选1.24.0(198)，未上传TestFlight。用户追加的历史完整性与刷新性能调查不属于本次Mac发布资产，不能把本次Mac公开发布视为已修复问题手机或已完成真实金额对账；该后续工作的代码与验证应在其独立交付中审计。
 
 此前 03/09 文档中“等待凭证授权/禁止 push/无 PR”描述的是本次用户授权之前的检查点；本记录取代这些发布状态，保留历史验证事实。
