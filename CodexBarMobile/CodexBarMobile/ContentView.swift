@@ -1637,6 +1637,7 @@ struct CostDashboardInsights: Sendable {
 
             guard resolvedThirtyDayCost != nil || resolvedTodayCost != nil ||
                 thirtyDayTokens > 0 || todayTokens > 0 ||
+                costSummary.daily.contains(where: { TokenActivity.knownTokens($0) != nil }) ||
                 costSummary.hasIncompleteHistoricalCostCoverage(at: now)
             else {
                 continue

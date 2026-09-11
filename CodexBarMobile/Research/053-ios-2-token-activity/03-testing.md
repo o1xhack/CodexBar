@@ -76,3 +76,8 @@ UI夹具说明：`UI_TEST_PREVIEW_DATA`只注入内存快照，不写本地账�
 - 已查看实际截图 `evidence/cost-summary-navigation.png` 和 `evidence/token-activity-detail.png`：主卡片及详情总数一致（fixture 12,772,947），导航、列表与点图无截断。
 - 四语言 UI/商店/in-app 说明同步完成；i18n audit 332 source keys 通过；TokenActivityView strict lint 通过。
 - 本次 UI 变更后重新走当前 head CR，归档与上传必须包含该提交。
+
+## 新布局 CR：零 Token 的 Cost 入口
+- Codex 指出 CWL 关闭、Token 全部明确为零且费用不可用时，旧 CostDashboardInsights guard 会删除该 provider，导致总数卡片不可达。
+- 入口判断现在接受 available daily token counts（包括确认零）；未把未知费用变成已知零。
+- `/tmp/cbm-2-zero-tests.log`：27 tests / 2 suites（TokenActivityTests + SyncModelTests）通过，覆盖 blob resolver 可达、provider 保留、费用仍未知与热力图零计数；测试文件 strict lint 通过。

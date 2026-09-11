@@ -42,6 +42,43 @@ struct TokenActivityTests {
         #expect(points.first?.totalTokens == Int.max)
     }
 
+    @Test func `Confirmed zero token history keeps the Cost entry point reachable without the ledger`() throws {
+        let now = Date()
+        let provider = ProviderUsageSnapshot(
+            providerID: "codex",
+            providerName: "Codex",
+            primary: nil,
+            secondary: nil,
+            accountEmail: nil,
+            loginMethod: nil,
+            statusMessage: nil,
+            isError: false,
+            lastUpdated: now,
+            costSummary: SyncCostSummary(
+                sessionCostUSD: nil,
+                sessionTokens: nil,
+                last30DaysCostUSD: nil,
+                last30DaysTokens: nil,
+                daily: [SyncDailyPoint(
+                    dayKey: TokenActivity.dayKey(now, calendar: Calendar(identifier: .gregorian)),
+                    costUSD: 0,
+                    totalTokens: 0,
+                    costIsKnown: false,
+                    tokenCountIsKnown: true)]))
+        let snapshot = SyncedUsageSnapshot(providers: [provider], syncTimestamp: now, deviceName: "Fixture Mac")
+        let insights = try #require(CostTabInsightsResolver.make(
+            snapshot: snapshot,
+            ledgerAggregation: nil,
+            isLedgerEnabled: false,
+            isDemoMode: false,
+            localHistoryClearedAt: nil))
+        #expect(insights.providerRows.count == 1)
+        #expect(insights.total30DayCostIsKnown == false)
+        let series = TokenActivity.series(providers: [provider], rollups: nil, referenceDate: now)
+        #expect(series.count == 1)
+        #expect(TokenActivity.knownTokens(series.first?.days.first) == 0)
+    }
+
     @Test func `Unknown and absent token counts differ from confirmed zero`() {
         #expect(TokenActivity.knownTokens(nil) == nil)
         #expect(TokenActivity.knownTokens(SyncDailyPoint(
