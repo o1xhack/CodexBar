@@ -1,0 +1,122 @@
+import CodexBarSync
+import Foundation
+
+struct TokenActivitySeries: Identifiable, Sendable {
+    let provider: ProviderUsageSnapshot
+    let days: [SyncDailyPoint]
+    var hasLedgerCounts = false
+    var id: String {
+        self.provider.cardIdentityKey
+    }
+}
+
+enum TokenActivity {
+    static func knownTokens(_ day: SyncDailyPoint?) -> Int? {
+        guard let day, day.tokenCountIsKnown != false, day.totalTokens >= 0 else { return nil }
+        return day.totalTokens
+    }
+
+    /// Fixed logarithmic bands keep a provider's colors stable while browsing history.
+    static func intensity(_ tokens: Int) -> Double {
+        switch tokens {
+        case ...0: 0
+        case ..<100_000: 0.25
+        case ..<1_000_000: 0.5
+        case ..<10_000_000: 0.75
+        default: 1
+        }
+    }
+
+    static func series(
+        providers: [ProviderUsageSnapshot],
+        rollups: [CostLedgerProviderRollup]?,
+        referenceDate: Date = Date()) -> [TokenActivitySeries]
+    {
+        providers.compactMap { provider in
+            let matching = rollups?.filter { rollup in
+                guard provider.providerID == rollup.providerID else { return false }
+                if rollup.accountIdentityKey != nil {
+                    return !Set(CostLedgerService.accountIdentityKeys(for: provider))
+                        .isDisjoint(with: rollup.accountIdentityKeys)
+                }
+                return provider.accountEmail == rollup.accountEmail
+            }
+            let days: [SyncDailyPoint] = if let matching {
+                // Rollups already apply device/account merge semantics. Do not merge the
+                // current blob again: it is the same data and would double count it.
+                Self.combine(matching.flatMap(\.dailyPoints), alreadyAggregated: true)
+            } else {
+                Self.snapshotDays(provider.costSummary, referenceDate: referenceDate)
+            }
+            let series = TokenActivitySeries(provider: provider, days: days, hasLedgerCounts: rollups != nil)
+            guard days.contains(where: { Self.recordedTokens($0, series: series) != nil }) else { return nil }
+            return series
+        }
+    }
+
+    /// Use the same logical age mapping as the ledger when persistence is disabled.
+    static func snapshotDays(
+        _ summary: SyncCostSummary?,
+        referenceDate: Date,
+        readerTimeZone: TimeZone = .current) -> [SyncDailyPoint]
+    {
+        guard let summary, !summary.hasInvalidBucketTimeZoneIdentifier else { return [] }
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = .gmt
+        formatter.dateFormat = "yyyy-MM-dd"
+        var readerCalendar = Calendar(identifier: .gregorian)
+        readerCalendar.timeZone = readerTimeZone
+        guard let producerToday = formatter.date(from: summary.costDayKey(for: referenceDate)),
+              let readerToday = formatter.date(from: dayKey(referenceDate, calendar: readerCalendar))
+        else { return [] }
+        var mapping: [String: String] = [:]
+        for age in 0..<365 {
+            let producer = formatter.calendar.date(byAdding: .day, value: -age, to: producerToday)!
+            let reader = formatter.calendar.date(byAdding: .day, value: -age, to: readerToday)!
+            mapping[formatter.string(from: producer)] = formatter.string(from: reader)
+        }
+        return summary.daily.compactMap { point in
+            guard let key = mapping[point.dayKey] else { return nil }
+            return SyncDailyPoint(
+                dayKey: key,
+                costUSD: 0,
+                totalTokens: point.totalTokens,
+                costIsKnown: false,
+                tokenCountIsKnown: point.tokenCountIsKnown)
+        }
+    }
+
+    static func combine(_ days: [SyncDailyPoint], alreadyAggregated: Bool = false) -> [SyncDailyPoint] {
+        Dictionary(grouping: days, by: \.dayKey).map { key, values in
+            SyncDailyPoint(
+                dayKey: key,
+                costUSD: 0,
+                totalTokens: values.map { alreadyAggregated ? max(0, $0.totalTokens) : self.knownTokens($0) ?? 0 }
+                    .reduce(
+                        0,
+                        +),
+                costIsKnown: false,
+                tokenCountIsKnown: values.allSatisfy { self.knownTokens($0) != nil })
+        }.sorted { $0.dayKey < $1.dayKey }
+    }
+
+    static func recordedTokens(_ day: SyncDailyPoint?, series: TokenActivitySeries) -> Int? {
+        if let known = knownTokens(day) { return known }
+        // The ledger sums only known contributions, so a positive incomplete
+        // aggregate is a lower bound. Raw unavailable values are never trusted.
+        guard series.hasLedgerCounts, let day, day.totalTokens > 0 else { return nil }
+        return day.totalTokens
+    }
+
+    static func tokenText(_ day: SyncDailyPoint?, series: TokenActivitySeries) -> String {
+        guard let value = recordedTokens(day, series: series) else { return String(localized: "Unavailable") }
+        return (day?.tokenCountIsKnown == false ? "≥" : "") + value.formatted()
+    }
+
+    static func dayKey(_ date: Date, calendar: Calendar) -> String {
+        let parts = calendar.dateComponents([.year, .month, .day], from: date)
+        return String(format: "%04d-%02d-%02d", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0)
+    }
+}

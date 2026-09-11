@@ -342,7 +342,9 @@ private struct ProviderListView: View {
                     NavigationLink {
                         ProviderDetailView(
                             group: group,
-                            costReferenceDate: self.costReferenceDate)
+                            costReferenceDate: self.costReferenceDate,
+                            sourceSnapshots: self.usageData.deviceSnapshots,
+                            isDemoMode: self.isDemoMode)
                     } label: {
                         ProviderUsageView(
                             provider: group.representative,
@@ -909,6 +911,13 @@ private struct CostDashboardView: View {
                         total: self.insights.spendProviderRows.reduce(0) { $0 + $1.thirtyDayCost })
                 }
 
+                TokenActivitySection(
+                    providers: self.isDemoMode ? self.insights.providerRows.map(\.provider)
+                        : self.usageData.snapshot.map { MockProviderDetector.filteredProviders(from: $0) } ?? [],
+                    sourceSnapshots: self.usageData.deviceSnapshots,
+                    isOverview: true,
+                    isDemoMode: self.isDemoMode)
+
                 if !self.insights.costDailyPoints.isEmpty {
                     self.trendSection
                 }
@@ -926,14 +935,6 @@ private struct CostDashboardView: View {
                         subtitle: "Top cost drivers across providers that expose model-level billing.",
                         rows: self.insights.modelRows,
                         total: self.insights.modelRows.reduce(0) { $0 + $1.amountUSD })
-                }
-
-                if !self.insights.serviceRows.isEmpty {
-                    self.contributionSection(
-                        title: "Codex Service Mix",
-                        subtitle: "Breakdown from Codex Cloud dashboard data, including Codex Run and other billable services.",
-                        rows: self.insights.serviceRows,
-                        total: self.insights.serviceRows.reduce(0) { $0 + $1.amountUSD })
                 }
 
                 if !self.insights.budgetRows.isEmpty {
@@ -4124,8 +4125,15 @@ private struct ReleaseNotesVersion: Identifiable {
 private enum MobileReleaseNotesCatalog {
     static let versions: [ReleaseNotesVersion] = [
         ReleaseNotesVersion(
+            version: "2.0.0", status: String(localized: "Latest"),
+            summary: String(localized: "Token activity across your Macs, with a clearer home for Codex service costs."),
+            sections: [.init(title: String(localized: "What's New"), items: [
+                String(localized: "Explore daily tokens in a scrollable yearly heatmap. Unavailable days stay distinct from confirmed zero usage."),
+                String(localized: "Compare provider token activity above Daily Spend. Codex Service Mix now lives in Codex details."),
+            ])]),
+        ReleaseNotesVersion(
             version: "1.24.0",
-            status: String(localized: "Latest"),
+            status: "",
             summary: String(
                 localized: "iPhone 1.24 adds purchased Codex credits and clearer monthly quotas, with more reliable data from newer Macs."),
             sections: [

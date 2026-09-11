@@ -19,9 +19,9 @@ import SwiftData
 // `CodexBarSwiftDataSchema.models` is handled by SwiftData automatically. Old
 // stores without this table will be upgraded in place on first open (verified
 // by `CWLMigrationTests` / T16). No `VersionedSchema` / `SchemaMigrationPlan`
-// introduced this round — current `ModelContainerFactory` policy is
-// "init-failure → delete + recreate" (it's a CloudKit cache, can be
-// repopulated). Additive optional fields such as `costIsKnown` remain eligible
+// introduced this round. ModelContainerFactory preserves a failed store;
+// historical rows must never be deleted to recover from an open failure.
+// Additive optional fields such as `costIsKnown` remain eligible
 // for SwiftData's lightweight migration.
 
 @Model
@@ -56,6 +56,7 @@ final class DailyCostPoint {
 
     var costUSD: Double
     var totalTokens: Int
+    var tokenCountIsKnown: Bool?
     /// Three-state wire availability: true = authoritative cost (including
     /// zero), false = cost unavailable, nil = legacy writer with no metadata.
     var costIsKnown: Bool?
@@ -88,6 +89,7 @@ final class DailyCostPoint {
         dayKey: String,
         costUSD: Double,
         totalTokens: Int,
+        tokenCountIsKnown: Bool? = nil,
         costIsKnown: Bool? = nil,
         isEstimated: Bool? = nil,
         modelBreakdownsData: Data? = nil,
@@ -109,6 +111,7 @@ final class DailyCostPoint {
         self.dayKey = dayKey
         self.costUSD = costUSD
         self.totalTokens = totalTokens
+        self.tokenCountIsKnown = tokenCountIsKnown
         self.costIsKnown = costIsKnown
         self.isEstimated = isEstimated
         self.modelBreakdownsData = modelBreakdownsData

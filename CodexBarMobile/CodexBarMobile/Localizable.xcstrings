@@ -1,6 +1,398 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Show fewer providers": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show fewer providers"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收起其他 Provider"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收起其他 Provider"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "表示するプロバイダーを減らす"
+          }
+        }
+      }
+    },
+    "Show all providers": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show all providers"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示所有 Provider"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顯示所有 Provider"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "すべてのプロバイダーを表示"
+          }
+        }
+      }
+    },
+    "Token Activity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token Activity"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token 活动"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token 活動"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークンアクティビティ"
+          }
+        }
+      }
+    },
+    "Daily Tokens Overview": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Daily Tokens Overview"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每日 Token 总览"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每日 Token 總覽"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日別トークン概要"
+          }
+        }
+      }
+    },
+    "Past year · Swipe to explore. Missing history is not zero.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Past year · Swipe to explore. Missing history is not zero."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "过去一年 · 左右滑动查看。缺失历史不代表用量为零。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "過去一年 · 左右滑動查看。缺失歷史不代表用量為零。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "過去1年・左右にスワイプして確認。履歴がない日はゼロとは限りません。"
+          }
+        }
+      }
+    },
+    "Back to today": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to today"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "回到今天"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "回到今天"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "今日に戻る"
+          }
+        }
+      }
+    },
+    "Color intensity: <100K · <1M · <10M · 10M+ tokens": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Color intensity: <100K · <1M · <10M · 10M+ tokens"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "颜色深浅：少于10万 · 少于100万 · 少于1000万 · 1000万以上 Token"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "顏色深淺：少於10萬 · 少於100萬 · 少於1000萬 · 1000萬以上 Token"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色の濃さ：10万未満・100万未満・1000万未満・1000万以上のトークン"
+          }
+        }
+      }
+    },
+    "Recorded tokens": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recorded tokens"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已记录 Token"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已記錄 Token"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "記録済みトークン"
+          }
+        }
+      }
+    },
+    "Could not refresh token history. Showing the last loaded data.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not refresh token history. Showing the last loaded data."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token 历史刷新失败，正在显示上次加载的数据。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token 歷史重新整理失敗，正在顯示上次載入的資料。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークン履歴を更新できません。前回のデータを表示しています。"
+          }
+        }
+      }
+    },
+    "Could not load token history. Please try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not load token history. Please try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法加载 Token 历史，请重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法載入 Token 歷史，請重試。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "トークン履歴を読み込めません。もう一度お試しください。"
+          }
+        }
+      }
+    },
+    "Service costs in the current Mac sync window.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Service costs in the current Mac sync window."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前 Mac 同步时间范围内的服务费用。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目前 Mac 同步時間範圍內的服務費用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "現在のMac同期期間におけるサービス別費用。"
+          }
+        }
+      }
+    },
+    "Token activity across your Macs, with a clearer home for Codex service costs.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Token activity across your Macs, with a clearer home for Codex service costs."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通过热力图查看各台 Mac 的 Token 活动，并在 Codex 详情中查看服务费用。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "透過熱力圖查看各台 Mac 的 Token 活動，並在 Codex 詳情中查看服務費用。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macのトークン履歴をヒートマップで確認し、Codex詳細でサービス別費用を表示します。"
+          }
+        }
+      }
+    },
+    "Explore daily tokens in a scrollable yearly heatmap. Unavailable days stay distinct from confirmed zero usage.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explore daily tokens in a scrollable yearly heatmap. Unavailable days stay distinct from confirmed zero usage."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在可横向滑动的年度热力图中查看每日 Token，明确区分缺失数据和真实零用量。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在可橫向滑動的年度熱力圖中查看每日 Token，明確區分缺失資料和實際零用量。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "横スクロールできる年間ヒートマップで日別トークンを確認。データなしと利用ゼロを区別します。"
+          }
+        }
+      }
+    },
+    "Compare provider token activity above Daily Spend. Codex Service Mix now lives in Codex details.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compare provider token activity above Daily Spend. Codex Service Mix now lives in Codex details."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在每日费用上方对比各 Provider 的 Token 活动；Codex 服务构成已移至 Codex 详情。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在每日費用上方比較各 Provider 的 Token 活動；Codex 服務組成已移至 Codex 詳情。"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "日別支出の上でプロバイダーのトークン活動を比較。Codexサービス内訳はCodex詳細に移動しました。"
+          }
+        }
+      }
+    },
     "Loading local history…": {
       "localizations": {
         "en": {

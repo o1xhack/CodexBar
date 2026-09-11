@@ -71,6 +71,16 @@ struct CostHistoryWorkerTests {
             isDemoMode: false,
             clearTombstone: nil))
         #expect(insights?.total30DayCost == 12000)
+        let tokens = try await worker.tokenActivity(
+            providers: shortened.providers,
+            sourceSnapshots: [shortened],
+            referenceDate: now)
+        #expect(tokens.first?.days.reduce(0) { $0 + $1.totalTokens } == 1200)
+        let withoutSources = try await worker.tokenActivity(
+            providers: shortened.providers,
+            sourceSnapshots: [],
+            referenceDate: now)
+        #expect(withoutSources.first?.days.reduce(0) { $0 + $1.totalTokens } == 1200)
         #expect(try await worker.loadToken(zoneName: "test-zone") == Data([1]))
     }
 

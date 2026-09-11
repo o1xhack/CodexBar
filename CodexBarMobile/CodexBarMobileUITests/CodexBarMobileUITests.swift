@@ -132,6 +132,101 @@ final class CodexBarMobileUITests: XCTestCase {
     }
 
     @MainActor
+    func testTokenActivityOverviewScrollsAndSelectsDay() throws {
+        let app = self.makeApp()
+        // Preview snapshots are intentionally not persisted to the real ledger.
+        app.launchArguments += ["-cwlEnabled", "NO"]
+        app.launch()
+        app.tabBars.buttons["Cost"].tap()
+        let title = app.staticTexts["Daily Tokens Overview"]
+        for _ in 0..<5 where !title.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
+        let move = max(0, title.frame.minY - 130) / app.frame.height
+        if move > 0 {
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.8))
+                .press(
+                    forDuration: 0.1,
+                    thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: max(0.15, 0.8 - move))),
+                    withVelocity: .slow, thenHoldForDuration: 0.5)
+        }
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        let key = try formatter.string(from: XCTUnwrap(Calendar.current.date(byAdding: .day, value: -7, to: Date())))
+        let day = app.buttons["token-day-" + key].firstMatch
+        XCTAssertTrue(day.waitForExistence(timeout: 3))
+        let before = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        before.name = "Token cells before selection"
+        before.lifetime = .keepAlways
+        add(before)
+        day.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let selected = app.staticTexts["selected-token-day"]
+        for _ in 0..<3 where !selected.exists {
+            app.swipeUp()
+        }
+        XCTAssertTrue(selected.waitForExistence(timeout: 3))
+        XCTAssertEqual(selected.label, key)
+        XCTAssertTrue(app.buttons["Back to today"].firstMatch.exists)
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = "2.0 Token Overview"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        XCTAssertFalse(app.staticTexts["Codex Service Mix"].exists)
+    }
+
+    @MainActor
+    func testProviderTokenActivityReplacesDailyList() {
+        let app = self.makeApp()
+        // Preview snapshots are intentionally not persisted to the real ledger.
+        app.launchArguments += ["-cwlEnabled", "NO"]
+        app.launch()
+        app.buttons["provider-group-codex"].tap()
+        let title = app.staticTexts["Token Activity"]
+        for _ in 0..<10 where !title.isHittable {
+            app.swipeUp()
+        }
+        XCTAssertTrue(title.exists)
+        XCTAssertFalse(app.buttons["Show all days"].exists)
+        let move = max(0, title.frame.minY - 130) / app.frame.height
+        if move > 0 {
+            app.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.8))
+                .press(forDuration: 0.1,
+                    thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: max(0.15, 0.8 - move))),
+                    withVelocity: .slow, thenHoldForDuration: 0.5)
+        }
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        let todayKey = formatter.string(from: Date())
+        let today = app.buttons["token-day-" + todayKey].firstMatch
+        XCTAssertTrue(today.exists)
+        let originalX = today.frame.midX
+        let y = today.frame.midY / app.frame.height
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.3, dy: y))
+            .press(forDuration: 0.1,
+                thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.85, dy: y)),
+                withVelocity: .slow, thenHoldForDuration: 0.5)
+        XCTAssertTrue(!today.isHittable || today.frame.midX > originalX + 100)
+        let history = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        history.name = "2.0 Provider older history after horizontal swipe"
+        history.lifetime = .keepAlways
+        add(history)
+        app.buttons["Back to today"].firstMatch.tap()
+        XCTAssertTrue(today.isHittable)
+        let attachment = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        attachment.name = "2.0 Provider Token Activity"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        let serviceMix = app.staticTexts["Codex Service Mix"]
+        for _ in 0..<5 where !serviceMix.isHittable { app.swipeUp() }
+        XCTAssertTrue(serviceMix.exists)
+    }
+
+    @MainActor
     private func makeApp() -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = [
