@@ -138,19 +138,19 @@ final class CodexBarMobileUITests: XCTestCase {
         app.launchArguments += ["-cwlEnabled", "NO"]
         app.launch()
         app.tabBars.buttons["Cost"].tap()
-        let title = app.staticTexts["Daily Tokens Overview"]
-        for _ in 0..<5 where !title.isHittable {
+        let overview = app.buttons["token-overview-link"]
+        for _ in 0..<5 where !overview.isHittable {
             app.swipeUp()
         }
-        XCTAssertTrue(title.waitForExistence(timeout: 5))
-        let move = max(0, title.frame.minY - 130) / app.frame.height
-        if move > 0 {
-            app.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: 0.8))
-                .press(
-                    forDuration: 0.1,
-                    thenDragTo: app.coordinate(withNormalizedOffset: CGVector(dx: 0.8, dy: max(0.15, 0.8 - move))),
-                    withVelocity: .slow, thenHoldForDuration: 0.5)
-        }
+        XCTAssertTrue(overview.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Back to today"].exists)
+        let summary = XCTAttachment(screenshot: XCUIScreen.main.screenshot())
+        summary.name = "Cost combined token summary"
+        summary.lifetime = .keepAlways
+        add(summary)
+        overview.tap()
+        XCTAssertTrue(app.navigationBars["Token Activity"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Daily Tokens Overview"].exists)
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .gregorian)
         formatter.locale = Locale(identifier: "en_US_POSIX")

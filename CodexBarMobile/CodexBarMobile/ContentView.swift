@@ -4129,7 +4129,7 @@ private enum MobileReleaseNotesCatalog {
             summary: String(localized: "Token activity across your Macs, with a clearer home for Codex service costs."),
             sections: [.init(title: String(localized: "What's New"), items: [
                 String(localized: "Explore daily tokens in a scrollable yearly heatmap. Unavailable days stay distinct from confirmed zero usage."),
-                String(localized: "Compare provider token activity above Daily Spend. Codex Service Mix now lives in Codex details."),
+                String(localized: "See total tokens on Cost, then tap to explore each provider’s activity. Codex Service Mix now lives in Codex details."),
             ])]),
         ReleaseNotesVersion(
             version: "1.24.0",

@@ -13,15 +13,6 @@ struct TokenActivitySection: View {
     @State private var series: [TokenActivitySeries] = []
     @State private var failed = false
     @State private var loadedScope: String?
-    @State private var showsAllProviders = false
-    @State private var selectedDate = Calendar.current.startOfDay(for: Date())
-    @State private var hasSelection = false
-    @ScaledMetric(relativeTo: .caption2) private var calendarLabelHeight: CGFloat = 16
-
-    private var gridHeight: CGFloat {
-        166 + 2 * self.calendarLabelHeight
-    }
-
     private var scope: String {
         self.providers
             .map { $0.cardIdentityKey + CostLedgerService.accountIdentityKeys(for: $0).sorted().joined(separator: ",") }
@@ -35,6 +26,94 @@ struct TokenActivitySection: View {
             + self.sourceSnapshots.map { "\($0.deviceID ?? ""):\($0.syncTimestamp.timeIntervalSince1970)" }.joined()
             + TokenActivity.sourceRevision(self.sourceSnapshots)
             + TokenActivity.dayKey(self.referenceDate, calendar: .current)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            if self.loadedScope == self.scope, !self.series.isEmpty {
+                if self.isOverview {
+                    NavigationLink {
+                        ScrollView {
+                            TokenActivityCharts(
+                                series: self.series,
+                                isOverview: true,
+                                referenceDate: self.referenceDate,
+                                failed: self.failed)
+                                .padding()
+                        }
+                        .navigationTitle(String(localized: "Token Activity"))
+                        .navigationBarTitleDisplayMode(.inline)
+                    } label: {
+                        HStack(spacing: 12) {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(String(localized: "Recorded tokens")).font(.headline)
+                                Text(SyncCounterMath.saturatingSum(self.series.flatMap { item in
+                                    item.days.compactMap { TokenActivity.recordedTokens($0, series: item) }
+                                }).formatted())
+                                    .font(.title2.bold().monospacedDigit())
+                                    .accessibilityIdentifier("token-overview-total")
+                                Text(String(localized: "Past year · All providers"))
+                                    .font(.caption).foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.body.weight(.semibold)).foregroundStyle(.secondary)
+                                .accessibilityHidden(true)
+                        }
+                        .foregroundStyle(.primary)
+                        .padding(16)
+                        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier("token-overview-link")
+                } else {
+                    TokenActivityCharts(
+                        series: self.series,
+                        isOverview: false,
+                        referenceDate: self.referenceDate,
+                        failed: self.failed)
+                }
+            } else if self.failed {
+                Text(String(localized: "Could not load token history. Please try again."))
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+        }
+        .task(id: self.refreshKey) {
+            let requestedScope = self.scope
+            do {
+                let result: [TokenActivitySeries] = if self.useLedger, !self.isDemoMode {
+                    try await CostHistoryWorker.shared.tokenActivity(
+                        providers: self.providers,
+                        sourceSnapshots: self.sourceSnapshots,
+                        referenceDate: self.referenceDate)
+                } else {
+                    try await CostHistoryWorker.shared.snapshotTokenActivity(
+                        providers: self.providers, referenceDate: self.referenceDate)
+                }
+                guard !Task.isCancelled else { return }
+                self.series = result
+                self.loadedScope = requestedScope
+                self.failed = false
+            } catch {
+                guard !Task.isCancelled else { return }
+                self.failed = true
+            }
+        }
+    }
+}
+
+private struct TokenActivityCharts: View {
+    let series: [TokenActivitySeries]
+    let isOverview: Bool
+    let referenceDate: Date
+    let failed: Bool
+    @State private var showsAllProviders = false
+    @State private var selectedDate = Calendar.current.startOfDay(for: Date())
+    @State private var hasSelection = false
+    @ScaledMetric(relativeTo: .caption2) private var calendarLabelHeight: CGFloat = 16
+
+    private var gridHeight: CGFloat {
+        166 + 2 * self.calendarLabelHeight
     }
 
     private var selectedDay: String? {
@@ -64,124 +143,96 @@ struct TokenActivitySection: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            if self.loadedScope == self.scope, !self.series.isEmpty {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(self
-                        .isOverview ? String(localized: "Daily Tokens Overview") : String(localized: "Token Activity"))
-                        .font(.headline)
-                    Text(String(localized: "Past year · Swipe to explore. Missing history is not zero."))
-                        .font(.caption).foregroundStyle(.secondary)
-                    let availableTotal = SyncCounterMath.saturatingSum(self.series.flatMap { item in
-                        item.days.compactMap { TokenActivity.recordedTokens($0, series: item) }
-                    })
-                    Text(String(localized: "Recorded tokens") + ": " + availableTotal.formatted())
-                        .font(.subheadline.monospacedDigit())
-                    ScrollViewReader { proxy in
-                        HStack(alignment: .top, spacing: 8) {
-                            if self.isOverview {
-                                VStack(alignment: .leading, spacing: 16) {
-                                    ForEach(self.showsAllProviders ? self
-                                        .series : Array(self.series.prefix(2)))
-                                    { item in
-                                        Text(self.title(for: item))
-                                            .font(.caption.bold()).lineLimit(4)
-                                            .foregroundStyle(ProviderColorPalette.color(for: item.provider))
-                                            .frame(width: 60, height: self.gridHeight, alignment: .topLeading)
-                                    }
-                                }
-                            }
-                            ScrollView(.horizontal) {
-                                VStack(alignment: .leading, spacing: 16) {
-                                    ForEach(self.showsAllProviders ? self
-                                        .series : Array(self.series.prefix(2)))
-                                    { item in
-                                        TokenActivityGrid(
-                                            series: item,
-                                            referenceDate: self.referenceDate,
-                                            selectedDay: self.daySelection)
-                                    }
-                                }
-                                .id("latest")
-                            }
-                            .defaultScrollAnchor(.trailing)
-                        }
-                        Button(String(localized: "Back to today")) { proxy.scrollTo("latest", anchor: .trailing) }
-                            .font(.caption)
-                    }
-                    if self.series.count > 2 {
-                        Button(self
-                            .showsAllProviders ? String(localized: "Show fewer providers") :
-                            String(localized: "Show all providers"))
-                        {
-                            self.showsAllProviders.toggle()
-                        }.font(.caption)
-                    }
-                    Text(String(localized: "Color intensity: <100K · <1M · <10M · 10M+ tokens"))
-                        .font(.caption2).foregroundStyle(.secondary)
-                    DatePicker(
-                        String(localized: "Date"),
-                        selection: self.$selectedDate,
-                        in: Calendar.current.date(byAdding: .day, value: -364, to: self.referenceDate)!...self
-                            .referenceDate,
-                        displayedComponents: .date)
-                        .accessibilityIdentifier("token-date-picker")
-                        .onChange(of: self.selectedDate) { self.hasSelection = true }
-                    if let selectedDay {
-                        Text(selectedDay).font(.subheadline.bold()).accessibilityIdentifier("selected-token-day")
-                        if self.isOverview {
-                            let values = self.series.compactMap { item in
-                                TokenActivity.recordedTokens(item.days.first { $0.dayKey == selectedDay }, series: item)
-                            }
-                            Text(String(localized: "Recorded tokens") + ": " + (values.isEmpty
-                                    ? String(localized: "Unavailable")
-                                    : SyncCounterMath.saturatingSum(values).formatted()))
-                                .font(.subheadline.monospacedDigit())
-                        }
-                        ForEach(self.series) { item in
-                            HStack {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(self
+                .isOverview ? String(localized: "Daily Tokens Overview") : String(localized: "Token Activity"))
+                .font(.headline)
+            Text(String(localized: "Past year · Swipe to explore. Missing history is not zero."))
+                .font(.caption).foregroundStyle(.secondary)
+            let availableTotal = SyncCounterMath.saturatingSum(self.series.flatMap { item in
+                item.days.compactMap { TokenActivity.recordedTokens($0, series: item) }
+            })
+            Text(String(localized: "Recorded tokens") + ": " + availableTotal.formatted())
+                .font(.subheadline.monospacedDigit())
+            ScrollViewReader { proxy in
+                HStack(alignment: .top, spacing: 8) {
+                    if self.isOverview {
+                        VStack(alignment: .leading, spacing: 16) {
+                            ForEach(self.showsAllProviders ? self
+                                .series : Array(self.series.prefix(2)))
+                            { item in
                                 Text(self.title(for: item))
-                                Spacer()
-                                Text(TokenActivity.tokenText(
-                                    item.days.first { $0.dayKey == selectedDay },
-                                    series: item))
-                                    .monospacedDigit()
-                            }.font(.caption)
+                                    .font(.caption.bold()).lineLimit(4)
+                                    .foregroundStyle(ProviderColorPalette.color(for: item.provider))
+                                    .frame(width: 60, height: self.gridHeight, alignment: .topLeading)
+                            }
                         }
                     }
-                    if self.failed {
-                        Text(String(localized: "Could not refresh token history. Showing the last loaded data."))
-                            .font(.caption).foregroundStyle(.secondary)
+                    ScrollView(.horizontal) {
+                        VStack(alignment: .leading, spacing: 16) {
+                            ForEach(self.showsAllProviders ? self
+                                .series : Array(self.series.prefix(2)))
+                            { item in
+                                TokenActivityGrid(
+                                    series: item,
+                                    referenceDate: self.referenceDate,
+                                    selectedDay: self.daySelection)
+                            }
+                        }
+                        .id("latest")
                     }
+                    .defaultScrollAnchor(.trailing)
                 }
-                .padding(16)
-                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
-            } else if self.failed {
-                Text(String(localized: "Could not load token history. Please try again."))
+                Button(String(localized: "Back to today")) { proxy.scrollTo("latest", anchor: .trailing) }
+                    .font(.caption)
+            }
+            if self.series.count > 2 {
+                Button(self
+                    .showsAllProviders ? String(localized: "Show fewer providers") :
+                    String(localized: "Show all providers"))
+                {
+                    self.showsAllProviders.toggle()
+                }.font(.caption)
+            }
+            Text(String(localized: "Color intensity: <100K · <1M · <10M · 10M+ tokens"))
+                .font(.caption2).foregroundStyle(.secondary)
+            DatePicker(
+                String(localized: "Date"),
+                selection: self.$selectedDate,
+                in: Calendar.current.date(byAdding: .day, value: -364, to: self.referenceDate)!...self
+                    .referenceDate,
+                displayedComponents: .date)
+                .accessibilityIdentifier("token-date-picker")
+                .onChange(of: self.selectedDate) { self.hasSelection = true }
+            if let selectedDay {
+                Text(selectedDay).font(.subheadline.bold()).accessibilityIdentifier("selected-token-day")
+                if self.isOverview {
+                    let values = self.series.compactMap { item in
+                        TokenActivity.recordedTokens(item.days.first { $0.dayKey == selectedDay }, series: item)
+                    }
+                    Text(String(localized: "Recorded tokens") + ": " + (values.isEmpty
+                            ? String(localized: "Unavailable")
+                            : SyncCounterMath.saturatingSum(values).formatted()))
+                        .font(.subheadline.monospacedDigit())
+                }
+                ForEach(self.series) { item in
+                    HStack {
+                        Text(self.title(for: item))
+                        Spacer()
+                        Text(TokenActivity.tokenText(
+                            item.days.first { $0.dayKey == selectedDay },
+                            series: item))
+                            .monospacedDigit()
+                    }.font(.caption)
+                }
+            }
+            if self.failed {
+                Text(String(localized: "Could not refresh token history. Showing the last loaded data."))
                     .font(.caption).foregroundStyle(.secondary)
             }
         }
-        .task(id: self.refreshKey) {
-            let requestedScope = self.scope
-            do {
-                let result: [TokenActivitySeries] = if self.useLedger, !self.isDemoMode {
-                    try await CostHistoryWorker.shared.tokenActivity(
-                        providers: self.providers,
-                        sourceSnapshots: self.sourceSnapshots,
-                        referenceDate: self.referenceDate)
-                } else {
-                    try await CostHistoryWorker.shared.snapshotTokenActivity(
-                        providers: self.providers, referenceDate: self.referenceDate)
-                }
-                guard !Task.isCancelled else { return }
-                self.series = result
-                self.loadedScope = requestedScope
-                self.failed = false
-            } catch {
-                guard !Task.isCancelled else { return }
-                self.failed = true
-            }
-        }
+        .padding(16)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 14))
     }
 }
 

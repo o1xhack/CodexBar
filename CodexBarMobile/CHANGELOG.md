@@ -5,7 +5,7 @@ All notable changes to the CodexBar iOS companion app will be documented in this
 ## [2.0.0 (200)] — Unreleased
 
 ### Added
-- Shared yearly Token Activity heatmaps in provider details and the Cost overview, with provider colors and explicit unavailable states.
+- Shared yearly Token Activity heatmaps in provider details, with provider colors and explicit unavailable states; a combined token total on Cost opens the per-provider activity breakdown.
 - Preserve token availability in the local daily ledger independently of cost availability.
 
 ### Changed

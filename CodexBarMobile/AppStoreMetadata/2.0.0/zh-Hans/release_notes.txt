@@ -1,4 +1,4 @@
 通过热力图查看各台 Mac 的 Token 活动，并在 Codex 详情中查看服务费用。
 
 • 在可横向滑动的年度热力图中查看每日 Token，明确区分缺失数据和真实零用量。
-• 在每日费用上方对比各 Provider 的 Token 活动；Codex 服务构成已移至 Codex 详情。
+• 在费用页查看 Token 总数，点按即可查看各 Provider 的活动；Codex 服务构成已移至 Codex 详情。

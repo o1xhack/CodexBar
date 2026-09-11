@@ -69,3 +69,10 @@ UI夹具说明：`UI_TEST_PREVIEW_DATA`只注入内存快照，不写本地账�
 - 应用代码已变化，上传前必须重新归档，原 build 200 archive 不再作为最终上传产物。
 - 同轮自查补充：新热力图日合并、全年总计和所选日总计均使用现有 SyncCounterMath.saturatingSum，避免极端同步计数溢出。`/tmp/cbm-2-counter-tests.log`：12 tests / 2 suites passed，包含 Int.max + 1 回归；相关文件 strict lint 通过。
 - 自查空日总计：所选日所有 provider 都没有可用计数时显示 Unavailable，保留已知 0；复用已有四语言文案。`/tmp/cbm-2-cr-final-ui.log`：Cost overview 滑动/日期选择 UI 测试通过；strict lint 通过。上传使用该修正之后的重新归档。
+
+## Cost 总数 → Provider 详情导航调整
+- 按用户确认将 Cost 热力图收纳到详情页；主卡片与详情共用 section 持有的已加载 series，导航不新增查询或独立合计来源。
+- `/tmp/cbm-2-summary-tests.log`：10 项 TokenActivityTests + 2 项 UI 测试全部通过。UI 验证主卡片无热力图控制、点击进入 Token Activity、选日及 Usage 单 provider 回归。
+- 已查看实际截图 `evidence/cost-summary-navigation.png` 和 `evidence/token-activity-detail.png`：主卡片及详情总数一致（fixture 12,772,947），导航、列表与点图无截断。
+- 四语言 UI/商店/in-app 说明同步完成；i18n audit 332 source keys 通过；TokenActivityView strict lint 通过。
+- 本次 UI 变更后重新走当前 head CR，归档与上传必须包含该提交。

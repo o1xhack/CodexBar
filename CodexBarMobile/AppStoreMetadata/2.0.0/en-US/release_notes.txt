@@ -1,4 +1,4 @@
 Token activity across your Macs, with a clearer home for Codex service costs.
 
 • Explore daily tokens in a scrollable yearly heatmap. Unavailable days stay distinct from confirmed zero usage.
-• Compare provider token activity above Daily Spend. Codex Service Mix now lives in Codex details.
+• See total tokens on Cost, then tap to explore each provider’s activity. Codex Service Mix now lives in Codex details.
