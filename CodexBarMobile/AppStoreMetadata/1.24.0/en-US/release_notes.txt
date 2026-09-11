@@ -1,0 +1,5 @@
+• See daily requests, tokens and costs from your Mac. Unavailable values remain clearly marked.
+• View purchased Codex credits separately from monthly limits, with more reliable balances across Macs.
+• Improved Moonshot balances and Ollama monthly credit labels.
+• Cost history refreshes in the background while keeping the last complete view visible. Safer local storage and incremental syncing help protect saved history.
+Update CodexBar on Mac to 0.58.0.1 or later for all new data. Older Mac versions remain supported.

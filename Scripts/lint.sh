@@ -264,6 +264,7 @@ run_portable_checks() {
   check_package_info_plist
   check_release_dsym_paths
   check_release_checksum
+  /bin/bash "${ROOT_DIR}/Scripts/test_ios_upload_contract.sh"
   check_sparkle_signing_paths
   check_release_secret_loading
   check_upstream_release_monitor

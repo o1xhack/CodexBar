@@ -52,6 +52,8 @@ cat > "$OPTIONS_PLIST" <<PLIST
     <string>3TUERHN53E</string>
     <key>destination</key>
     <string>upload</string>
+    <key>manageAppVersionAndBuildNumber</key>
+    <false/>
     <key>uploadSymbols</key>
     <true/>
     <key>stripSwiftSymbols</key>
@@ -71,6 +73,7 @@ xcodebuild archive \
   -destination "generic/platform=iOS" \
   -archivePath "$ARCHIVE_PATH" \
   -allowProvisioningUpdates \
+  -packageAuthorizationProvider netrc \
   | tail -30
 
 echo ""
@@ -79,6 +82,7 @@ xcodebuild -exportArchive \
   -archivePath "$ARCHIVE_PATH" \
   -exportOptionsPlist "$OPTIONS_PLIST" \
   -allowProvisioningUpdates \
+  -packageAuthorizationProvider netrc \
   | tail -30
 
 echo ""
