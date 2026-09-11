@@ -1,6 +1,6 @@
 # 第六轮前架构复盘
 
-状态：修正已实现并验证，等待最终当前提交 CR。
+状态：done。修正已实现并验证，b8c0c0e5e 已获最终 clean，PR #123 gate 通过并合并，TF 上传完成。
 
 - PR 审计：https://github.com/o1xhack/CodexBar-Mobile/pull/123#issuecomment-5641138029
 - 审计时当前 head：3b52c4539874111df0d536233de0d551ee0198f2；已完成五轮评审事件。

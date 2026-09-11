@@ -1,6 +1,6 @@
 # 实现与代码审计
 
-Status: 本地实现及针对性review完成；发布前真机与远端review gate未完成。
+Status: done（实现、六轮远端 CR、PR #123 合并与 TF 上传已完成；真机未覆盖项见03-testing）。
 
 ## 文件与数据流
 - `Models/TokenActivity.swift`：同一 reducer 供两处视图使用；ledger rollup 按账户匹配，避免再叠加当前 blob；显式空 rollup 不回退旧 blob；无费用但有 Token 的 Provider 保留。
@@ -31,4 +31,4 @@ ledger 查询仍为365天；不删除历史、不扩大保存承诺。blob fallb
 10. 关闭ledger时的365日映射也移入后台actor，避免在主线程处理整个Provider集合。
 11. ledger开启时始终读本地账本，即使来源快照暂时为空也不绕过clear墓碑回退旧blob。
 
-正式远端 PR review 尚未运行；没有 push 授权，不将本地自查写成远端review通过。
+远端 PR #123 在 b8c0c0e5e 最终 clean，全部线程已关闭，review gate 通过；已合并并上传2.0.0(200)。Code Review 后补齐 producer 午夜刷新、统一 optional/lower-bound 总数、安全账本求和与365日 padding 边界，详见03-testing与05-review-audit。

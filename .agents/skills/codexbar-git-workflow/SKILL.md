@@ -143,9 +143,9 @@ fork-owned invariant is documented in `docs/ci-policy.md`:
 
 Code review may therefore finish before heavy CI exists on the PR. PR Fast
 Checks and Codex Code Review are independent gates: a green check run never
-means review is complete. After merge, check Final CI before release; a failure
-is fixed forward and release remains blocked until the relevant final gate
-passes.
+means review is complete. After merge, check Final CI before public release; a failure
+is fixed forward and public release remains blocked until the relevant final gate
+passes. TestFlight beta uploads are independent of this remote CI gate.
 
 After pushing or opening a PR, check status from GitHub, not memory:
 
@@ -195,8 +195,30 @@ Revised approach: <what will be redesigned or rewritten>
 ```
 
 For release/upstream-sync work, **merge, tag creation, Mac live release,
-appcast publication, and TestFlight upload are blocked until this PR review
-gate passes**. Review-fix and closeout PRs are not exceptions.
+and appcast publication are blocked until this PR review gate passes**.
+Review-fix and closeout PR merges are not exceptions.
+
+## Independent TestFlight Beta Uploads
+
+When the user authorizes TestFlight, upload directly from the task branch if needed.
+A PR, completed Codex review, merge to mobile-dev, and remote CI completion are
+not prerequisites. Do not create a PR solely to unlock TestFlight.
+
+Retain relevant local builds/tests, version and build-number checks, four-language
+release notes, signing, and CloudKit Production checks. Record the source commit,
+uploaded version/build, Apple processing/beta-access results, and known validation
+gaps. An upload does not authorize merging, tagging, or a public App Store release.
+If a PR exists, its review/CI workflow continues independently; beta upload does
+not mark those gates passed or waive them for a later merge.
+
+Before promoting a beta build to App Review/public release, verify its recorded
+archive source commit and tree against the clean reviewed release source. The
+selected ASC build must contain the exact reviewed code, resources, build settings
+and version; an unrelated clean review on a newer head is not evidence for an
+older binary. Record the archive/IPA hash and ASC build ID with that provenance.
+If review fixes change any shipped inputs, or provenance cannot be established,
+archive and upload a new build and select that build for submission. Docs-only
+follow-ups do not require a new binary when the shipped inputs are identical.
 
 ## Todoist Handoff
 

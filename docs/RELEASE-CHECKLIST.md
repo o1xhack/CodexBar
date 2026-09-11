@@ -55,12 +55,16 @@
 - [ ] 每个 finding：修复并复测 → 在线程回复 commit/证据 → 明确 Resolve conversation → push → 再次 `@codex review`
 - [ ] merge 前运行 `Scripts/check_pr_review_gate.sh <pr>`：当前 head 必须收到 `Didn't find any major issues`，所有 thread（含 outdated）必须 `isResolved=true`
 - [ ] 第 5 轮后仍有新 finding：第 6 轮前停止补小洞，在 PR 写 `Codex review architecture audit`，并填写非空的 `Head`、`Repeated finding pattern`、`Root design/requirements problem`、`Revised approach` 四个字段；重审方向后再继续，audit 不能替代最终 clean review
-- [ ] 上述 gate 未通过时，禁止 merge、tag、Mac live release/appcast publish 与 TestFlight upload
+- [ ] 上述 gate 未通过时，禁止 merge、tag、Mac live release/appcast publish；TestFlight 内测上传独立于该 gate
 
 ## 7. 发布（在用户 Mac 上实跑）
-- [ ] `Scripts/check_pr_review_gate.sh <pr>` + PR CI 均通过后，才 merge sync 分支 → `mobile-dev`（release + appcast 都从 mobile-dev 出）
+
+TestFlight 是独立内测流程。用户授权上传后，不要求先创建 PR、通过 CR、merge 或等远端 CI；不得为了上传 TF 而强制创建 PR。仍完成适用的本地构建/测试、版本号、四语言说明、签名及 CloudKit Production 检查，记录 source commit、版本/build、Apple 处理与 beta 可用状态以及未验证风险。后续合并和公开发布仍执行各自 gate。
+
+- [ ] `Scripts/check_pr_review_gate.sh <pr>` + PR CI 均通过后，才 merge sync 分支 → `mobile-dev`（Mac release + appcast 从 mobile-dev 出；TestFlight 可从任务分支上传）
 - [ ] Sparkle 工具加进 PATH：`export PATH="$PWD/.build/artifacts/sparkle/Sparkle/bin:$PATH"`
 - [ ] `./Scripts/release.sh`（phase1：build + sign + notarize + draft GitHub release）
+- [ ] iOS 正式审核/公开发布前核对所选 ASC build 的 archive source commit/tree、archive/IPA hash 与 build ID；其代码、资源、构建配置和版本必须与已 clean review 的发布输入完全一致。若 CR 后有影响二进制的变化，或来源无法证明，重新归档上传新 build 并绑定新包；后续纯文档差异不要求重打相同二进制。
 - [ ] iOS：`xcodegen generate` → Archive（`-allowProvisioningUpdates`）→ export/upload 到 App Store Connect（TestFlight）
 - [ ] 用户 QA 通过后 → `./Scripts/release.sh --finalize`（publish draft + 生成签名 appcast + push 到 mobile-dev）
 - [ ] Mac public release 公开后，逐个找到本 train 对应的 open `upstream-sync` issue，回复正式 release URL 与完成说明，再手动选择 `Close as completed`。PR 只关联这些 issue，不用 closing keyword 提前关闭；draft release 也不关闭 issue
