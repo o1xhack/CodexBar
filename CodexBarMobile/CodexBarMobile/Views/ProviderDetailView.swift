@@ -62,6 +62,8 @@ struct ProviderDetailView: View {
     /// every Today/history accessor prevents an open detail view from retaining
     /// yesterday's producer-calendar freshness after midnight.
     let costReferenceDate: Date
+    var sourceSnapshots: [SyncedUsageSnapshot] = []
+    var isDemoMode = false
 
     @State private var selectedAccountIndex: Int = 0
 
@@ -82,8 +84,11 @@ struct ProviderDetailView: View {
 
     /// Multi-account init — preferred path from the post-merge,
     /// post-grouping Usage list.
-    init(group: ProviderAccountGroup, costReferenceDate: Date = Date()) {
+    init(group: ProviderAccountGroup, costReferenceDate: Date = Date(),
+         sourceSnapshots: [SyncedUsageSnapshot] = [], isDemoMode: Bool = false) {
         self.group = group
+        self.sourceSnapshots = sourceSnapshots
+        self.isDemoMode = isDemoMode
         self.costReferenceDate = costReferenceDate
     }
 
@@ -330,9 +335,12 @@ struct ProviderDetailView: View {
                 }
 
                 // Daily chart
+                TokenActivitySection(
+                    providers: [self.provider], sourceSnapshots: self.sourceSnapshots,
+                    isDemoMode: self.isDemoMode, referenceDate: self.costReferenceDate)
                 if let cost = self.provider.costSummary {
-                    if !cost.daily.isEmpty {
-                        SyncedDailyActivityView(summary: cost)
+                    if self.provider.providerID == "codex" {
+                        CodexServiceMixView(summary: cost)
                     }
                     let availableDaily = Self.availableCostPoints(cost.daily)
                     if !availableDaily.isEmpty {

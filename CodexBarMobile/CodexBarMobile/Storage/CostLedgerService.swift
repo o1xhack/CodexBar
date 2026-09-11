@@ -211,6 +211,7 @@ enum CostLedgerService {
                 dayKey: point.dayKey,
                 costUSD: point.costUSD,
                 totalTokens: point.totalTokens,
+                tokenCountIsKnown: point.tokenCountIsKnown,
                 costIsKnown: point.costIsKnown,
                 isEstimated: point.isEstimated,
                 modelBreakdowns: point.modelBreakdowns,
@@ -240,6 +241,7 @@ enum CostLedgerService {
         dayKey: String,
         costUSD: Double,
         totalTokens: Int,
+        tokenCountIsKnown: Bool? = nil,
         costIsKnown: Bool? = nil,
         isEstimated: Bool?,
         modelBreakdowns: [SyncCostBreakdown],
@@ -285,6 +287,7 @@ enum CostLedgerService {
             if existing.lastUpdated == lastUpdated,
                existing.costUSD != costUSD ||
                existing.totalTokens != totalTokens ||
+               existing.tokenCountIsKnown != tokenCountIsKnown ||
                existing.costIsKnown != costIsKnown ||
                existing.isEstimated != isEstimated ||
                existing.modelBreakdownsData != modelData ||
@@ -292,6 +295,7 @@ enum CostLedgerService {
             {
                 existing.costUSD = costUSD
                 existing.totalTokens = totalTokens
+                existing.tokenCountIsKnown = tokenCountIsKnown
                 existing.costIsKnown = costIsKnown
                 existing.isEstimated = isEstimated
                 existing.modelBreakdownsData = modelData
@@ -306,6 +310,7 @@ enum CostLedgerService {
             }
             existing.costUSD = costUSD
             existing.totalTokens = totalTokens
+            existing.tokenCountIsKnown = tokenCountIsKnown
             existing.costIsKnown = costIsKnown
             existing.isEstimated = isEstimated
             existing.modelBreakdownsData = modelData
@@ -322,6 +327,7 @@ enum CostLedgerService {
                 dayKey: dayKey,
                 costUSD: costUSD,
                 totalTokens: totalTokens,
+                tokenCountIsKnown: tokenCountIsKnown,
                 costIsKnown: costIsKnown,
                 isEstimated: isEstimated,
                 modelBreakdownsData: modelData,
@@ -367,6 +373,7 @@ enum CostLedgerService {
                 if legacy.lastUpdated > existing.lastUpdated {
                     existing.costUSD = legacy.costUSD
                     existing.totalTokens = legacy.totalTokens
+                    existing.tokenCountIsKnown = legacy.tokenCountIsKnown
                     existing.costIsKnown = legacy.costIsKnown
                     existing.isEstimated = legacy.isEstimated
                     existing.modelBreakdownsData = legacy.modelBreakdownsData
@@ -428,6 +435,7 @@ enum CostLedgerService {
                 if source.lastUpdated > target.lastUpdated {
                     target.costUSD = source.costUSD
                     target.totalTokens = source.totalTokens
+                    target.tokenCountIsKnown = source.tokenCountIsKnown
                     target.costIsKnown = source.costIsKnown
                     target.isEstimated = source.isEstimated
                     target.modelBreakdownsData = source.modelBreakdownsData
@@ -619,7 +627,7 @@ enum CostLedgerService {
             .sortedByCostThenName()
 
         let totalCostUSD = perDay.values.reduce(0) { $0 + $1.costUSD }
-        let totalTokens = perDay.values.reduce(0) { $0 + $1.totalTokens }
+        let totalTokens = SyncCounterMath.saturatingSum(perDay.values.map(\.totalTokens))
         let activeDayCount = perDay.values.count(where: { $0.costUSD > 0 })
 
         return CostLedgerAggregation(
@@ -822,6 +830,7 @@ enum CostLedgerService {
                     dayKey: point.dayKey,
                     costUSD: point.costUSD,
                     totalTokens: point.totalTokens,
+                    tokenCountIsKnown: point.tokenCountIsKnown,
                     costIsKnown: point.costIsKnown,
                     isEstimated: point.isEstimated,
                     modelBreakdowns: point.modelBreakdowns,
@@ -891,6 +900,7 @@ enum CostLedgerService {
                         || existing.accountIdentitiesData != accountIdentitiesData
                         || existing.costUSD != point.costUSD
                         || existing.totalTokens != point.totalTokens
+                        || existing.tokenCountIsKnown != point.tokenCountIsKnown
                         || existing.costIsKnown != point.costIsKnown
                         || existing.isEstimated != point.isEstimated
                         || existing.modelBreakdownsData != modelData
@@ -1196,6 +1206,7 @@ enum CostLedgerService {
         let dayKey: String
         let costUSD: Double
         let totalTokens: Int
+        let tokenCountIsKnown: Bool?
         let costIsKnown: Bool?
         let isEstimated: Bool?
         let modelBreakdowns: [SyncCostBreakdown]
@@ -1214,7 +1225,8 @@ enum CostLedgerService {
             self.accountIdentityKeys = accountIdentityKeys
             self.dayKey = dayKey ?? row.dayKey
             self.costUSD = row.costUSD
-            self.totalTokens = row.totalTokens
+            self.totalTokens = row.tokenCountIsKnown == false ? 0 : max(0, row.totalTokens)
+            self.tokenCountIsKnown = row.totalTokens < 0 ? false : row.tokenCountIsKnown
             self.costIsKnown = row.costIsKnown
             self.isEstimated = row.isEstimated
             self.modelBreakdowns = Self.decodeBreakdowns(row.modelBreakdownsData, decoder: decoder)
@@ -1246,6 +1258,7 @@ enum CostLedgerService {
                 dayKey: dayKey,
                 costUSD: dayAccumulator.costUSD,
                 totalTokens: dayAccumulator.totalTokens,
+                tokenCountIsKnown: dayAccumulator.mergedTokenCountIsKnown,
                 costIsKnown: dayAccumulator.mergedCostIsKnown,
                 isEstimated: dayAccumulator.isEstimated ? true : nil,
                 modelBreakdowns: dayAccumulator.modelBreakdownsArray,
@@ -1260,6 +1273,7 @@ enum CostLedgerService {
             dayKey: String,
             costUSD: Double,
             totalTokens: Int,
+            tokenCountIsKnown: Bool?,
             costIsKnown: Bool?,
             isEstimated: Bool?,
             modelBreakdowns: [SyncCostBreakdown],
@@ -1272,6 +1286,7 @@ enum CostLedgerService {
             self.dayKey = dayKey
             self.costUSD = costUSD
             self.totalTokens = totalTokens
+            self.tokenCountIsKnown = tokenCountIsKnown
             self.costIsKnown = costIsKnown
             self.isEstimated = isEstimated
             self.modelBreakdowns = modelBreakdowns
@@ -1290,6 +1305,7 @@ enum CostLedgerService {
         let dayKey: String
         var costUSD: Double = 0
         var totalTokens: Int = 0
+        var sawUnknownTokens = false
         var isEstimated = false
         var sawKnownCost = false
         var sawUnknownCost = false
@@ -1299,7 +1315,8 @@ enum CostLedgerService {
 
         mutating func ingest(_ point: AggregatedDailyCostPoint) {
             self.costUSD += point.costUSD
-            self.totalTokens += point.totalTokens
+            self.totalTokens = SyncCounterMath.saturatingSum([self.totalTokens, point.totalTokens])
+            self.sawUnknownTokens = self.sawUnknownTokens || point.tokenCountIsKnown == false || point.totalTokens < 0
             if point.isEstimated == true {
                 self.isEstimated = true
             }
@@ -1337,7 +1354,12 @@ enum CostLedgerService {
                 modelBreakdowns: self.modelBreakdownsArray,
                 serviceBreakdowns: self.serviceBreakdownsArray,
                 isEstimated: self.isEstimated ? true : nil,
-                costIsKnown: self.mergedCostIsKnown)
+                costIsKnown: self.mergedCostIsKnown,
+                tokenCountIsKnown: self.mergedTokenCountIsKnown)
+        }
+
+        var mergedTokenCountIsKnown: Bool? {
+            self.sawUnknownTokens ? false : true
         }
 
         var mergedCostIsKnown: Bool? {
@@ -1372,7 +1394,7 @@ enum CostLedgerService {
 
         mutating func ingest(_ point: AggregatedDailyCostPoint) {
             self.costUSD += point.costUSD
-            self.totalTokens += point.totalTokens
+            self.totalTokens = SyncCounterMath.saturatingSum([self.totalTokens, point.totalTokens])
             self.perDay[point.dayKey, default: .init(dayKey: point.dayKey)].ingest(point)
             guard point.costIsKnown != false else { return }
             for breakdown in point.modelBreakdowns where breakdown.costUSD > 0 {
@@ -1429,11 +1451,11 @@ enum CostLedgerService {
                 self.hasPriorityCost = true
             }
             if let value = breakdown.standardTokens {
-                self.standardTokens += value
+                self.standardTokens = SyncCounterMath.saturatingSum([self.standardTokens, max(0, value)])
                 self.hasStandardTokens = true
             }
             if let value = breakdown.priorityTokens {
-                self.priorityTokens += value
+                self.priorityTokens = SyncCounterMath.saturatingSum([self.priorityTokens, max(0, value)])
                 self.hasPriorityTokens = true
             }
         }

@@ -102,6 +102,29 @@ actor CostHistoryWorker {
             sourceSnapshots: sourceSnapshots)
     }
 
+    func snapshotTokenActivity(
+        providers: [ProviderUsageSnapshot], referenceDate: Date) throws -> [TokenActivitySeries]
+    {
+        try Task.checkCancellation()
+        return TokenActivity.series(providers: providers, rollups: nil, referenceDate: referenceDate)
+    }
+
+    func tokenActivity(
+        providers: [ProviderUsageSnapshot],
+        sourceSnapshots: [SyncedUsageSnapshot],
+        referenceDate: Date = Date()) throws -> [TokenActivitySeries]
+    {
+        try Task.checkCancellation()
+        let aggregation = try CostLedgerService.aggregateSeedingFromExistingBlobsIfNeeded(
+            windowDays: 365,
+            in: self.makeContext(),
+            asOf: referenceDate,
+            activeDeviceIDs: CostLedgerDeviceFilter.activeDeviceIDs(for: sourceSnapshots),
+            sourceSnapshots: sourceSnapshots)
+        try Task.checkCancellation()
+        return TokenActivity.series(providers: providers, rollups: aggregation.sortedProviderRollups)
+    }
+
     func load(_ request: CostHistoryRequest) throws -> CostDashboardInsights? {
         try Task.checkCancellation()
         let aggregation: CostLedgerAggregation?

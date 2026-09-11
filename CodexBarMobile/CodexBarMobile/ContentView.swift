@@ -342,7 +342,9 @@ private struct ProviderListView: View {
                     NavigationLink {
                         ProviderDetailView(
                             group: group,
-                            costReferenceDate: self.costReferenceDate)
+                            costReferenceDate: self.costReferenceDate,
+                            sourceSnapshots: self.usageData.deviceSnapshots,
+                            isDemoMode: self.isDemoMode)
                     } label: {
                         ProviderUsageView(
                             provider: group.representative,
@@ -909,6 +911,13 @@ private struct CostDashboardView: View {
                         total: self.insights.spendProviderRows.reduce(0) { $0 + $1.thirtyDayCost })
                 }
 
+                TokenActivitySection(
+                    providers: self.isDemoMode ? self.insights.providerRows.map(\.provider)
+                        : self.usageData.snapshot.map { MockProviderDetector.filteredProviders(from: $0) } ?? [],
+                    sourceSnapshots: self.usageData.deviceSnapshots,
+                    isOverview: true,
+                    isDemoMode: self.isDemoMode)
+
                 if !self.insights.costDailyPoints.isEmpty {
                     self.trendSection
                 }
@@ -926,14 +935,6 @@ private struct CostDashboardView: View {
                         subtitle: "Top cost drivers across providers that expose model-level billing.",
                         rows: self.insights.modelRows,
                         total: self.insights.modelRows.reduce(0) { $0 + $1.amountUSD })
-                }
-
-                if !self.insights.serviceRows.isEmpty {
-                    self.contributionSection(
-                        title: "Codex Service Mix",
-                        subtitle: "Breakdown from Codex Cloud dashboard data, including Codex Run and other billable services.",
-                        rows: self.insights.serviceRows,
-                        total: self.insights.serviceRows.reduce(0) { $0 + $1.amountUSD })
                 }
 
                 if !self.insights.budgetRows.isEmpty {
@@ -1557,7 +1558,7 @@ struct CostDashboardInsights: Sendable {
     }
 
     var total30DayTokens: Int {
-        self.providerRows.reduce(0) { $0 + $1.thirtyDayTokens }
+        SyncCounterMath.saturatingSum(self.providerRows.map { max(0, $0.thirtyDayTokens) })
     }
 
     var spendProviderRows: [ProviderRow] {
@@ -1626,7 +1627,7 @@ struct CostDashboardInsights: Sendable {
             let resolvedThirtyDayCost = costSummary.last30DaysCostUSD ?? fallbackThirtyDayCost
             let thirtyDayCost = resolvedThirtyDayCost ?? 0
             let thirtyDayTokens = costSummary.last30DaysTokens
-                ?? costSummary.daily.reduce(0) { $0 + $1.totalTokens }
+                ?? SyncCounterMath.saturatingSum(costSummary.daily.map { max(0, $0.totalTokens) })
 
             let todayTotals = costSummary.todayTotals(now: now)
             let resolvedTodayCost = todayTotals.displayCostUSD
@@ -1636,6 +1637,7 @@ struct CostDashboardInsights: Sendable {
 
             guard resolvedThirtyDayCost != nil || resolvedTodayCost != nil ||
                 thirtyDayTokens > 0 || todayTokens > 0 ||
+                costSummary.daily.contains(where: { TokenActivity.knownTokens($0) != nil }) ||
                 costSummary.hasIncompleteHistoricalCostCoverage(at: now)
             else {
                 continue
@@ -1844,7 +1846,7 @@ struct CostDashboardInsights: Sendable {
             let fallbackDailyCost = availableFallbackPoints.isEmpty
                 ? nil
                 : availableFallbackPoints.reduce(0) { $0 + $1.costUSD }
-            let fallbackDailyTokens = fallbackSyncPoints.reduce(0) { $0 + $1.totalTokens }
+            let fallbackDailyTokens = SyncCounterMath.saturatingSum(fallbackSyncPoints.map { max(0, $0.totalTokens) })
             let resolvedCost = max(totals.costUSD, max(fallbackDailyCost ?? 0, todayCost))
             let resolvedCostIsKnown = totals.costIsKnown || fallbackDailyCost != nil || resolvedTodayCost != nil
             let resolvedTokens = max(totals.tokens, max(fallbackDailyTokens, todayTokens))
@@ -2028,7 +2030,7 @@ struct CostDashboardInsights: Sendable {
 
         mutating func ingest(_ point: SyncDailyPoint) {
             self.costUSD += point.costUSD
-            self.totalTokens += point.totalTokens
+            self.totalTokens = SyncCounterMath.saturatingSum([self.totalTokens, max(0, point.totalTokens)])
             switch point.costIsKnown {
             case true: self.sawKnownCost = true
             case false: self.sawUnavailableCost = true
@@ -2098,11 +2100,11 @@ struct CostDashboardInsights: Sendable {
                 self.hasPriorityCost = true
             }
             if let standardTokens = breakdown.standardTokens {
-                self.standardTokens += standardTokens
+                self.standardTokens = SyncCounterMath.saturatingSum([self.standardTokens, max(0, standardTokens)])
                 self.hasStandardTokens = true
             }
             if let priorityTokens = breakdown.priorityTokens {
-                self.priorityTokens += priorityTokens
+                self.priorityTokens = SyncCounterMath.saturatingSum([self.priorityTokens, max(0, priorityTokens)])
                 self.hasPriorityTokens = true
             }
         }
@@ -4124,8 +4126,15 @@ private struct ReleaseNotesVersion: Identifiable {
 private enum MobileReleaseNotesCatalog {
     static let versions: [ReleaseNotesVersion] = [
         ReleaseNotesVersion(
+            version: "2.0.0", status: String(localized: "Latest"),
+            summary: String(localized: "Token activity across your Macs, with a clearer home for Codex service costs."),
+            sections: [.init(title: String(localized: "What's New"), items: [
+                String(localized: "Explore daily tokens in a scrollable yearly heatmap. Unavailable days stay distinct from confirmed zero usage."),
+                String(localized: "See total tokens on Cost, then tap to explore each provider’s activity. Codex Service Mix now lives in Codex details."),
+            ])]),
+        ReleaseNotesVersion(
             version: "1.24.0",
-            status: String(localized: "Latest"),
+            status: "",
             summary: String(
                 localized: "iPhone 1.24 adds purchased Codex credits and clearer monthly quotas, with more reliable data from newer Macs."),
             sections: [
