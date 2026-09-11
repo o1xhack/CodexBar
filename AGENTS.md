@@ -193,7 +193,11 @@ problem and revise the approach; do not keep stacking symptom-level patches.
 The PR comment must use the exact non-empty `Head`, `Repeated finding pattern`,
 `Root design/requirements problem`, and `Revised approach` fields documented in
 `$codexbar-git-workflow`.
-Release/tag/appcast/TestFlight work remains blocked until this gate passes.
+Merge, tag creation, and public release/appcast work remain blocked until this gate passes.
+TestFlight is an independent beta workflow: an authorized upload does not require
+a PR, a clean CR gate, a merge, or remote CI completion. Keep local build/test,
+versioning, four-language notes, signing, and CloudKit Production checks; record
+the source commit and any known beta validation gaps.
 
 For large Goals, the agent may make staged Git commits when the Goal or user
 authorizes implementation work. Do not push, merge, tag, publish a live release,
