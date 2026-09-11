@@ -102,10 +102,9 @@ enum TokenActivity {
             SyncDailyPoint(
                 dayKey: key,
                 costUSD: 0,
-                totalTokens: values.map { alreadyAggregated ? max(0, $0.totalTokens) : self.knownTokens($0) ?? 0 }
-                    .reduce(
-                        0,
-                        +),
+                totalTokens: SyncCounterMath.saturatingSum(values.map {
+                    alreadyAggregated ? max(0, $0.totalTokens) : self.knownTokens($0) ?? 0
+                }),
                 costIsKnown: false,
                 tokenCountIsKnown: values.allSatisfy { self.knownTokens($0) != nil })
         }.sorted { $0.dayKey < $1.dayKey }

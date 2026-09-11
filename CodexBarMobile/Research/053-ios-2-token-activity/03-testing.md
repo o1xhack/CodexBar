@@ -67,3 +67,4 @@ UI夹具说明：`UI_TEST_PREVIEW_DATA`只注入内存快照，不写本地账�
 - 回归固定 usage/device timestamp，仅增加 provider publication，并断言 refresh revision 改变；输入顺序改变不产生无效刷新。
 - `/tmp/cbm-2-cr1-tests.log`：TokenActivityTests + CostHistoryWorkerTests，11 tests / 2 suites passed；相关 3 个文件 strict lint 与 diff check 通过。
 - 应用代码已变化，上传前必须重新归档，原 build 200 archive 不再作为最终上传产物。
+- 同轮自查补充：新热力图日合并、全年总计和所选日总计均使用现有 SyncCounterMath.saturatingSum，避免极端同步计数溢出。`/tmp/cbm-2-counter-tests.log`：12 tests / 2 suites passed，包含 Int.max + 1 回归；相关文件 strict lint 通过。

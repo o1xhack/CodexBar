@@ -34,6 +34,14 @@ struct TokenActivityTests {
         #expect(TokenActivity.sourceRevision([old, catchUp]) == TokenActivity.sourceRevision([catchUp, old]))
     }
 
+    @Test func `Extreme synced counters do not overflow daily token combination`() {
+        let points = TokenActivity.combine([
+            SyncDailyPoint(dayKey: "2026-09-10", costUSD: 0, totalTokens: Int.max),
+            SyncDailyPoint(dayKey: "2026-09-10", costUSD: 0, totalTokens: 1),
+        ])
+        #expect(points.first?.totalTokens == Int.max)
+    }
+
     @Test func `Unknown and absent token counts differ from confirmed zero`() {
         #expect(TokenActivity.knownTokens(nil) == nil)
         #expect(TokenActivity.knownTokens(SyncDailyPoint(

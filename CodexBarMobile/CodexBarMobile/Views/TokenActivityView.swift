@@ -72,10 +72,9 @@ struct TokenActivitySection: View {
                         .font(.headline)
                     Text(String(localized: "Past year · Swipe to explore. Missing history is not zero."))
                         .font(.caption).foregroundStyle(.secondary)
-                    let availableTotal = self.series
-                        .reduce(0) { total, item in total + item.days.compactMap { TokenActivity.recordedTokens(
-                            $0,
-                            series: item) }.reduce(0, +) }
+                    let availableTotal = SyncCounterMath.saturatingSum(self.series.flatMap { item in
+                        item.days.compactMap { TokenActivity.recordedTokens($0, series: item) }
+                    })
                     Text(String(localized: "Recorded tokens") + ": " + availableTotal.formatted())
                         .font(.subheadline.monospacedDigit())
                     ScrollViewReader { proxy in
@@ -134,7 +133,8 @@ struct TokenActivitySection: View {
                             let values = self.series.compactMap { item in
                                 TokenActivity.recordedTokens(item.days.first { $0.dayKey == selectedDay }, series: item)
                             }
-                            Text(String(localized: "Recorded tokens") + ": " + values.reduce(0, +).formatted())
+                            Text(String(localized: "Recorded tokens") + ": " + SyncCounterMath.saturatingSum(values)
+                                .formatted())
                                 .font(.subheadline.monospacedDigit())
                         }
                         ForEach(self.series) { item in
