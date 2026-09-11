@@ -18,7 +18,7 @@ Status: in-review（PR #123；尚未上传）。
 ## 审查与后续动作
 - 2026-09-11：feature/ios-2-token-activity 已推送 origin，PR #123 以 mobile-dev 为 base；已请求 GitHub Codex review。
 - 当前提交的审查、Fast Checks 与全部 review thread 必须通过，才可继续 TestFlight。任何修复 push 后重新请求 review。
-- 本地 Opus 4.7 可用性检查返回 OAuth session expired，尚未执行该模型 CR；不可将 GitHub Codex review 记作 Opus review。此独立 gate 仍待恢复认证。
+- 用户明确不使用 Claude。旧 Opus 4.7 要求来自 fork 提交 e275f0233（2026-05-26），本轮已移除该专属门槛，保留完整 Codex PR review gate；无需 Claude 登录。
 - Todoist Dev 已记录本轮 PR / TestFlight，保持 In Progress。
 
 本地归档并不等于上传成功；尚未执行 export/upload、merge、tag 或 live release。真实费用差额与实体设备同步/性能验收仍按03-testing保留，TF阶段也不得声称已解决。

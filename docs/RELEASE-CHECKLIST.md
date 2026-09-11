@@ -50,7 +50,7 @@
 - [ ] 跑 `docs/cloudkit-deploy-audit.md` 审计 → 判断是否要 Dashboard deploy 到 Production。新 provider = runtime zone 复用 `QuotaTransition` record type → 通常**不**需要；新 record type / field / index → **需要**
 
 ## 6. CR（每一大轮）
-- [ ] merge 轮 / bridge 轮 / iOS 轮 各跑一次 **Opus 4.7 agent CR**，循环到 clean，findings 全修（含 stale 注释 / @Test 标题）
+- [ ] merge 轮 / bridge 轮 / iOS 轮先自查 diff，再执行下述 Codex Code Review，循环到 clean，findings 全修（含 stale 注释 / @Test 标题）；不要求 Claude / Opus 或其登录凭证
 - [ ] 每个 GitHub PR（含 docs/review-fix/release-closeout PR）必须在**当前 `headRefOid`** 上完成 Codex Code Review；Fast Checks 绿不代表 review 完成
 - [ ] 每个 finding：修复并复测 → 在线程回复 commit/证据 → 明确 Resolve conversation → push → 再次 `@codex review`
 - [ ] merge 前运行 `Scripts/check_pr_review_gate.sh <pr>`：当前 head 必须收到 `Didn't find any major issues`，所有 thread（含 outdated）必须 `isResolved=true`
