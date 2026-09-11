@@ -94,6 +94,76 @@ struct TokenActivityTests {
         }
     }
 
+    private func fixtureProvider(summary: SyncCostSummary? = nil) -> ProviderUsageSnapshot {
+        ProviderUsageSnapshot(
+            providerID: "codex",
+            providerName: "Codex",
+            primary: nil,
+            secondary: nil,
+            accountEmail: nil,
+            loginMethod: nil,
+            statusMessage: nil,
+            isError: false,
+            lastUpdated: Date(timeIntervalSince1970: 0),
+            costSummary: summary)
+    }
+
+    @Test func `Producer midnight invalidates history while reader day and publications stay fixed`() throws {
+        let formatter = ISO8601DateFormatter()
+        let before = try #require(formatter.date(from: "2026-09-11T14:59:00Z"))
+        let after = try #require(formatter.date(from: "2026-09-11T15:01:00Z"))
+        var reader = Calendar(identifier: .gregorian)
+        reader.timeZone = try #require(TimeZone(identifier: "America/Los_Angeles"))
+        let provider = self.fixtureProvider(summary: SyncCostSummary(
+            sessionCostUSD: nil,
+            sessionTokens: nil,
+            last30DaysCostUSD: nil,
+            last30DaysTokens: nil,
+            daily: [SyncDailyPoint(dayKey: "2026-09-11", costUSD: 0, totalTokens: 100)],
+            bucketTimeZoneIdentifier: "Asia/Tokyo"))
+        let source = SyncedUsageSnapshot(providers: [provider], syncTimestamp: before, deviceName: "Fixture Mac")
+        #expect(TokenActivity.dayKey(before, calendar: reader) == TokenActivity.dayKey(after, calendar: reader))
+        #expect(TokenActivity.dayRevision(
+            providers: [provider], snapshots: [source], referenceDate: before, readerCalendar: reader)
+            != TokenActivity.dayRevision(
+                providers: [provider], snapshots: [source], referenceDate: after, readerCalendar: reader))
+        #expect(TokenActivity.dayRevision(
+            providers: [], snapshots: [source], referenceDate: before, readerCalendar: reader)
+            != TokenActivity.dayRevision(
+                providers: [], snapshots: [source], referenceDate: after, readerCalendar: reader))
+        #expect(TokenActivity.snapshotDays(provider.costSummary, referenceDate: before, readerTimeZone: reader.timeZone)
+            .first?.dayKey == "2026-09-11")
+        #expect(TokenActivity.snapshotDays(provider.costSummary, referenceDate: after, readerTimeZone: reader.timeZone)
+            .first?.dayKey == "2026-09-10")
+    }
+
+    @Test func `All aggregate surfaces preserve complete zero unknown and lower bound semantics`() {
+        let provider = self.fixtureProvider()
+        let key = "2026-09-11"
+        let known = TokenActivitySeries(provider: provider, days: [
+            SyncDailyPoint(dayKey: key, costUSD: 0, totalTokens: 100, tokenCountIsKnown: true),
+        ])
+        let unknown = TokenActivitySeries(provider: provider, days: [
+            SyncDailyPoint(dayKey: key, costUSD: 0, totalTokens: 999, tokenCountIsKnown: false),
+        ])
+        let partial = TokenActivitySeries(
+            provider: provider,
+            days: [SyncDailyPoint(dayKey: key, costUSD: 0, totalTokens: 100, tokenCountIsKnown: false)],
+            hasLedgerCounts: true)
+        let zero = TokenActivitySeries(provider: provider, days: [
+            SyncDailyPoint(dayKey: key, costUSD: 0, totalTokens: 0, tokenCountIsKnown: true),
+        ])
+        #expect(TokenActivity.total([zero]) == TokenActivityTotal(value: 0, isLowerBound: false))
+        #expect(TokenActivity.total([unknown]).value == nil)
+        #expect(TokenActivity.total([known], dayKey: "2026-09-10").value == nil)
+        for day in [nil, key] {
+            #expect(TokenActivity.total([known, unknown], dayKey: day)
+                == TokenActivityTotal(value: 100, isLowerBound: true))
+            #expect(TokenActivity.total([partial], dayKey: day).text == "≥100")
+            #expect(TokenActivity.total([known], dayKey: day).text == "100")
+        }
+    }
+
     @Test func `Unknown and absent token counts differ from confirmed zero`() {
         #expect(TokenActivity.knownTokens(nil) == nil)
         #expect(TokenActivity.knownTokens(SyncDailyPoint(

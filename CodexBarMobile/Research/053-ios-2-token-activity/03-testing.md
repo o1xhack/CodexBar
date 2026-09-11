@@ -88,3 +88,8 @@ UI夹具说明：`UI_TEST_PREVIEW_DATA`只注入内存快照，不写本地账�
 - 合成两台 Mac、两天、Int.max 已知 Token 与 model token counters，贯穿 persistFull → worker.tokenActivity → aggregate → Cost load/blob projection，均饱和为 Int.max 且不崩溃。
 - `/tmp/cbm-2-boundary-tests.log`：742 tests / 49 suites 全部通过；两个 UI 流程 0 failures；`Test-CodexBarMobile-2026.09.11_14-52-59--0700.xcresult`。
 - 4 个相关新/测试文件 strict lint 通过；git diff --check 通过。实体多设备矩阵仍属于上文明确记录的替代验证。
+
+## 第六轮前统一数据语义
+- 复盘与方案见05-review-audit；审计评论在第六轮请求前发布。
+- 统一 producer/reader 日历刷新标识与 optional / lower-bound 总数，覆盖同一时刻不同设备跨日、≥ 总数和全未知状态。
+- `/tmp/cbm-2-semantics-tests.log`：744 tests / 49 suites、2 UI tests 全部通过；结果包 `Test-CodexBarMobile-2026.09.11_15-04-21--0700.xcresult`。

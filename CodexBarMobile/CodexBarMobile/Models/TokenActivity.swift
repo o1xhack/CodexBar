@@ -10,7 +10,49 @@ struct TokenActivitySeries: Identifiable, Sendable {
     }
 }
 
+struct TokenActivityTotal: Equatable, Sendable {
+    let value: Int?
+    let isLowerBound: Bool
+
+    var text: String {
+        guard let value else { return String(localized: "Unavailable") }
+        return (self.isLowerBound ? "≥" : "") + value.formatted()
+    }
+}
+
 enum TokenActivity {
+    static func dayRevision(
+        providers: [ProviderUsageSnapshot],
+        snapshots: [SyncedUsageSnapshot],
+        referenceDate: Date,
+        readerCalendar: Calendar = Calendar(identifier: .gregorian)) -> String
+    {
+        let producerDays = Set((providers + snapshots.flatMap(\.providers)).compactMap { provider -> String? in
+            guard let summary = provider.costSummary else { return nil }
+            return "\(summary.bucketTimeZoneIdentifier ?? "legacy"):\(summary.costDayKey(for: referenceDate))"
+        })
+        return ([Self.dayKey(referenceDate, calendar: readerCalendar)] + producerDays.sorted()).joined(separator: "|")
+    }
+
+    static func total(_ series: [TokenActivitySeries], dayKey: String? = nil) -> TokenActivityTotal {
+        var values: [Int] = []
+        var incomplete = false
+        for item in series {
+            let points: [SyncDailyPoint?] = if let dayKey {
+                [item.days.first { $0.dayKey == dayKey }]
+            } else {
+                item.days.map(Optional.some)
+            }
+            for point in points {
+                if let value = Self.recordedTokens(point, series: item) { values.append(value) }
+                if point == nil || Self.knownTokens(point) == nil { incomplete = true }
+            }
+        }
+        return TokenActivityTotal(
+            value: values.isEmpty ? nil : SyncCounterMath.saturatingSum(values),
+            isLowerBound: !values.isEmpty && incomplete)
+    }
+
     static func window(referenceDate: Date, calendar: Calendar) -> ClosedRange<Date> {
         let today = calendar.startOfDay(for: referenceDate)
         let firstDay = calendar.date(byAdding: .day, value: -364, to: today)!

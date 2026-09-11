@@ -25,7 +25,8 @@ struct TokenActivitySection: View {
         self.scope + self.providers.map { "\($0.lastUpdated.timeIntervalSince1970)" }.joined(separator: "|")
             + self.sourceSnapshots.map { "\($0.deviceID ?? ""):\($0.syncTimestamp.timeIntervalSince1970)" }.joined()
             + TokenActivity.sourceRevision(self.sourceSnapshots)
-            + TokenActivity.dayKey(self.referenceDate, calendar: .current)
+            + TokenActivity.dayRevision(
+                providers: self.providers, snapshots: self.sourceSnapshots, referenceDate: self.referenceDate)
     }
 
     var body: some View {
@@ -47,9 +48,7 @@ struct TokenActivitySection: View {
                         HStack(spacing: 12) {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text(String(localized: "Recorded tokens")).font(.headline)
-                                Text(SyncCounterMath.saturatingSum(self.series.flatMap { item in
-                                    item.days.compactMap { TokenActivity.recordedTokens($0, series: item) }
-                                }).formatted())
+                                Text(TokenActivity.total(self.series).text)
                                     .font(.title2.bold().monospacedDigit())
                                     .accessibilityIdentifier("token-overview-total")
                                 Text(String(localized: "Past year · All providers"))
@@ -149,10 +148,7 @@ private struct TokenActivityCharts: View {
                 .font(.headline)
             Text(String(localized: "Past year · Swipe to explore. Missing history is not zero."))
                 .font(.caption).foregroundStyle(.secondary)
-            let availableTotal = SyncCounterMath.saturatingSum(self.series.flatMap { item in
-                item.days.compactMap { TokenActivity.recordedTokens($0, series: item) }
-            })
-            Text(String(localized: "Recorded tokens") + ": " + availableTotal.formatted())
+            Text(String(localized: "Recorded tokens") + ": " + TokenActivity.total(self.series).text)
                 .font(.subheadline.monospacedDigit())
             ScrollViewReader { proxy in
                 HStack(alignment: .top, spacing: 8) {
@@ -207,12 +203,8 @@ private struct TokenActivityCharts: View {
             if let selectedDay {
                 Text(selectedDay).font(.subheadline.bold()).accessibilityIdentifier("selected-token-day")
                 if self.isOverview {
-                    let values = self.series.compactMap { item in
-                        TokenActivity.recordedTokens(item.days.first { $0.dayKey == selectedDay }, series: item)
-                    }
-                    Text(String(localized: "Recorded tokens") + ": " + (values.isEmpty
-                            ? String(localized: "Unavailable")
-                            : SyncCounterMath.saturatingSum(values).formatted()))
+                    Text(String(localized: "Recorded tokens") + ": " + TokenActivity.total(
+                        self.series, dayKey: selectedDay).text)
                         .font(.subheadline.monospacedDigit())
                 }
                 ForEach(self.series) { item in
