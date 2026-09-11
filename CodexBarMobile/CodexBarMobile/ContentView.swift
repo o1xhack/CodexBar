@@ -5228,6 +5228,9 @@ private struct CostSettingsView: View {
             } catch {
                 guard !Task.isCancelled else { return }
                 self.ledgerDiagnostics = nil
+                // A failed ledger read must leave the synced snapshot view usable.
+                // Cancellation above prevents an obsolete task reverting a newer choice.
+                self.cwlEnabled = false
             }
         }
     }

@@ -411,7 +411,8 @@ final class SyncedUsageData {
         let rawDeviceSnapshots = nextCache.buildDeviceSnapshots()
         if rawDeviceSnapshots.isEmpty {
             if let kvsSnapshot = reader.latestKVSSnapshot() {
-                self.cache.seedFromColdStart([kvsSnapshot])
+                nextCache.seedFromColdStart([kvsSnapshot])
+                self.cache = nextCache
                 self.usingKVSFallback = true
                 self.republishFromCache()
                 return

@@ -461,6 +461,26 @@ struct SnapshotCacheTests {
         #expect(cache.perProviderByDevice["mac-A"]?["wayfinder|gateway@example.test"] != nil)
     }
 
+    @Test
+    func `Authoritative empty zones let KVS replace stale provider data`() {
+        var cache = SnapshotCache()
+        cache.replaceFromFullFetch(
+            perProviderSnapshots: [self.snapshot(
+                deviceID: "mac-A", deviceName: "Mac A",
+                providers: [self.provider(id: "codex", lastUpdated: self.t1)],
+                timestamp: self.t1)],
+            legacySnapshots: [])
+        cache.replaceFromFullFetch(perProviderSnapshots: [], legacySnapshots: [])
+        cache.seedFromColdStart([self.snapshot(
+            deviceID: "mac-A", deviceName: "Mac A",
+            providers: [self.provider(id: "claude", lastUpdated: self.t3)],
+            timestamp: self.t3)])
+        let snapshots = cache.buildDeviceSnapshots()
+        #expect(snapshots.count == 1)
+        #expect(snapshots.first?.providers.map(\.providerID) == ["claude"])
+        #expect(cache.perProviderByDevice.isEmpty)
+    }
+
     // MARK: - Codex review P1 — preserve on transient fetch error
 
     @Test

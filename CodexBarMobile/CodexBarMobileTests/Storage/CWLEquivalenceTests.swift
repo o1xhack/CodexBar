@@ -12,8 +12,8 @@ import Testing
 ///
 /// The fixture pins `last30DaysCostUSD = nil` so the blob path also reduces
 /// from `daily[]` (matching how the ledger sums daily rows), and uses a
-/// 365-day aggregate window so every fixture day is in range regardless of
-/// timezone edges.
+/// UTC reader clock for UTC day keys, including when UTC is ahead of the
+/// machine local date. Explicit cross-timezone cases below keep their own clocks.
 @Suite("CWL Equivalence — ledger path == blob path (T7)")
 @MainActor
 struct CWLEquivalenceTests {
@@ -109,7 +109,8 @@ struct CWLEquivalenceTests {
                 provider, deviceID: "test-device", in: context)
         }
         try context.save()
-        let aggregation = try CostLedgerService.aggregate(windowDays: 365, in: context)
+        let aggregation = try CostLedgerService.aggregate(
+                windowDays: 365, in: context, readerTimeZone: TimeZone(secondsFromGMT: 0)!)
         let ledger = CostDashboardInsights.fromLedger(
             aggregation: aggregation, snapshot: snapshot)
 
@@ -243,7 +244,8 @@ struct CWLEquivalenceTests {
         let aggregation = try CostLedgerService.aggregate(
             windowDays: 365,
             in: context,
-            activeDeviceIDs: ["dev-A", "dev-B"])
+            activeDeviceIDs: ["dev-A", "dev-B"],
+            readerTimeZone: TimeZone(secondsFromGMT: 0)!)
         let ledger = CostDashboardInsights.fromLedger(
             aggregation: aggregation, snapshot: mergedSnapshot)
 
@@ -285,7 +287,8 @@ struct CWLEquivalenceTests {
 
         // Each selected CWL window must drive the Overview "N Days" headline.
         for window in [7, 30, 90, 365] {
-            let agg = try CostLedgerService.aggregate(windowDays: window, in: context)
+            let agg = try CostLedgerService.aggregate(
+                windowDays: window, in: context, readerTimeZone: TimeZone(secondsFromGMT: 0)!)
             let insights = CostDashboardInsights.fromLedger(aggregation: agg, snapshot: snapshot)
             #expect(insights.cwlWindowDays == window)
             #expect(insights.historyDays == window, "CWL window \(window) must drive the headline")
@@ -351,7 +354,8 @@ struct CWLEquivalenceTests {
         try CostLedgerService.upsertFromSnapshot(openai, deviceID: "test-device", in: context)
         try context.save()
 
-        let aggregation = try CostLedgerService.aggregate(windowDays: 90, in: context)
+        let aggregation = try CostLedgerService.aggregate(
+                windowDays: 90, in: context, readerTimeZone: TimeZone(secondsFromGMT: 0)!)
         let insights = CostDashboardInsights.fromLedger(aggregation: aggregation, snapshot: snapshot)
         let row = try #require(insights.providerRows.first { $0.provider.providerID == "claude" })
         let summaryOnlyRow = try #require(insights.providerRows.first { $0.provider.providerID == "openai" })
@@ -402,7 +406,8 @@ struct CWLEquivalenceTests {
         try CostLedgerService.upsertFromSnapshot(codex, deviceID: "test-device", in: context)
         try context.save()
 
-        let aggregation = try CostLedgerService.aggregate(windowDays: 7, in: context)
+        let aggregation = try CostLedgerService.aggregate(
+                windowDays: 7, in: context, readerTimeZone: TimeZone(secondsFromGMT: 0)!)
         let insights = CostDashboardInsights.fromLedger(aggregation: aggregation, snapshot: snapshot)
         let row = try #require(insights.providerRows.first)
 
@@ -881,7 +886,8 @@ struct CWLEquivalenceTests {
                 provider, deviceID: "test-device", in: context)
         }
         try context.save()
-        let aggregation = try CostLedgerService.aggregate(windowDays: 365, in: context)
+        let aggregation = try CostLedgerService.aggregate(
+                windowDays: 365, in: context, readerTimeZone: TimeZone(secondsFromGMT: 0)!)
         let ledger = CostDashboardInsights.fromLedger(
             aggregation: aggregation, snapshot: snapshot)
 

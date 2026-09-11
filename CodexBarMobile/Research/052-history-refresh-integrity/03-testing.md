@@ -43,3 +43,8 @@ E1=同次全量测试中的V058SyncSemanticsTests mask0...15，两个writer身�
 
 R1：真实Production网络乱序、silent push、前后台收敛和物理SQLite升级未实测；实际$2,000来源未确认。R2：旧reader不支持独立余额时间及新日计数；价格修正/账户或设备筛选可能合法改变总额，不能保证旧新界面金额完全一致。
 CloudKit审计：本052相对9b849af无Shared/wire/record/zone/index/entitlement变化，仅本地事务与读取，不需要Production schema deploy；没有Dashboard deploy，也未声称在线schema读取完成。
+
+## PR122 第一轮线上review修复
+- P1：权威空CloudKit结果的KVS回退改为在清空后的candidate上seed再发布，避免旧provider优先遮蔽KVS。新增SnapshotCache回归通过。
+- P2：Settings账本读取/seed失败恢复关闭本地历史，Cost可继续使用同步blob；取消任务不回滚新选择。此UI错误分支经过代码审计，未声称真实故障设备复现。
+- 全量728项/47 suites通过，日志 `/tmp/cbm-124-review-tests-final.log`。初跑18个断言失败均来自CWLEquivalence UTC fixture与本地reader日期不一致（UTC已次日）；为这六处aggregate显式传入UTC，保留专门的跨时区case，未改变产品时间处理。
